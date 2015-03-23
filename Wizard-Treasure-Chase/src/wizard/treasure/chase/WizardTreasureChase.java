@@ -18,6 +18,7 @@ public class WizardTreasureChase
     public static void main(String[] args)
     {
         // TODO code application logic here
+        //Line
     }
     
 }
