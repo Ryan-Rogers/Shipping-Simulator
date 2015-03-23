@@ -11,5 +11,5 @@ package wizard.treasure.chase.newpackage;
  */
 public class NewClass
 {
-    
+    private NewClass newClass;
 }
