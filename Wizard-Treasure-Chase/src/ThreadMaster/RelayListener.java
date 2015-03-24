@@ -4,11 +4,15 @@
  */
 package ThreadMaster;
 
+import java.awt.Event;
+
 /**
  *
  * @author mason
  */
-public class MapMaster
+public interface RelayListener
 {
+    public void onRelay(Event evt);
     
+    //TODO: overload for special event types
 }
