@@ -27,8 +27,8 @@ public class DebugMain {
         window.setSize(960, 540);
         window.setLocationRelativeTo(null); // Centers the window on the screen
         Button testButton = new Button();
-        ActionListener testActionListener = new ActionListener;
-        testButton.addActionListener();
+        //ActionListener testActionListener = new ActionListener;
+        //testButton.addActionListener();
     }
     
 } // end DebugMain
