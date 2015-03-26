@@ -1,22 +1,31 @@
-/*
+/* 
  * This is an assigned group project for CSE1325
- * Members: Mason Moreland, Ryan Rogers, Raith Hamhaz
+ * Members: Mason Moreland, Ryan Rogers, Raith Hamzah
  */
 package FixedObject;
+
+import Map.Location;
 
 /**
  *
  * @author mason
  */
-public class FixedObject
+public abstract class FixedObject
 {
-    protected int longitude;
-    
-    protected int latitude;
+    protected Location location;
 
     public FixedObject()
     {
-        longitude = -1;
-        latitude = -1;
+        location = new Location(-1, -1);
+    }
+    
+    public FixedObject(int x, int y)
+    {
+        location = new Location(x, y);
+    }
+
+    public Location getLocation()
+    {
+        return new Location(this.location);
     }
 }
