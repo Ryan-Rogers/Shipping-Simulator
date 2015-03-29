@@ -2,7 +2,7 @@
 ${licenseFirst}
 </#if>
 ${licensePrefix}This is an assigned group project for CSE1325
-${licensePrefix}Members: Mason Moreland, Ryan Rogers, Raith Hamhaz
+${licensePrefix}Members: Mason Moreland, Ryan Rogers, Raith Hamzah
 <#if licenseLast??>
 ${licenseLast}
 </#if>

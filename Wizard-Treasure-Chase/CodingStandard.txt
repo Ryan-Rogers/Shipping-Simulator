@@ -1,0 +1,9 @@
+Note: If not listed below, the standard is the Netbeans default format.
+
+All curly braces ( '{' and '}' ) belong on their own line.
+
+All methods need a full Javadoc comment. 
+
+All files should have each group member's name listed at the top.
+
+Clean your code!!!
