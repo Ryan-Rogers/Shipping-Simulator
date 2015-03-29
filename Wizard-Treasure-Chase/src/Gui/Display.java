@@ -17,21 +17,20 @@ import java.util.ArrayList;
 // Java Awt
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.Image;
 import java.awt.GridLayout;
-import java.awt.Dimension;
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.image.ImageObserver;
-
-// Javax
-import javax.imageio.*;
+import java.awt.ComponentOrientation;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Dimension;
 
 // Javax Swing
 import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
+import javax.swing.JApplet;
 
 /**
  * @author Ryan Rogers
@@ -46,55 +45,95 @@ public class Display {
     private ArrayList<ArrayList<JButton>> buttonList;
     
     public Display() {
-        // Creates and displays the window with predefined name and size
-        window = new JFrame();
+        // Creates and displays the window with predefined name and size        
+        window = new JFrame("Wizard Treasure Chase");
         window.setVisible(true);
-        window.setTitle("Wizard Treasure Chase"); // Default window title
-        window.setMinimumSize(new Dimension(960, 540)); // Default width, height
+        //window.setMinimumSize(new Dimension(960, 540)); // Default width, height
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // X quits run
         
-        // Window Division 1
-        GridLayout division1Layout = new GridLayout();
-        division1Layout.setColumns(1);
-        division1Layout.setRows(2);
-        division1Layout.setHgap(0);
-        division1Layout.setVgap(0);
+        // Layout
+        GridBagLayout gridBag = new GridBagLayout();
+        GridBagConstraints constraints = new GridBagConstraints();
         
-        JPanel division1 = new JPanel(division1Layout);
-        division1.setMinimumSize(new Dimension(960, 540));
-        window.add(division1);
+        // Window
+        window.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+        window.setLayout(gridBag);
         
-        // Bar Menu
-        JPanel barMenu = new JPanel();
-        
-        barMenu.setBackground(Color.green); // DEBUG
-        barMenu.setMinimumSize(new Dimension(960, 36));
-        
-        division1.add(barMenu);
-        
-        // Window Division 2
-        GridLayout division2Layout = new GridLayout();
-        division2Layout.setColumns(2);
-        division2Layout.setRows(1);
-        division2Layout.setHgap(0);
-        division2Layout.setVgap(0);
-        
-        JPanel division2 = new JPanel(division2Layout);
-        division1.add(division2);
+        // Menu Bar
+        constraints.anchor = GridBagConstraints.NORTH;
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridheight = 1;
+        constraints.gridwidth = 2;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 0.5;
+        constraints.weighty = 0.5;
+        JPanel menuBar = new JPanel(gridBag);
+        window.add(menuBar, constraints);
+        menuBar.add(new JButton("menuBar")); // DEBUG
         
         // Window Map
-        GridLayout windowMapLayout = new GridLayout();
-        windowMapLayout.setColumns(54);
-        windowMapLayout.setRows(36);
-        windowMapLayout.setHgap(0);
-        windowMapLayout.setVgap(0);
+        constraints.anchor = GridBagConstraints.WEST;
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridheight = 2;
+        constraints.gridwidth = 1;
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.weightx = 0.5;
+        constraints.weighty = 0.5;
+        JPanel windowMap = new JPanel(gridBag);
+        window.add(windowMap, constraints);
         
-        JPanel windowMap = new JPanel(windowMapLayout);
+        // Detailed Menu
+        constraints.anchor = GridBagConstraints.EAST;
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridheight = 1;
+        constraints.gridwidth = 1;
+        constraints.gridx = 1;
+        constraints.gridy = 1;
+        constraints.weightx = 0.5;
+        constraints.weighty = 0.5;
+        JPanel detailedMenu = new JPanel(gridBag);
+        window.add(detailedMenu, constraints);
+        detailedMenu.add(new JButton("detailedMenu")); // DEBUG
+        
+        // Detailed Art
+        constraints.anchor = GridBagConstraints.EAST;
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridheight = 1;
+        constraints.gridwidth = 1;
+        constraints.gridx = 1;
+        constraints.gridy = 2;
+        constraints.weightx = 0.5;
+        constraints.weighty = 0.5;
+        JPanel detailedArt = new JPanel(gridBag);
+        window.add(detailedArt, constraints);
+        detailedArt.add(new JButton("detailedArt")); // DEBUG
+        
+        
+        
+        /* <editor-fold defaultstate="collapsed" desc="Panel Gui">
+        // Window Division 1
+        JPanel division1 = new JPanel(new GridLayout(2, 1, 0, 0));
+        
+        // Bar Menu
+        JComboBox barMenu = new JComboBox();
+        barMenu.setBackground(Color.green); // DEBUG
+        
+        // Window Division 2
+        JPanel division2 = new JPanel(new GridLayout(1, 2, 0, 0));
+        
+        // Window Map
+        JPanel windowMap = new JPanel(new GridLayout(36, 54, 0, 0));
         windowMap.setBackground(Color.lightGray); // DEBUG
-        windowMap.setMinimumSize(new Dimension(756, 504));
         
+        // Adding to window
+        window.add(division1);
+        division1.add(barMenu);
+        division1.add(division2);
         division2.add(windowMap);
-        
+        */
+        // </editor-fold>
         
         // Map buttinList
         buttonList = new ArrayList<>(); // Allocating buttonList columns
@@ -102,10 +141,20 @@ public class Display {
             // Allocating buttonList rows
             buttonList.add(new ArrayList<JButton>(36));
         }
+        
+        constraints.anchor = GridBagConstraints.SOUTH;
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.gridheight = 1;
+        constraints.gridwidth = 1;
+        
         loadMap();
         for(ArrayList<JButton> column : buttonList) { 
             for(int i = 0; i < 54; i++) { // Incrementing column
                 JButton newButton = new JButton(); // Allocating new button
+                constraints.gridx = i;
+                constraints.gridy = buttonList.indexOf(column);
                 if(map[i][buttonList.indexOf(column)] == '.') { // Water
                     try {
                         ImageIcon icon = new ImageIcon(waterImg);
@@ -123,27 +172,30 @@ public class Display {
                 }
                 
                 newButton.setBorder(null); // Removing borders
-                newButton.setBackground(Color.lightGray); // Matching background
+                newButton.addActionListener(new buttonClick());
+                
                 column.add(newButton); // Adding new button to buttonList
-                windowMap.add(column.get(i)); // Adding new button to map gui
+                windowMap.add(newButton, constraints);
+                //windowMap.add(column.get(i)); // Adding new button to map gui
             }
         }
         
         // Window Divison 3
-        JPanel division3 = new JPanel();
-        division3.setLayout(new GridLayout(2, 1));
-        division2.add(division3);
+        //JPanel division3 = new JPanel();
+        //division3.setLayout(new GridLayout(2, 1));
+        //division2.add(division3);
         
         // Detailed Menu
-        JPanel detailedMenu = new JPanel();
-        detailedMenu.setBackground(Color.yellow);
-        division3.add(detailedMenu);
+        //JPanel detailedMenu = new JPanel();
+        //detailedMenu.setBackground(Color.yellow);
+        //division3.add(detailedMenu);
         
         // Detailed Art
-        JPanel detailedArt = new JPanel();
-        detailedArt.setBackground(Color.gray);
-        division3.add(detailedArt);
+        //JPanel detailedArt = new JPanel();
+        //detailedArt.setBackground(Color.gray);
+        //division3.add(detailedArt);
         
+        window.pack();
         
     } // End Display() Constructor
     
@@ -151,7 +203,9 @@ public class Display {
     static class buttonClick implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("Button pressed");
+            String[] parameters = String.valueOf(e.getSource()).split(",");
+            System.out.println((Integer.valueOf(parameters[2]) / 14)
+                    +", "+(Integer.valueOf(parameters[1]) / 14));
         }
     }
         
@@ -205,21 +259,4 @@ public class Display {
         }
     }
     
-    public void addMapToGui(JPanel panel) {
-        // Uses printMap method to print the map to System.out
-        int currentColumn;
-        int currentRow = 0;
-        while(currentRow < 36) {
-            // Incrementing through the rows
-            currentColumn = 0;
-            while(currentColumn < 54) {
-                // Incrementing througsh the columns
-                panel.add(new JButton(String.valueOf(
-                        map[currentColumn][currentRow])));
-                // Adding the next system to the line
-                currentColumn ++;
-            }
-            currentRow ++;
-        }
-    }
 }
