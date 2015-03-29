@@ -3,8 +3,6 @@
  */
 
 package Gui;
-import javax.swing.JFrame;
-import java.awt.*;
 
 /**
  * @author Ryan Rogers
@@ -12,23 +10,18 @@ import java.awt.*;
 
 public class DebugMain {
     public static void main(String[] args) {
-        Display testDisplay = new Display();
-        testDisplay.loadMap();
-        testDisplay.printMap();
         
-        createWindow();
+        Display display = new Display(); // GUI window
         
-    } // end main
-    
-    public static void createWindow() {
-        JFrame window = new JFrame();
-        window.setVisible(true);
-        window.setTitle("Wizard Treasure Chase");
-        window.setSize(960, 540);
-        window.setLocationRelativeTo(null); // Centers the window on the screen
-        Button testButton = new Button();
-        //ActionListener testActionListener = new ActionListener;
-        //testButton.addActionListener();
-    }
+        // Loading map
+        if(display.loadMap()) {
+            System.out.println("Map loaded successfully");
+        } else { // loadMap returned false
+            System.out.println("Could not load the map!");
+        }
+        
+        display.printMapToConsole();
+        
+    } // end main       
     
 } // end DebugMain
