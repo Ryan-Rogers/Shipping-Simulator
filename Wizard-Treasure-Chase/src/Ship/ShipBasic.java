@@ -19,11 +19,11 @@ public class ShipBasic extends Entity
         super(location, relay, sleepTime);
     }
 
-    @Override
-    protected void onStart()
-    {
-        super.onStart();
-    }
+//    @Override
+//    protected void onStart()
+//    {
+//        super.onStart();
+//    }
     
     
 }

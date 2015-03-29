@@ -5,6 +5,7 @@
 package ThreadMaster;
 
 import Creature.Entity;
+import FixedObject.Water;
 import Map.Location;
 import Ship.*;
 import java.awt.Event;
@@ -19,14 +20,14 @@ public class TaskMaster implements RelayListener
     
     private MapMaster map;
     
+    //TODO: remove line
+    ThreadTestGUI TTG;
+    
     public static void main(String[] args)
     {
         
         TaskMaster tM = new TaskMaster();
-        
-        
-        
-        
+        tM.testLines();
         
     }
     
@@ -37,9 +38,9 @@ public class TaskMaster implements RelayListener
         //TODO: RYAN: unlock map size by making button generation dynamic
         map = new MapMaster(8, 10);
         
-        ThreadTestGUI TTG = new ThreadTestGUI();
+        TTG = new ThreadTestGUI();
         
-        // <editor-fold defaultstate="collapsed" desc="Set buttons to 'O'">                          
+        // <editor-fold defaultstate="collapsed" desc="Set buttons to 'O'">        
         int c = -1;
         for(JButton[] buttonRow: TTG.getButtons())
         {
@@ -66,16 +67,23 @@ public class TaskMaster implements RelayListener
     {
         //TODO: remove all this test code
         RelayMaster relay = new RelayMaster();
+        
+        relay.addListener(this);
 
-        ShipBasic ship = new ShipBasic(new Location(0, 0), relay, 500);
+        ShipBasic ship = new ShipBasic(new Location(1, 1), relay, 500);
 
         ship.setTarget(new Location(7, 9));
         
+        Thread thread = new Thread(ship);
+        
+        ship.inform(map.getSurroundings(new Location(1, 1)));
+        
         ship.setMentalState("chase");
         
-        ship.inform(map.getSurroundings(ship.getLocationShallow()));
-
-        ship.start();
+        thread.start();
+        
+//
+//        ship.start();
     }
 
     @Override
@@ -85,22 +93,38 @@ public class TaskMaster implements RelayListener
     }
 
     @Override
-    public void onRelay(MoveEvent evt)
+    public synchronized void onRelay(MoveEvent evt)
     {
+        System.err.println("onRelay()");
+        
+        //TODO: erase this test
         for(Location location: evt.getMovePriotity())
         {
-            //Stop checking and inform the 
+            System.err.println("TEST-LOCATE: " + location);
+        }
+        
+        for(Location location: evt.getMovePriotity())
+        {
+            System.err.println("Locate: " + location);
+            //Stop checking and inform the mover about it's current,
+            // but unmoved, neighbors (that may possible have changed)
+            //Null refers to an unmovable location (off map)
             if(location == null)
             {
-                ((Entity)( evt.getSource() ))
-                .inform(map.getSurroundings(((Entity)evt.getSource())
-                .getLocationShallow()));
+                System.err.println("null location");
+                ( (Entity) evt.getSource()).inform(map.getSurroundings(location));
             }
             
-            if(map.getAtLocation(location) == null)
+            if(map.getAtLocation(location) instanceof Water)
             {
-                //TODO: ?
+                System.err.println("found some wwater");
+                TTG.getButtons()[location.getY()][location.getX()].setText("X");
+                map.placeMapItem((Entity) evt.getSource(), location);
+                //Return on move made
+                break;
             }
+            System.err.println("");
+            System.err.println("LOOP END (1)");
         }
     }
     

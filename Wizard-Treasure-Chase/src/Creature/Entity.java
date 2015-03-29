@@ -4,9 +4,12 @@
  */
 package Creature;
 
-import FixedObject.Water;
 import Map.Location;
+import Map.MapItem;
 import ThreadMaster.*;
+import static com.sun.corba.se.impl.util.Utility.printStackTrace;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * @author Mason Moreland
@@ -20,30 +23,13 @@ import ThreadMaster.*;
  * 2: end() -> Runs out of scope?
  * 3: ???
  */
-public class Entity extends Thread
+public class Entity extends MapItem implements Runnable
 {
     /**
      * Signifies the state of the object, always lowercase.
      */
     protected String mentalState;
     
-    /**
-     * Y-axis location variable
-     * Note: Longitude runs North-South
-     */
-    protected int longitude;
-    
-    /**
-     * X-axis location variable
-     * Note: Latitude runs East-West
-     */
-    protected int latitude;
-    
-    /**
-     * In milliseconds, the time to remain sleeping.
-     */
-    protected long sleepTime;
-
     /**
      * True: The Entity is actively and continually running
      * False: The Entity will finish it's next cycle before ending
@@ -54,7 +40,7 @@ public class Entity extends Thread
      * Includes what the entity knows about its surroundings and target.
      * [North, East, South, West]
      */
-    protected Object[] neighbors;
+    protected HashMap<MapItem, Location> neighbors;
     
     /**
      * Events are handed to the relay for handling and disbursement.
@@ -62,14 +48,41 @@ public class Entity extends Thread
     protected RelayMaster relay;
     
     /**
-     * Location of self
-     */
-    protected Location location;
-    
-    /**
      * Location where entity is moving towards
      */
     private Location target; 
+    
+    /**
+     * In milliseconds, how long the Entity will stall.
+     */
+    private long sleepTime;
+
+    /**
+     * TODO: comment here
+     * @return A new location representing the current location of self.
+     * Null if not on the map.
+     */
+    @Override
+    protected Location getLocation()
+    {
+        super.getLocation();
+        //TODO: protect location by using relative values
+//        //northern location (could be null)
+//        Location north = neighbors.values().iterator().next();
+//        //southern location (could be null)
+//        Location south = neighbors.values().iterator().next();
+//        //right location (could be null)
+//        Location east = neighbors.values().iterator().next();
+//        //left location (could be null)
+//        Location west = neighbors.values().iterator().next();
+//        
+//        if(north != null)
+//        {
+//            if(south != null)
+//        }
+        return null;
+    }
+    
     
     public synchronized Location getTarget()
     {
@@ -97,40 +110,43 @@ public class Entity extends Thread
         this.relay = relay;
         //All entities need a sleep time
         this.sleepTime = sleepTime;
-        //Default class variables
-        longitude = -1;
-        latitude = -1;
+        //Default class variables need to be set on creation
+        //location = new Location(-1, -1);
     }
     
     /**
      * Updates the object's knowledge of avaliable surrounding locations.
      * @param moveKnowledge [North, East, South, West]
      */
-     public synchronized void inform(Location[] moveKnowledge)
+     public synchronized void inform(HashMap<MapItem, Location> moveKnowledge)
      {
          this.neighbors = moveKnowledge;
-         sleep();
+         //TODO: remove this test
+         Location l1 = moveKnowledge.values().iterator().next();
+         Location l2 = moveKnowledge.values().iterator().next();
+         location = new Location(l1.getX(), l1.getY() + l2.getY()/2);
      }
      
-     
-     /**
-      * Gives a pointer to the Entity's location.
-      * @return The location of the entity
-      */
-     public Location getLocationShallow()
-     {
-         return this.location;
-     }
-     
-     /**
-      * Produces a deep copy of the location of self.
-      * @return A Location() object representing the current object's coordinates.
-      */
-     public Location getLocationDeep()
-     {
-         return new Location(this.location);
-     }
-    
+     // <editor-fold defaultstate="collapsed" desc="Old location methods">
+//     /**
+//      * Gives a pointer to the Entity's location.
+//      * @return The location of the entity
+//      */
+//     public Location getLocationShallow()
+//     {
+//         return this.location;
+//     }
+//     
+//     /**
+//      * Produces a deep copy of the location of self.
+//      * @return A Location() object representing the current object's coordinates.
+//      */
+//     public Location getLocationDeep()
+//     {
+//         return new Location(this.location);
+//     }
+    // </editor-fold>
+
     /**
      * Allows the constant execution loop to run to an end.
      */
@@ -140,35 +156,38 @@ public class Entity extends Thread
         running = false;
     }
     
-    /**
-     * Starts the entity as a thread.
-     * Note: This must be called before the entity will begin running.
-     * Hint: This method will call the <code>onStart()</code> method.
-     */
-    @Override
-    public synchronized void start()
-    {
-        //Running variable will only be set to false when the 
-        running = true;
-        //Starts the innter workings of the thread
-        super.start();
-        //Starts the entity's execution
-        onStart();
-    }
+//    /**
+//     * Starts the entity as a thread.
+//     * Note: This must be called before the entity will begin running.
+//     * Hint: This method will call the <code>onStart()</code> method.
+//     */
+//    @Override
+//    public synchronized void start()
+//    {
+//        //Running variable will only be set to false when the 
+//        running = true;
+//        //Starts the innter workings of the thread
+//        super.start();
+//        //Starts the entity's execution
+//        onStart();
+//    }
     
-    /**
-     * Commands the entity to start its execution.
-     */
-    protected void onStart()
-    {
-        //TODO: start ?
-    }
+//    /**
+//     * Commands the entity to start its execution.
+//     */
+//    protected void onStart()
+//    {
+//        System.err.println("onStart()");
+//        sleep();
+//    }
     
     /**
      * Sleeps the Entity.
      */
     protected void sleep()
     {
+//        printStackTrace();
+        System.err.println("SLEEP()");
         try
         {
             //Puts the Thread to sleep to space cycles out
@@ -178,8 +197,12 @@ public class Entity extends Thread
         //Catch interrupt?
         catch(Exception e)
         {
-            System.err.println("Failed to sleep.");
-            e.printStackTrace();
+            //printStackTrace();
+            System.err.println("Interrupted! Running: " + running);
+            if(running != false)
+            {
+                sleep();
+            }
         }
     }
     
@@ -190,35 +213,60 @@ public class Entity extends Thread
      */
     protected void makeAction()
     {
+        System.err.println("makeAction()");
         switch(mentalState)
         {
             case "wait": sleep(); break;
-            case "chase": chaseTarget(); break;
+            case "chase": /*System.err.println("mental state chase");*/ chaseTarget(); break;
             default:
                 System.err.println("Unknown mental state: " + mentalState);
         }
+
+        sleep();
     }
     
+    //TODO: fix this shit
     protected void chaseTarget()
     {
+        System.err.println("chaseTarget()");
         //double heading = Map.MapAbstract.bearing(location, target);
         
         //?
-        //double distToTarget = Map.MapMetrics.distance(location, target);
+//        double distToTarget = Map.MapMetrics.distance(location, target);
         
-        for(int i = 0; i < neighbors.length - 1; i++)
+        MoveEvent mvEvt = new MoveEvent(this);
+        
+        ArrayList<Double> dist = new ArrayList<Double>();
+        Location[] moveChoice = new Location[4];
+        
+        int c = 0;
+        for(Location loca :neighbors.values())
         {
-            for(int t = i + 1; t < neighbors.length; t++)
+            dist.add(Map.MapMetrics.distance(loca, target));
+            moveChoice[c] = loca;
+            c++;
+        }
+        
+        for(int i = 0; i < dist.size() - 1; i++)
+        {
+            for(int u = i + 1; u < dist.size(); u++)
             {
-                if(neighbors[i] instanceof Water)
+                if(dist.get(u) < dist.get(i))
                 {
-                    if(Map.MapMetrics.distance((neighbors[i], target))
-                    {
-                        
-                    }
+                    double temp = dist.get(i);
+                    dist.set(i, dist.get(u));
+                    dist.set(u, temp);
+                    Location temp2 = moveChoice[i];
+                    moveChoice[i] = moveChoice[u];
+                    moveChoice[u] = temp2;
                 }
             }
         }
+        
+        mvEvt.setMoves(moveChoice);
+        
+//        System.err.println("FIRE RELAY!");
+        relay.fireRelay(mvEvt);
     }
 
     /**
@@ -237,5 +285,14 @@ public class Entity extends Thread
     public void setMentalState(String mentalState)
     {
         this.mentalState = mentalState.toLowerCase();
+    }
+
+    @Override
+    public void run()
+    {
+//        System.err.println("RUN()");
+        running = true;
+        sleep();
+        
     }
 }

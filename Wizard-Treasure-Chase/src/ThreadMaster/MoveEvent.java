@@ -18,7 +18,32 @@ public class MoveEvent extends EventObject
     public MoveEvent(Object source)
     {
         super(source);
+        movePriority = new Location[4];
+        for(Location loc: movePriority)
+        {
+            loc = null;
+        }
     }
+
+    public void addMove(Location move)
+    {
+        for(Location location: movePriority)
+        {
+            if(location == null)
+            {
+                location = move;
+                return;
+            }
+        }
+        //TODO: consider throwing an exception
+        System.err.println("Move list full!");
+    }
+    
+    public void setMoves(Location[] moves)
+    {
+        movePriority = moves;
+    }
+    
     
     /**
      * Signifies the source's chosen move preference.

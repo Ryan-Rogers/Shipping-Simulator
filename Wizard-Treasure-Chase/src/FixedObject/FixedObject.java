@@ -5,15 +5,14 @@
 package FixedObject;
 
 import Map.Location;
+import Map.MapItem;
 
 /**
  *
  * @author mason
  */
-public abstract class FixedObject
+public abstract class FixedObject extends MapItem
 {
-    protected Location location;
-
     public FixedObject()
     {
         location = new Location(-1, -1);
@@ -24,8 +23,13 @@ public abstract class FixedObject
         location = new Location(x, y);
     }
 
-    public Location getLocation()
-    {
-        return new Location(this.location);
-    }
+//    /**
+//     * Gives a reference to the object's location on the grid.
+//     * @return Pointer to the object's Location object
+//     */
+//    @Override
+//    public Location getLocation()
+//    {
+//        return this.location;
+//    }
 }

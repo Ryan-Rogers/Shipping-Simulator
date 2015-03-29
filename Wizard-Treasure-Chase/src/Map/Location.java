@@ -25,9 +25,19 @@ public class Location
         this.y = location.getY();
     }
 
-    protected void setX(int x)
+//    protected void setX(int x)
+//    {
+//        this.x = x;
+//    }
+    
+    /**
+     * Rewrites a location object to be another location.
+     * @param location The NEW version of the object to begin using immediately.
+     */
+    protected void changeLocation(Location location)
     {
-        this.x = x;
+        x = location.x;
+        y = location.y;
     }
 
     public int getX()
@@ -40,8 +50,16 @@ public class Location
         return y;
     }
 
-    protected void setY(int y)
+//    protected void setY(int y)
+//    {
+//        this.y = y;
+//    }
+
+    @Override
+    public String toString()
     {
-        this.y = y;
+        return "X: " + x + " Y: " + y;
     }
+    
+    
 }

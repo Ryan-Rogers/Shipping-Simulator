@@ -5,12 +5,13 @@
 package ThreadMaster;
 
 import java.awt.Event;
+import java.util.EventListener;
 
 /**
  *
  * @author mason
  */
-public interface RelayListener
+public interface RelayListener extends EventListener
 {
     public void onRelay(Event evt);
     
