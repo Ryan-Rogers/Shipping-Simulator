@@ -17,18 +17,21 @@ import java.util.ArrayList;
 // Java Awt
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.GridLayout;
-import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Dimension;
+import java.awt.Insets;
+import java.awt.Image;
+import java.awt.GridLayout;
+import java.awt.Color;
 
 // Javax Swing
 import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JComboBox;
 import javax.swing.JApplet;
 
@@ -41,19 +44,26 @@ public class Display {
     private String landImg = "land.png"; // Default land image
     private String ship1Img = "ship1.png"; // Default ship 1 image
     private String waterImg = "water.png"; // Default water image
-    private JFrame window;
-    private ArrayList<ArrayList<JButton>> buttonList;
+    private static JFrame window;
+    private static ArrayList<JButton> buttonList;
+    private static Icon currentIcon;
+    private static JButton detailedArtButton;
     
     public Display() {
         // Creates and displays the window with predefined name and size        
         window = new JFrame("Wizard Treasure Chase");
         window.setVisible(true);
-        //window.setMinimumSize(new Dimension(960, 540)); // Default width, height
+        window.setMinimumSize(new Dimension(960, 540)); // Default width, height
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // X quits run
         
         // Layout
         GridBagLayout gridBag = new GridBagLayout();
         GridBagConstraints constraints = new GridBagConstraints();
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.ipadx = 0;
+        constraints.ipady = 0;
+        constraints.insets = new Insets(0, 0, 0, 0);
         
         // Window
         window.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
@@ -61,16 +71,56 @@ public class Display {
         
         // Menu Bar
         constraints.anchor = GridBagConstraints.NORTH;
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridheight = 1;
         constraints.gridwidth = 2;
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.weightx = 0.5;
-        constraints.weighty = 0.5;
+        constraints.weightx = 0;
+        constraints.weighty = 0;
+        
         JPanel menuBar = new JPanel(gridBag);
+        menuBar.setPreferredSize(new Dimension(960, 36));
+        menuBar.setMaximumSize(new Dimension(1500, 36));
+        menuBar.setBorder(null);
         window.add(menuBar, constraints);
-        menuBar.add(new JButton("menuBar")); // DEBUG
+        
+        menuBar.setBackground(Color.green); // DEBUG
+        
+        // Credit Menu Button
+        constraints.anchor = GridBagConstraints.NORTH;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridheight = 1;
+        constraints.gridwidth = 1;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        JButton credits = new JButton("Credits");
+        menuBar.add(credits);
+        
+        
+        // Load Menu Button
+        constraints.anchor = GridBagConstraints.NORTH;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridheight = 1;
+        constraints.gridwidth = 1;
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        
+        // Ships Menu Combo Box
+        constraints.anchor = GridBagConstraints.NORTH;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridheight = 1;
+        constraints.gridwidth = 1;
+        constraints.gridx = 2;
+        constraints.gridy = 0;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        
+        
         
         // Window Map
         constraints.anchor = GridBagConstraints.WEST;
@@ -79,38 +129,54 @@ public class Display {
         constraints.gridwidth = 1;
         constraints.gridx = 0;
         constraints.gridy = 1;
-        constraints.weightx = 0.5;
-        constraints.weighty = 0.5;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        
         JPanel windowMap = new JPanel(gridBag);
+        windowMap.setPreferredSize(new Dimension(756, 504));
+        windowMap.setBorder(null);
         window.add(windowMap, constraints);
         
         // Detailed Menu
-        constraints.anchor = GridBagConstraints.EAST;
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.anchor = GridBagConstraints.NORTHEAST;
+        constraints.fill = GridBagConstraints.VERTICAL;
         constraints.gridheight = 1;
         constraints.gridwidth = 1;
         constraints.gridx = 1;
         constraints.gridy = 1;
-        constraints.weightx = 0.5;
-        constraints.weighty = 0.5;
+        constraints.weightx = 0;
+        constraints.weighty = 0;
+        
         JPanel detailedMenu = new JPanel(gridBag);
+        detailedMenu.setPreferredSize(new Dimension(204, 300));
+        detailedMenu.setMaximumSize(new Dimension(204, 1000));
+        detailedMenu.setBorder(null);
         window.add(detailedMenu, constraints);
-        detailedMenu.add(new JButton("detailedMenu")); // DEBUG
+        
+        detailedMenu.setBackground(Color.yellow); // DEBUG
         
         // Detailed Art
-        constraints.anchor = GridBagConstraints.EAST;
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.anchor = GridBagConstraints.SOUTHEAST;
+        constraints.fill = GridBagConstraints.NONE;
         constraints.gridheight = 1;
         constraints.gridwidth = 1;
         constraints.gridx = 1;
         constraints.gridy = 2;
-        constraints.weightx = 0.5;
-        constraints.weighty = 0.5;
+        constraints.weightx = 0;
+        constraints.weighty = 0;
+        
         JPanel detailedArt = new JPanel(gridBag);
+        detailedArt.setPreferredSize(new Dimension(204, 204));
+        detailedArt.setMaximumSize(new Dimension(204, 1000));
+        detailedArt.setBorder(null);
         window.add(detailedArt, constraints);
-        detailedArt.add(new JButton("detailedArt")); // DEBUG
         
+        detailedArtButton = new JButton();
+        detailedArtButton.setBorder(null);
+        detailedArtButton.setIcon(currentIcon);
+        detailedArt.add(detailedArtButton);
         
+        detailedArt.setBackground(Color.darkGray); // DEBUG
         
         /* <editor-fold defaultstate="collapsed" desc="Panel Gui">
         // Window Division 1
@@ -137,49 +203,50 @@ public class Display {
         
         // Map buttinList
         buttonList = new ArrayList<>(); // Allocating buttonList columns
-        for(int i = 0; i < 36; i++) {
-            // Allocating buttonList rows
-            buttonList.add(new ArrayList<JButton>(36));
-        }
+        loadMap();
         
-        constraints.anchor = GridBagConstraints.SOUTH;
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.weightx = 1;
-        constraints.weighty = 1;
+        // Button Constraints
+        constraints.anchor = GridBagConstraints.SOUTHWEST;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridheight = 1;
         constraints.gridwidth = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
         
-        loadMap();
-        for(ArrayList<JButton> column : buttonList) { 
-            for(int i = 0; i < 54; i++) { // Incrementing column
+        // Button list population
+        for(int row = 0; row < 36; row++) { // Incrementing column
+            for(int column = 0; column < 54; column++) { // Incrementing row
+
                 JButton newButton = new JButton(); // Allocating new button
-                constraints.gridx = i;
-                constraints.gridy = buttonList.indexOf(column);
-                if(map[i][buttonList.indexOf(column)] == '.') { // Water
-                    try {
-                        ImageIcon icon = new ImageIcon(waterImg);
-                        newButton.setIcon(icon);
+                constraints.gridx = column;
+                constraints.gridy = row;
+
+                // Loading image into button
+                if(map[column][row] == '.') { 
+                    try { // Water
+                        newButton.setIcon(new ImageIcon(waterImg));
                     } catch (Exception e) {
-                        System.out.println("Could not read the water file!");
+                        System.out.println(
+                                "Could not read the water file!");
                     }
                 } else { // Land
                     try {
-                        ImageIcon icon = new ImageIcon(landImg);
-                        newButton.setIcon(icon);
+                        newButton.setIcon(new ImageIcon(landImg));
                     } catch (Exception e) {
-                        System.out.println("Could not read the land file!");
+                        System.out.println(
+                                "Could not read the land file!");
                     }
                 }
                 
                 newButton.setBorder(null); // Removing borders
-                newButton.addActionListener(new buttonClick());
-                
-                column.add(newButton); // Adding new button to buttonList
+                newButton.addActionListener(new MapClick());
+                newButton.setPreferredSize(new Dimension(14, 14));
+                buttonList.add(newButton); // Adding new button to list
                 windowMap.add(newButton, constraints);
-                //windowMap.add(column.get(i)); // Adding new button to map gui
             }
         }
         
+        // Old code
         // Window Divison 3
         //JPanel division3 = new JPanel();
         //division3.setLayout(new GridLayout(2, 1));
@@ -200,15 +267,26 @@ public class Display {
     } // End Display() Constructor
     
     // Button Click Event
-    static class buttonClick implements ActionListener {
+    static class MapClick implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            String[] parameters = String.valueOf(e.getSource()).split(",");
-            System.out.println((Integer.valueOf(parameters[2]) / 14)
-                    +", "+(Integer.valueOf(parameters[1]) / 14));
+            System.out.println("(" + buttonList.indexOf(e.getSource()) % 54 + 
+                    ", " + buttonList.indexOf(e.getSource()) / 54 + ")");
+            detailedArtButton.setIcon(buttonList.get(
+                    buttonList.indexOf(e.getSource())).getIcon());
+            
         }
     }
-        
+    
+    static class CreditClick implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            
+        }
+    }
+    
+    
+    
     public boolean loadMap() {
         int columns = 54; // Default column number
         int rows = 36; // Default row number
