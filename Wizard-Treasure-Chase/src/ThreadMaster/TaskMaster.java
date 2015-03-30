@@ -70,18 +70,25 @@ public class TaskMaster implements RelayListener
         
         relay.addListener(this);
 
-        ShipBasic ship = new ShipBasic(new Location(1, 1), relay, 500);
-
-        ship.setTarget(new Location(7, 9));
+        Location loc = new Location(9, 9);
         
-        Thread thread = new Thread(ship);
+        ShipBasic ship1 = new ShipBasic(new Location(1, 1), relay, 500);
+        ShipBasic ship2 = new ShipBasic(new Location(4, 1), relay, 200);
         
-        ship.inform(map.getSurroundings(new Location(1, 1)));
+        ship1.setTarget(new Location(0, 9));
+        ship2.setTarget(loc);
         
-        ship.setMentalState("chase");
+        Thread thread1 = new Thread(ship1);
+        Thread thread2 = new Thread(ship2);
         
-        thread.start();
+        ship1.inform(map.getSurroundings(new Location(1, 1)));
+        ship2.inform(map.getSurroundings(new Location(4, 1)));
         
+        ship1.setMentalState("chase");
+        ship2.setMentalState("chase");
+        
+        thread1.start();
+        thread2.start();
 //
 //        ship.start();
     }
