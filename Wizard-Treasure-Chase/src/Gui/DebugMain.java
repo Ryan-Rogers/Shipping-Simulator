@@ -4,6 +4,12 @@
 
 package Gui;
 
+import Creature.Entity;
+import Map.Location;
+import Map.MapItem;
+import Ship.ShipBasic;
+import ThreadMaster.RelayMaster;
+
 /**
  * @author Ryan Rogers
  */
@@ -13,14 +19,10 @@ public class DebugMain {
         
         Display display = new Display(); // GUI window
         
-        // Loading map
-        if(display.loadMap()) {
-            System.out.println("Map loaded successfully");
-        } else { // loadMap returned false
-            System.out.println("Could not load the map!");
-        }
+        ShipBasic ship = new ShipBasic(new Location(5, 5),
+                new RelayMaster(), 1);
         
-        display.printMapToConsole();
+        display.setMap(ship, new Location(5, 5));
         
     } // end main       
     
