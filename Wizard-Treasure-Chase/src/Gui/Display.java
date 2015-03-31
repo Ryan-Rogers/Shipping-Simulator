@@ -22,9 +22,9 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Dimension;
 import java.awt.Insets;
+import java.awt.Color;
 import java.awt.Image;
 import java.awt.GridLayout;
-import java.awt.Color;
 
 // Javax Swing
 import javax.swing.JFrame;
@@ -78,6 +78,7 @@ public class Display {
         constraints.gridy = 0;
         constraints.weightx = 0;
         constraints.weighty = 0;
+        constraints.insets = new Insets(0, 0, 0, 0);
         
         JPanel menuBar = new JPanel(gridBag);
         menuBar.setPreferredSize(new Dimension(960, 36));
@@ -96,7 +97,12 @@ public class Display {
         constraints.gridy = 0;
         constraints.weightx = 1;
         constraints.weighty = 1;
+        constraints.insets = new Insets(0, 0, 0, 0);
+        
         JButton credits = new JButton("Credits");
+        credits.setBorder(null);
+        credits.setBackground(Color.black);
+        credits.setForeground(Color.white);
         menuBar.add(credits);
         
         
@@ -110,7 +116,8 @@ public class Display {
         constraints.weightx = 1;
         constraints.weighty = 1;
         
-        // Ships Menu Combo Box
+        
+        // Ships Menu Bar
         constraints.anchor = GridBagConstraints.NORTH;
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridheight = 1;
@@ -156,7 +163,7 @@ public class Display {
         detailedMenu.setBackground(Color.yellow); // DEBUG
         
         // Detailed Art
-        constraints.anchor = GridBagConstraints.SOUTHEAST;
+        constraints.anchor = GridBagConstraints.NORTHEAST;
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridheight = 1;
         constraints.gridwidth = 1;
@@ -167,16 +174,20 @@ public class Display {
         
         JPanel detailedArt = new JPanel(gridBag);
         detailedArt.setPreferredSize(new Dimension(204, 204));
-        detailedArt.setMaximumSize(new Dimension(204, 1000));
+        detailedArt.setMinimumSize(new Dimension(204, 204));
+        detailedArt.setMaximumSize(new Dimension(204, 204));
         detailedArt.setBorder(null);
         window.add(detailedArt, constraints);
         
         detailedArtButton = new JButton();
         detailedArtButton.setBorder(null);
         detailedArtButton.setIcon(currentIcon);
-        detailedArt.add(detailedArtButton);
         
-        detailedArt.setBackground(Color.darkGray); // DEBUG
+        
+        detailedArt.setBackground(Color.black);
+        detailedArt.setForeground(Color.white);
+        detailedArt.setBorder(null);
+        detailedArt.add(detailedArtButton);
         
         /* <editor-fold defaultstate="collapsed" desc="Panel Gui">
         // Window Division 1
