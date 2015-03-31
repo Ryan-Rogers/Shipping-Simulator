@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ClassDiagram name="Demo2">
+  <ClassDiagramComponents>
+    <Class name="CargoShip" package="" visibility="public" xPosition="127.0" yPosition="72.0">
+      <Fields>
+        <Field name="name" type="String" visibility="private"/>
+        <Field name="transNum" type="long" visibility="private"/>
+        <Field name="capacity" type="double" visibility="private"/>
+        <Field name="length" type="double" visibility="private"/>
+        <Field name="width" type="double" visibility="private"/>
+        <Field name="depth" type="double" visibility="private"/>
+        <Field name="longitude" type="double" visibility="private"/>
+        <Field name="latitude" type="double" visibility="private"/>
+        <Field name="cargo" type="Cargo" visibility="private"/>
+        <Field name="mapSymbol" type="char" visibility="private"/>
+        <Field name="type" type="String" visibility="private"/>
+      </Fields>
+      <Constructors/>
+      <Methods>
+        <Method name="getMapSymbol" returnType="char" visibility="public"/>
+        <Method name="display" returnType="void" visibility="public"/>
+      </Methods>
+    </Class>
+    <Class name="OilTanker" package="" visibility="public" xPosition="127.0" yPosition="482.0">
+      <Fields/>
+      <Constructors/>
+      <Methods/>
+    </Class>
+    <Class name="ContainerShip" package="" visibility="public" xPosition="29.0" yPosition="395.0">
+      <Fields/>
+      <Constructors/>
+      <Methods/>
+    </Class>
+    <Class name="Port" package="" visibility="public" xPosition="617.0" yPosition="192.0">
+      <Fields>
+        <Field name="docks" type="ArrayList&lt;Dock&gt;" visibility="private"/>
+        <Field name="unloadedCargo" type="ArrayList&lt;Cargo&gt;" visibility="private"/>
+        <Field name="name" type="String" visibility="private"/>
+      </Fields>
+      <Constructors/>
+      <Methods>
+        <Method name="unloadCargo" returnType="Cargo" visibility="public">
+          <Argument type="Cargo" name="cargo"/>
+        </Method>
+        <Method name="untitledMethod" returnType="CargoShip" visibility="public">
+          <Argument type="CargoShip" name="ship"/>
+        </Method>
+        <Method name="display" returnType="void" visibility="public"/>
+        <Method name="addDock" returnType="Dock" visibility="public">
+          <Argument type="Dock" name="newDock"/>
+        </Method>
+        <Method name="removeDock" returnType="Dock" visibility="public">
+          <Argument type="Dock" name="dock"/>
+        </Method>
+        <Method name="getDocks" returnType="ArrayList&lt;Dock&gt;" visibility="public"/>
+        <Method name="getUnloadedCargo" returnType="ArrayList&lt;Cargo&gt;" visibility="public"/>
+        <Method name="untitledMethod" returnType="void" visibility="public"/>
+      </Methods>
+    </Class>
+    <Class name="Dock" package="" visibility="public" xPosition="816.0" yPosition="481.0">
+      <Fields>
+        <Field name="name" type="String" visibility="private"/>
+        <Field name="section" type="char" visibility="private"/>
+        <Field name="dockNum" type="int" visibility="private"/>
+        <Field name="depth" type="double" visibility="private"/>
+        <Field name="length" type="double" visibility="private"/>
+        <Field name="width" type="double" visibility="private"/>
+        <Field name="longitude" type="double" visibility="private"/>
+        <Field name="latitude" type="double" visibility="private"/>
+        <Field name="mapSymbol" type="char" visibility="private"/>
+        <Field name="type" type="String" visibility="private"/>
+      </Fields>
+      <Constructors/>
+      <Methods>
+        <Method name="display" returnType="void" visibility="public"/>
+      </Methods>
+    </Class>
+    <Class name="Crane" package="" visibility="public" xPosition="1052.0" yPosition="434.0">
+      <Fields/>
+      <Constructors/>
+      <Methods/>
+    </Class>
+    <Class name="Pier" package="" visibility="public" xPosition="590.0" yPosition="513.0">
+      <Fields/>
+      <Constructors/>
+      <Methods/>
+    </Class>
+    <Class name="Map" package="" visibility="public" xPosition="368.0" yPosition="7.0">
+      <Fields>
+        <Field name="sMap" type="char[][]" visibility="private"/>
+        <Field name="ships" type="ArrayList&lt;CargoShip&gt;" visibility="private"/>
+        <Field name="port" type="Port" visibility="private"/>
+        <Field name="width" type="int" visibility="private"/>
+        <Field name="height" type="int" visibility="private"/>
+      </Fields>
+      <Constructors/>
+      <Methods>
+        <Method name="showMap" returnType="String" visibility="public"/>
+      </Methods>
+    </Class>
+    <Class name="Cargo" package="" visibility="public" xPosition="345.0" yPosition="251.0">
+      <Fields>
+        <Field name="weight" type="double" visibility="private"/>
+        <Field name="description" type="String" visibility="private"/>
+      </Fields>
+      <Constructors/>
+      <Methods>
+        <Method name="display" returnType="void" visibility="public"/>
+      </Methods>
+    </Class>
+    <Class name="main" package="" visibility="public" xPosition="658.0" yPosition="7.0">
+      <Fields>
+        <Field name="map" type="Map" visibility="private"/>
+      </Fields>
+      <Constructors/>
+      <Methods/>
+    </Class>
+    <Class name="MapConverter" package="" visibility="public" xPosition="410.0" yPosition="572.0">
+      <Fields/>
+      <Constructors/>
+      <Methods>
+        <Method name="lat2row" returnType="int" visibility="public"/>
+        <Method name="lon2col" returnType="int" visibility="public"/>
+        <Method name="row2lat" returnType="double" visibility="public"/>
+        <Method name="col2lon" returnType="double" visibility="public"/>
+      </Methods>
+    </Class>
+    <Class name="FileHandler" package="" visibility="public" xPosition="943.0" yPosition="203.0">
+      <Fields>
+        <Field name="fReader" type="FileReader" visibility="private"/>
+        <Field name="fWriter" type="FileWriter" visibility="private"/>
+      </Fields>
+      <Constructors/>
+      <Methods>
+        <Method name="readFile" returnType="String" visibility="public"/>
+        <Method name="loadShips" returnType="ArrayList&lt;CargoShip&gt;" visibility="public"/>
+        <Method name="loadMap" returnType="Map" visibility="public"/>
+        <Method name="loadPort" returnType="Port" visibility="public"/>
+      </Methods>
+    </Class>
+    <Class name="ControlMenu" package="" visibility="public" xPosition="943.0" yPosition="43.0">
+      <Fields/>
+      <Constructors/>
+      <Methods>
+        <Method name="update" returnType="void" visibility="public"/>
+      </Methods>
+    </Class>
+    <Class name="Oil" package="" visibility="public" xPosition="368.0" yPosition="458.0">
+      <Fields>
+        <Field name="barrels" type="int" visibility="private"/>
+      </Fields>
+      <Constructors/>
+      <Methods/>
+    </Class>
+    <Class name="Box" package="" visibility="public" xPosition="187.0" yPosition="554.0">
+      <Fields>
+        <Field name="Boxes" type="int" visibility="private"/>
+      </Fields>
+      <Constructors/>
+      <Methods/>
+    </Class>
+  </ClassDiagramComponents>
+  <ClassDiagramRelations>
+    <HasRelation name="port" source="Map" target="Port" type="Default" sourceCardinality="0..1" targetCardinality="1..1"/>
+    <HasRelation name="map" source="main" target="Map" type="Default" sourceCardinality="0..1" targetCardinality="1..1"/>
+    <IsRelation name="is" source="ContainerShip" target="CargoShip"/>
+    <HasRelation name="unloadedCargo" source="Port" target="Cargo" type="Default" sourceCardinality="0..1" targetCardinality="0..*" collectionType="ArrayList"/>
+    <IsRelation name="is" source="OilTanker" target="CargoShip"/>
+    <IsRelation name="is" source="Crane" target="Dock"/>
+    <IsRelation name="is" source="Box" target="Cargo"/>
+    <IsRelation name="is" source="Oil" target="Cargo"/>
+    <HasRelation name="docks" source="Port" target="Dock" type="Default" sourceCardinality="0..1" targetCardinality="0..*" collectionType="ArrayList"/>
+    <HasRelation name="ships" source="Map" target="CargoShip" type="Default" sourceCardinality="0..1" targetCardinality="0..*" collectionType="ArrayList"/>
+    <IsRelation name="is" source="Pier" target="Dock"/>
+    <HasRelation name="cm" source="main" target="ControlMenu" type="Default" sourceCardinality="0..1" targetCardinality="1..1"/>
+    <HasRelation name="port" source="main" target="Port" type="Default" sourceCardinality="0..1" targetCardinality="1..1"/>
+  </ClassDiagramRelations>
+</ClassDiagram>
