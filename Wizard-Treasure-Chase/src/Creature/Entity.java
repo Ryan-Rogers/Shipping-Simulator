@@ -63,7 +63,7 @@ public class Entity extends MapItem implements Runnable
      * Null if not on the map.
      */
     @Override
-    protected Location getLocation()
+    public Location getLocation()
     {
         super.getLocation();
         //TODO: protect location by using relative values
