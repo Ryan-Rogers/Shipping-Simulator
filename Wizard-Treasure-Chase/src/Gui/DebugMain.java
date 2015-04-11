@@ -17,12 +17,12 @@ import ThreadMaster.RelayMaster;
 public class DebugMain {
     public static void main(String[] args) {
         
-        Display display = new Display(); // GUI window
+        Display display = new Display();
         
         ShipBasic ship = new ShipBasic(new Location(5, 5),
                 new RelayMaster(), 1);
         
-        display.setMap(ship, new Location(5, 5));
+        // display.setMap(ship, new Location(5, 5));
         
     } // end main       
     
