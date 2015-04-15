@@ -4,26 +4,22 @@
 
 package Gui;
 
-import Creature.Entity;
 import Map.Location;
-import Map.MapItem;
 import Ship.ShipBasic;
-import ThreadMaster.RelayMaster;
+import javafx.application.Application;
+import javafx.application.Platform;
 
 /**
  * @author Ryan Rogers
  */
 
-public class DebugMain {
-    public static void main(String[] args) {
+public class DebugMain { // Main class
+    public static void main(String[] args) { // Main loop
+        Window window = new Window();
+        Application.launch(Window.class, args);
+        //Application.launch(window.getClass(), args);
+        Window.setMap(new ShipBasic(new Location(4, 5), null, 0), new Location(5, 5));
+        //window.setMap(new ShipBasic(new Location(4, 5), null, 0), new Location(5, 5));
         
-        Display display = new Display();
-        
-        ShipBasic ship = new ShipBasic(new Location(5, 5),
-                new RelayMaster(), 1);
-        
-        // display.setMap(ship, new Location(5, 5));
-        
-    } // end main       
-    
-} // end DebugMain
+    }
+}
