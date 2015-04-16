@@ -22,9 +22,9 @@ import javafx.stage.Stage;
 // Application
 public class Window extends Application {
     
-    ArrayList<ShipBasic> mapMoveList = new ArrayList<>();
-    ArrayList<Location> locationList = new ArrayList<>();
-    ArrayList<ArrayList<Button>> mapButtons = new ArrayList<>();
+    static ArrayList<ShipBasic> mapMoveList = new ArrayList<>();
+    static ArrayList<Location> locationList = new ArrayList<>();
+    static ArrayList<ArrayList<Button>> mapButtons = new ArrayList<>();
     
     // Application loop
     public void main(String[] args) {
@@ -37,11 +37,11 @@ public class Window extends Application {
         
         // Setup
         StackPane root = new StackPane(); // Creating window pane
-        Scene scene = new Scene(root, 960, 540); // Creating scene
+        Scene scene = new Scene(root, 1024, 768); // Creating scene
         primaryStage.setScene(scene); // Adding scene to window pane
         primaryStage.setTitle("Wizard Treasure Chase"); // Setting itle
         primaryStage.show(); // Setting window to be visible
-        primaryStage.setFullScreen(true); // Setting window to fullscreen
+        // primaryStage.setFullScreen(true); // Setting window to fullscreen
         
         // Map
         GridPane mapPane = new GridPane(); // Creating a grid pane
@@ -49,7 +49,7 @@ public class Window extends Application {
         root.getChildren().add(mapPane);
         int rowCount = 0; // Current row holder
         int columnCount = 0; // Current column holder
-        mapButtons = loadMap();
+        loadMap();
         for(ArrayList<Button> row : mapButtons) { // Row increment
             for(Button button : row) { // Column increment
                 mapPane.add(button, columnCount, rowCount); // Adding button
@@ -69,16 +69,14 @@ public class Window extends Application {
     }
     
     // Returns loaded buttonList
-    public ArrayList<ArrayList<Button>> loadMap() {
-        ArrayList<ArrayList<Button>> buttonList = new ArrayList<>();
-        Scanner mapReader; // Scanner holder
+    public void loadMap() {
+        Scanner mapReader = null; // Scanner holder
         String fileName = "complex"; // DEFAULT VALUE
         try{ // Attempting to create a scanner from the filename
             mapReader = new Scanner(new File(fileName + ".map.txt"));
         } catch(Exception e) { // Exception occurance
             System.out.println(e); // Printing exception
             System.out.println("Exception occured while loading map!");
-            return buttonList;
         }
         String line; // Read line holder
         String[] splitLine; // Delimated line holder
@@ -87,16 +85,14 @@ public class Window extends Application {
             line = mapReader.nextLine(); // Getting line
             splitLine = line.split(","); // Deliminating line
             row = Integer.parseInt(splitLine[1]); // Counting rows
-            if(buttonList.size() <= row) { // Checking if row is finished
-                buttonList.add(new ArrayList<>()); // Creating a new row
+            if(mapButtons.size() <= row) { // Checking if row is finished
+                mapButtons.add(new ArrayList<>()); // Creating a new row
             } else { // Current row is not finished
                 Button newButton = new Button(
                         String.valueOf(splitLine[2].charAt(0)));
-                buttonList.get(row).add(newButton); // Adding new button to list
-                        
+                mapButtons.get(row).add(newButton); // Adding new button to list                        
             }
         }
-        return buttonList; // New buttonList with read map added
     }
     
     // Adding move to queue
@@ -106,15 +102,13 @@ public class Window extends Application {
     }
     
     // Processing queue
-    public boolean mapUpdate() {
+    public static boolean mapUpdate() {
         if(!mapMoveList.isEmpty()) {
-            System.out.println("true 1");
             if(!mapButtons.isEmpty()) {
-                System.out.print(" & true 2");
                 mapButtons.get(locationList.get(0).getY()).
                     get(locationList.get(0).getX()).setText("S");
-                mapMoveList.remove(1);
-                locationList.remove(1);
+                mapMoveList.remove(0);
+                locationList.remove(0);
                 return true;
             } else {
                 return false;
@@ -122,5 +116,17 @@ public class Window extends Application {
         } else {
             return false;
         }
+    }
+    
+    public ArrayList<ArrayList<Button>> getMapButtons() {
+        return mapButtons;
+    }
+    
+    public ArrayList<ShipBasic> getMapMoveList() {
+        return mapMoveList;
+    }
+    
+    public ArrayList<Location> getLocationList() {
+        return locationList;
     }
 }

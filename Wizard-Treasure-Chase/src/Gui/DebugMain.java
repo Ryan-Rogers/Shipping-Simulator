@@ -17,17 +17,20 @@ public class DebugMain { // Main class
         // Window Creation
         Window window = new Window();
         
+        // Starting window thread
+        WindowThread windowThread = new WindowThread(window);
+        windowThread.start();
+        WindowUpdateThread windowUpdateThread = new WindowUpdateThread(window);
+        windowUpdateThread.start();
+        
         // Test ship
         ShipBasic shipBasic = new ShipBasic(new Location(4, 5), null, 0);
         
         // Test move of test 
-        window.mapMove(shipBasic, new Location(5, 5));
+        window.mapMove(shipBasic, new Location(10, 10));
         
-        // Starting window thread
-        WindowThread windowThread = new WindowThread(window);
-        windowThread.start();
+        System.out.println("Threading test"); // DEBUG
         
-        System.out.println("Threading test");
     }
 }
 
