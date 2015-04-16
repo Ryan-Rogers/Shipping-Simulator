@@ -6,8 +6,6 @@ package Gui;
 
 import Map.Location;
 import Ship.ShipBasic;
-import javafx.application.Application;
-import javafx.application.Platform;
 
 /**
  * @author Ryan Rogers
@@ -15,11 +13,21 @@ import javafx.application.Platform;
 
 public class DebugMain { // Main class
     public static void main(String[] args) { // Main loop
-        Window window = new Window();
-        Application.launch(Window.class, args);
-        //Application.launch(window.getClass(), args);
-        Window.setMap(new ShipBasic(new Location(4, 5), null, 0), new Location(5, 5));
-        //window.setMap(new ShipBasic(new Location(4, 5), null, 0), new Location(5, 5));
         
+        // Window Creation
+        Window window = new Window();
+        
+        // Test ship
+        ShipBasic shipBasic = new ShipBasic(new Location(4, 5), null, 0);
+        
+        // Test move of test 
+        window.mapMove(shipBasic, new Location(5, 5));
+        
+        // Starting window thread
+        WindowThread windowThread = new WindowThread(window);
+        windowThread.start();
+        
+        System.out.println("Threading test");
     }
 }
+

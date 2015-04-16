@@ -22,9 +22,12 @@ import javafx.stage.Stage;
 // Application
 public class Window extends Application {
     
-    static ArrayList<ArrayList<Button>> mapButtons;
+    ArrayList<ShipBasic> mapMoveList = new ArrayList<>();
+    ArrayList<Location> locationList = new ArrayList<>();
+    ArrayList<ArrayList<Button>> mapButtons = new ArrayList<>();
     
-    public static void main(String[] args) { // Application loop
+    // Application loop
+    public void main(String[] args) {
         launch(args); // Launching application
     }
     
@@ -56,10 +59,6 @@ public class Window extends Application {
             rowCount++; // Incrementing row counter
         }
         
-        
-        
-        
-        
         // Example button and action
         /* Button mapButton = new Button();
          mapButton.setOnAction((ActionEvent event) -> {
@@ -69,15 +68,8 @@ public class Window extends Application {
         */
     }
     
-    public static void setMap(ShipBasic ship, Location newLocation) {
-        // Location oldLocation = ship.getLocation();
-        // int row = newLocation.getY();
-        // int column = newLocation.getX();
-        mapButtons.get(newLocation.getY()).get(newLocation.getX()).setText("S");
-    }
-    
     // Returns loaded buttonList
-    public static ArrayList<ArrayList<Button>> loadMap() {
+    public ArrayList<ArrayList<Button>> loadMap() {
         ArrayList<ArrayList<Button>> buttonList = new ArrayList<>();
         Scanner mapReader; // Scanner holder
         String fileName = "complex"; // DEFAULT VALUE
@@ -105,5 +97,30 @@ public class Window extends Application {
             }
         }
         return buttonList; // New buttonList with read map added
+    }
+    
+    // Adding move to queue
+    public void mapMove(ShipBasic ship, Location location) {
+        mapMoveList.add(ship);
+        locationList.add(location);
+    }
+    
+    // Processing queue
+    public boolean mapUpdate() {
+        if(!mapMoveList.isEmpty()) {
+            System.out.println("true 1");
+            if(!mapButtons.isEmpty()) {
+                System.out.print(" & true 2");
+                mapButtons.get(locationList.get(0).getY()).
+                    get(locationList.get(0).getX()).setText("S");
+                mapMoveList.remove(1);
+                locationList.remove(1);
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 }
