@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 // Application
 public class Window extends Application {
     
+    static char[][] mapList = new char[54][36];
     static ArrayList<ShipBasic> mapMoveList = new ArrayList<>();
     static ArrayList<Location> locationList = new ArrayList<>();
     static ArrayList<ArrayList<Button>> mapButtons = new ArrayList<>();
@@ -37,7 +38,7 @@ public class Window extends Application {
         
         // Setup
         StackPane root = new StackPane(); // Creating window pane
-        Scene scene = new Scene(root, 1024, 768); // Creating scene
+        Scene scene = new Scene(root, 1200, 900); // Creating scene
         primaryStage.setScene(scene); // Adding scene to window pane
         primaryStage.setTitle("Wizard Treasure Chase"); // Setting itle
         primaryStage.show(); // Setting window to be visible
@@ -58,6 +59,7 @@ public class Window extends Application {
             columnCount = 0;
             rowCount++; // Incrementing row counter
         }
+        printMap();
         
         // Example button and action
         /* Button mapButton = new Button();
@@ -80,17 +82,20 @@ public class Window extends Application {
         }
         String line; // Read line holder
         String[] splitLine; // Delimated line holder
-        int row; // Current row counter for new array creation
+        int row = 0; // Current row counter for new array creation
+        int column = 0; // Current column counter
         while(mapReader.hasNextLine()) { // Checking if file is finished
             line = mapReader.nextLine(); // Getting line
             splitLine = line.split(","); // Deliminating line
             row = Integer.parseInt(splitLine[1]); // Counting rows
+            column = Integer.parseInt(splitLine[0]); // Counting columns
             if(mapButtons.size() <= row) { // Checking if row is finished
                 mapButtons.add(new ArrayList<>()); // Creating a new row
             } else { // Current row is not finished
-                Button newButton = new Button(
-                        String.valueOf(splitLine[2].charAt(0)));
-                mapButtons.get(row).add(newButton); // Adding new button to list                        
+                mapList[column][row] = splitLine[2].charAt(0);
+                Button newButton = 
+                        new Button(String.valueOf(mapList[row][column]));
+                mapButtons.get(row).add(newButton); // Adding new button to list
             }
         }
     }
@@ -117,6 +122,19 @@ public class Window extends Application {
             return false;
         }
     }
+    
+    public static void printMap() {
+        for(int y = 0; y < 36; y++) {
+            System.out.println("");
+            for(int x = 0; x < 54; x++) {
+                System.out.print(mapList[x][y]);
+            }
+        }
+    }
+    
+    public char[][] getMapList() {
+        return mapList;
+    } 
     
     public ArrayList<ArrayList<Button>> getMapButtons() {
         return mapButtons;

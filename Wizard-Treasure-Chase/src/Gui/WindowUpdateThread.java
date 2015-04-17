@@ -36,8 +36,9 @@ class WindowUpdateThread extends Thread {
     public static boolean mapUpdate() {
         if(!threadWindow.getMapMoveList().isEmpty()) {
             if(!threadWindow.getMapButtons().isEmpty()) {
-                threadWindow.getMapButtons().get(threadWindow.getLocationList().get(0).getY()).
-                    get(threadWindow.getLocationList().get(0).getX()).setText("S");
+                threadWindow.getMapList()
+                        [threadWindow.getLocationList().get(0).getY()]
+                        [threadWindow.getLocationList().get(0).getX()] = 'S';
                 threadWindow.getMapMoveList().remove(0);
                 threadWindow.getLocationList().remove(0);
                 return true;
