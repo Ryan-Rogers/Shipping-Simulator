@@ -22,7 +22,7 @@ import javafx.stage.Stage;
 // Application
 public class Window extends Application {
     
-    static char[][] mapList = new char[54][36];
+    static char[][] mapList = new char[36][54];
     static ArrayList<ShipBasic> mapMoveList = new ArrayList<>();
     static ArrayList<Location> locationList = new ArrayList<>();
     static ArrayList<ArrayList<Button>> mapButtons = new ArrayList<>();
@@ -92,7 +92,7 @@ public class Window extends Application {
             if(mapButtons.size() <= row) { // Checking if row is finished
                 mapButtons.add(new ArrayList<>()); // Creating a new row
             } else { // Current row is not finished
-                mapList[column][row] = splitLine[2].charAt(0);
+                mapList[row][column] = splitLine[2].charAt(0);
                 Button newButton = 
                         new Button(String.valueOf(mapList[row][column]));
                 mapButtons.get(row).add(newButton); // Adding new button to list
