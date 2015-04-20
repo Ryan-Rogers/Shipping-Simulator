@@ -20,7 +20,8 @@ public class DebugMain { // Main class
         // Starting window thread
         WindowThread windowThread = new WindowThread(window);
         windowThread.start();
-        WindowUpdateThread windowUpdateThread = new WindowUpdateThread(window);
+        WindowUpdateThread windowUpdateThread = 
+                new WindowUpdateThread(window, windowThread);
         windowUpdateThread.start();
         
         // Test ship
