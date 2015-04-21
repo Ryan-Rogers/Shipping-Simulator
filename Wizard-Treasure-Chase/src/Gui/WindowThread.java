@@ -17,6 +17,7 @@ public class WindowThread extends Thread {
     // Consutrctor
     public WindowThread(Window window) {
         threadWindow = window;
+        threadWindow.setWindowThread(this);
     }
     
     @Override
