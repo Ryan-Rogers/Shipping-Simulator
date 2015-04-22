@@ -9,6 +9,8 @@ import FixedObject.Water;
 import Map.Location;
 import Ship.*;
 import java.awt.Event;
+import Gui.*;
+import Map.MapItem;
 import javax.swing.JButton;
 
 /**
@@ -20,43 +22,39 @@ public class TaskMaster implements RelayListener
     
     private MapMaster map;
     
+    private Window window;
+    
     //TODO: remove line
-    ThreadTestGUI TTG;
+    //ThreadTestGUI TTG;
     
     public static void main(String[] args)
     {
-        
-        TaskMaster tM = new TaskMaster();
-        tM.testLines();
-        
+       // TaskMaster tM = new TaskMaster(n);
+        //tM.testLines();
     }
-    
-    
 
-    public TaskMaster()
+    public TaskMaster(Window window)
     {
         //TODO: RYAN: unlock map size by making button generation dynamic
         map = new MapMaster(8, 10);
         
-        TTG = new ThreadTestGUI();
+        //TTG = new ThreadTestGUI();
+
+        this.window = window;
         
         // <editor-fold defaultstate="collapsed" desc="Set buttons to 'O'">        
-        int c = -1;
-        for(JButton[] buttonRow: TTG.getButtons())
-        {
-            for(JButton button: buttonRow)
-            {
-                c++;
-                //button.setText(""+(char)(45 + c));
-                button.setText("O");
-            }
-        }
-        TTG.setVisible(true);
+//        int c = -1;
+//        for(JButton[] buttonRow: TTG.getButtons())
+//        {
+//            for(JButton button: buttonRow)
+//            {
+//                c++;
+//                //button.setText(""+(char)(45 + c));
+//                button.setText("O");
+//            }
+//        }
+//        TTG.setVisible(true);
         // </editor-fold>
-        
-        
-        
-       
         
     }
     
@@ -75,7 +73,7 @@ public class TaskMaster implements RelayListener
         ShipBasic ship1 = new ShipBasic(new Location(1, 1), relay, 500);
         ShipBasic ship2 = new ShipBasic(new Location(4, 1), relay, 200);
         
-        ship1.setTarget(new Location(0, 9));
+        ship1.setTarget(new Location(20, 20));
         ship2.setTarget(loc);
         
         Thread thread1 = new Thread(ship1);
@@ -88,7 +86,7 @@ public class TaskMaster implements RelayListener
         ship2.setMentalState("chase");
         
         thread1.start();
-        thread2.start();
+        //thread2.start();
 //
 //        ship.start();
     }
@@ -102,17 +100,17 @@ public class TaskMaster implements RelayListener
     @Override
     public synchronized void onRelay(MoveEvent evt)
     {
-        System.err.println("onRelay()");
+        System.err.println("TM: onRelay()");
         
-        //TODO: erase this test
-        for(Location location: evt.getMovePriotity())
-        {
-            System.err.println("TEST-LOCATE: " + location);
-        }
+//        //TODO: erase this test
+//        for(Location location: evt.getMovePriority())
+//        {
+//            System.err.println("TEST-LOCATE: " + location);
+//        }
         
-        for(Location location: evt.getMovePriotity())
+        for(Location location: evt.getMovePriority())
         {
-            System.err.println("Locate: " + location);
+//            System.err.println("Locate: " + location);
             //Stop checking and inform the mover about it's current,
             // but unmoved, neighbors (that may possible have changed)
             //Null refers to an unmovable location (off map)
@@ -120,18 +118,30 @@ public class TaskMaster implements RelayListener
             {
                 System.err.println("null location");
                 ( (Entity) evt.getSource()).inform(map.getSurroundings(location));
+                break;
             }
             
             if(map.getAtLocation(location) instanceof Water)
             {
-                System.err.println("found some wwater");
-                TTG.getButtons()[location.getY()][location.getX()].setText("X");
-                map.placeMapItem((Entity) evt.getSource(), location);
+//                System.err.println("found some water");
+                //TTG.getButtons()[location.getY()][location.getX()].setText("X");
+                
+                //TODO: check for hiddenReef (doCrash)
+                
+                //TODO: intead of casting to Entity, cast to specific object type
+                map.placeMapItem((MapItem)evt.getSource(), location);
+                //TODO: Ryan: Remove casting on next line
+                System.err.println("TM: tell window to move item");
+                System.err.println((ShipBasic)evt.getSource());
+                ShipBasic ship = (ShipBasic)evt.getSource();
+                System.err.println(ship);
+                System.err.println(location);
+                window.mapMove(ship, location);
                 //Return on move made
                 break;
             }
-            System.err.println("");
-            System.err.println("LOOP END (1)");
+//            System.err.println("");
+//            System.err.println("LOOP END (1)");
         }
     }
     
