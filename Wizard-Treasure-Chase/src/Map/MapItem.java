@@ -4,6 +4,8 @@
  */
 package Map;
 
+import java.util.HashMap;
+
 /**
  *
  * @author mason
@@ -23,6 +25,8 @@ public class MapItem
 //     */
 //    protected int latitude;
     
+    private char sym;
+    
     /**
      * Location of self
      */
@@ -36,4 +40,20 @@ public class MapItem
     {
         return location;
     }
+    
+    public char getSym()
+    {
+        return sym;
+    }
+
+    public MapItem()
+    {
+        sym = '#';
+    }
+    
+    public void inform(HashMap<MapItem, Location> hm)
+    {
+        //TODO: throw an exception
+    }
+    
 }

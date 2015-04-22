@@ -46,17 +46,17 @@ public class MapAbstract
 
     /**
      * Places a MapItem at a set location on the map.
-     * @param entity New object for the specified location
+     * @param mapItem New object for the specified location
      * @param location Specifically where to place the Entity
      * @return The previous value at the location (possibly null)
      */
-    public Object placeMapItem(Entity entity, Location location)
+    public MapItem placeMapItem(MapItem mapItem, Location location)
     {
         //Save the previous object occupying this location
         MapItem wasHere = oMap[location.getY()][location.getX()];
         
         //Set the new object to this location
-        oMap[location.getY()][location.getX()] = entity;
+        oMap[location.getY()][location.getX()] = mapItem;
         
         //Take advantage of the protected methods to update the entity's location
         // NOTE: Entites *now* get their location from the locations of their
@@ -64,7 +64,10 @@ public class MapAbstract
 //        entity.getLocationShallow().
         
         //inform the Entity of it's new neighbors and target location
-        entity.inform(getSurroundings(location));
+        mapItem.inform(getSurroundings(location));
+        
+        //TODO: tell GUI about the move
+        // gui.tell(MapItem.class, )
         
         //give the caller access to whatever (possibly null) was there
         return wasHere;

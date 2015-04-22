@@ -64,6 +64,7 @@ public class Window extends Application {
                     if(mapUpdate()) {
                         System.out.println("Task update completed!");
                     } else {
+                        System.err.println("--->  Window: Sleep");
                         Thread.sleep(1000); // DEFAULT time between empty update
                     }
                 }
@@ -193,14 +194,18 @@ public class Window extends Application {
     }
     
     // Adding move to queue
-    public void mapMove(ShipBasic ship, Location location) {
+    public synchronized void mapMove(ShipBasic ship, Location location) {
+        System.err.println("mapMove()");
         mapMoveList.add(ship);
         locationList.add(location);
     }
     
     // Processing queue
     public boolean mapUpdate() {
+        System.err.println("---> Update called");
+        
         if(!mapMoveList.isEmpty()) {
+            System.out.println("mapMoveList is empty -- update aborted");
             if(!mapButtons.isEmpty()) {
                 mapButtons.get(locationList.get(0).getY()).get(locationList
                         .get(0).getX()).setGraphic(customImageView(ship));

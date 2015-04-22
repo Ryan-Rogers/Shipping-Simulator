@@ -29,13 +29,13 @@ public class Entity extends MapItem implements Runnable
      * Signifies the state of the object, always lowercase.
      */
     protected String mentalState;
-    
+
     /**
      * True: The Entity is actively and continually running
      * False: The Entity will finish it's next cycle before ending
      */
     protected boolean running;
-    
+
     /**
      * Includes what the entity knows about its surroundings and target.
      * [North, East, South, West]
@@ -102,6 +102,7 @@ public class Entity extends MapItem implements Runnable
      */
     public Entity(Location location, RelayMaster relay, long sleepTime)
     {
+        super();
         //Default the state
         mentalState = "wait";
         //Gives the entity a location
@@ -213,16 +214,44 @@ public class Entity extends MapItem implements Runnable
      */
     protected void makeAction()
     {
-        System.err.println("makeAction()");
+//        System.err.println("makeAction()");
         switch(mentalState)
         {
-            case "wait": sleep(); break;
-            case "chase": /*System.err.println("mental state chase");*/ chaseTarget(); break;
+            case "wait": /*sleep();*/ break;
+            case "chase": chaseTarget(); break;
             default:
                 System.err.println("Unknown mental state: " + mentalState);
         }
 
         sleep();
+    }
+    
+    
+    protected void sailToTarget()
+    {
+        /*
+        SailToTarget() looks at the (need to add this next thing) times it has
+        been to each location and prioritizes in sublists per moves count on 
+        spaces.
+        
+        Recorded 
+        
+        UnMovedSpots
+        -Best
+        -SecondBest
+        OneMovedSpots
+        -Best
+        -SecondBest
+        TwiceMovedSpots
+        -Best
+        -SecondBest
+        ...
+        ...
+        
+        
+        */
+        printStackTrace();
+        throw new UnsupportedOperationException("WE DIDN'T DO THIS YET!!");
     }
     
     //TODO: fix this shit

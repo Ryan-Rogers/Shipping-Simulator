@@ -4,6 +4,12 @@
  */
 package main;
 
+import Gui.Window;
+import Gui.WindowThread;
+import ThreadMaster.TaskMaster;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author mason
@@ -16,8 +22,21 @@ public class WizardTreasureChase
      */
     public static void main(String[] args)
     {
-        // TODO code application logic here
-        //Line
+        Window window = new Window();
+        
+        // Starting window thread
+        WindowThread windowThread = new WindowThread(window);
+        windowThread.start();
+        
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(WizardTreasureChase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        TaskMaster tM = new TaskMaster(window);
+        tM.testLines();
+        
     }
     
 }

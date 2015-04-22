@@ -50,7 +50,7 @@ public class MoveEvent extends EventObject
      * Note: A null can appear in the list if the move was never avaliable.
      * @return A Location[] of the desired moves.
      */
-    public Location[] getMovePriotity()
+    public Location[] getMovePriority()
     {
         return movePriority;
     }

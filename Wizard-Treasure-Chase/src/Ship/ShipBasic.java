@@ -24,6 +24,13 @@ public class ShipBasic extends Entity
 //    {
 //        super.onStart();
 //    }
+
+    @Override
+    public String toString()
+    {
+        return "Ima ship! " + location;
+    }
+    
     
     
 }
