@@ -8,14 +8,17 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.concurrent.Task;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 /**
  * @author Ryan Rogers
@@ -24,59 +27,75 @@ import javafx.stage.Stage;
 // Application
 public class Window extends Application {
     
+    static char[][] terrainMap; // [row][column]
     static char[][] mapList = new char[36][54]; // [row][column]
     static ArrayList<ShipBasic> mapMoveList = new ArrayList<>();
     static ArrayList<Location> locationList = new ArrayList<>();
     static ArrayList<ArrayList<Button>> mapButtons = new ArrayList<>();
     static GridPane mapPane = new GridPane();
+    static WindowThread windowThread;
+    
+    // Images
+    Image water;
+    Image land;
+    Image ship;
+    Image entity;
     
     // Application loop
     public void main(String[] args) {
+        System.out.println("The gui has started");
         launch(args); // Launching application
     }
     
     // Window
     @Override
     public void start(Stage primaryStage) {
+
+        // Update task
+        Task updateTask = new Task() {
+            @Override protected Integer call() throws Exception {
+                System.out.println("Update thread has started");
+                int updateCount;
+                for (updateCount = 0; updateCount > -1; updateCount++) {
+                    if(!windowThread.isAlive()) {
+                        System.out.println("Update thread has stopped");
+                        return 0;
+                    }
+                    if(mapUpdate()) {
+                        System.out.println("Task update completed!");
+                    } else {
+                        Thread.sleep(1000); // DEFAULT time between empty update
+                    }
+                }
+                return 0;
+            }
+        };
         
         // Setup
         StackPane root = new StackPane(); // Creating window pane
-        Scene scene = new Scene(root, 1300, 800); // Creating scene
+        Scene scene = new Scene(root, 972, 648); // Creating scene
         primaryStage.setScene(scene); // Adding scene to window pane
         primaryStage.setTitle("Wizard Treasure Chase"); // Setting itle
         primaryStage.show(); // Setting window to be visible
         // primaryStage.setFullScreen(true); // Setting window to fullscreen
         
+        // Images
+        water = new Image("FILE:water.png");
+        land = new Image("FILE:land.png");
+        ship = new Image("FILE:ship.png");
+        entity = new Image("FILE:entity.png");
+        
         // Map
         mapPane.setAlignment(Pos.CENTER);
         root.getChildren().add(mapPane);
+        mapPane.setMinWidth(972);
+        mapPane.setMinHeight(648);
+        
         loadMapToMap();
-        printMap();
         createMapButtons();
         populateMapPane();
+        new Thread(updateTask).start();
         
-        Task<Integer> update = new Task<Integer>() {
-            @Override protected Integer call() throws Exception {
-                int iterations;
-                for (iterations = 0; iterations < 10000000; iterations++) {
-                     if (isCancelled()) {
-                         updateMessage("Cancelled");
-                        break;
-                     }
-                    updateMessage("Iteration " + iterations);
-                    updateProgress(iterations, 10000000);
-                }
-                return iterations;
-            }
-        };
-        
-        // Example button and action
-        /* Button mapButton = new Button();
-         mapButton.setOnAction((ActionEvent event) -> {
-            System.out.println("Hello World!");
-        });
-        root.getChildren().add(mapButton);
-        */
     }
     
     // Populates mapPane with mapButtons
@@ -109,20 +128,38 @@ public class Window extends Application {
             row = Integer.parseInt(splitLine[1]);
             mapList[row][column] = splitLine[2].charAt(0);
         }
+        terrainMap = mapList;
     }
     
     // Creates buttons from map
     public void createMapButtons() {
         for(int row = 0; row < 36; row++) {
             for(int column = 0; column < 54; column++) {
-                Button button = new Button(String.valueOf(
-                        mapList[row][column]));
+                
+                // Button
+                Button button = customButton();
+                button.setGraphic(customImageView(mapList[row][column]));
+                
+                // Adding buttons to mapButtons<<>>
                 if(mapButtons.size() <= row) {
                     mapButtons.add(new ArrayList<>());
                 }
                 mapButtons.get(row).add(button);
             }
         }
+    }
+    
+    // Returns a new button with custom defaults
+    public Button customButton() {
+        Button newButton = new Button();
+        newButton.setPadding(new Insets(0, 0, 0, 0));
+        newButton.setOnAction((ActionEvent event) -> {
+            System.out.println("[" + newButton.getLayoutY()/18 + "][" 
+                    + newButton.getLayoutX()/18 + "]");
+            event.consume();
+        });
+        newButton.setGraphic(customImageView('E'));
+        return newButton;
     }
     
     // Creates loaded buttonList
@@ -162,11 +199,16 @@ public class Window extends Application {
     }
     
     // Processing queue
-    public static boolean mapUpdate() {
+    public boolean mapUpdate() {
         if(!mapMoveList.isEmpty()) {
             if(!mapButtons.isEmpty()) {
-                mapButtons.get(locationList.get(0).getY()).
-                    get(locationList.get(0).getX()).setText("S");
+                mapButtons.get(locationList.get(0).getY()).get(locationList
+                        .get(0).getX()).setGraphic(customImageView(ship));
+                Location previousLocation = mapMoveList.get(0).getLocation();
+                mapButtons.get(previousLocation.getY()).get(previousLocation.
+                        getX()).setText(String.valueOf(terrainMap
+                                [previousLocation.getY()]
+                                [previousLocation.getX()]));
                 mapMoveList.remove(0);
                 locationList.remove(0);
                 return true;
@@ -176,6 +218,36 @@ public class Window extends Application {
         } else {
             return false;
         }
+    }
+    
+    // Returns a default ImageView
+    public ImageView customImageView(Image image) {
+        ImageView imageView = new ImageView();
+        imageView.setImage(image);
+        imageView.setFitWidth(18);
+        imageView.setPreserveRatio(true);
+        imageView.setSmooth(true);
+        imageView.setCache(true);
+        return imageView;
+    }
+    
+    // Returns a default ImageView
+    public ImageView customImageView(char type) {
+        return customImageView(charToImage(type));
+    }
+    
+    // Converts a char to the appropriate Image
+    public Image charToImage(char type) {
+        if(".".equals(String.valueOf(type))) {
+            return water;
+        }
+        if("*".equals(String.valueOf(type))) {
+            return land;
+        }
+        if("S".equals(String.valueOf(type))) {
+            return ship;
+        }
+        return entity; // No image exists for the given char
     }
     
     // Prints the given map to the console
@@ -218,5 +290,12 @@ public class Window extends Application {
     public ArrayList<Location> getLocationList() {
         return locationList;
     }
+    
+    // Saves the recieved window thread
+    public void setWindowThread(WindowThread inputThread) {
+        windowThread = inputThread;
+    }
+    
+    
     
 }
