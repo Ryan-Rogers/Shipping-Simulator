@@ -36,14 +36,14 @@ public class Window extends Application {
     static WindowThread windowThread;
     
     // Images
-    Image water;
-    Image land;
-    Image ship;
-    Image entity;
+    static Image water;
+    static Image land;
+    static Image ship;
+    static Image entity;
     
     // Application loop
     public void main(String[] args) {
-        System.out.println("The gui has started");
+        System.err.println("The gui has started");
         launch(args); // Launching application
     }
     
@@ -54,21 +54,55 @@ public class Window extends Application {
         // Update task
         Task updateTask = new Task() {
             @Override protected Integer call() throws Exception {
-                System.out.println("Update thread has started");
+                System.err.println("Update thread has started");
                 int updateCount;
                 for (updateCount = 0; updateCount > -1; updateCount++) {
                     if(!windowThread.isAlive()) {
-                        System.out.println("Update thread has stopped");
+                        System.err.println("Update thread has stopped");
                         return 0;
                     }
-                    if(mapUpdate()) {
-                        System.out.println("Task update completed!");
+                    // if(mapUpdate()) {
+                    if(taskUpdate()) {
+                        System.err.println("Task update completed!");
                     } else {
-                        System.err.println("--->  Window: Sleep");
+                        System.err.println("---> Update sleeping");
                         Thread.sleep(1000); // DEFAULT time between empty update
                     }
                 }
                 return 0;
+            }
+            
+            private boolean taskUpdate() {
+                System.err.println("taskUpdate() Step 0");
+                if(!mapMoveList.isEmpty()) {
+                    System.err.println("taskUpdate() Step 1");
+                    if(!mapButtons.isEmpty()) {
+                        System.err.println("taskUpdate() Step 2");
+                        mapButtons.get(locationList.get(0).getY()).get(locationList
+                                .get(0).getX()).setGraphic(customImageView(ship));
+                        System.err.println("taskUpdate() Step 3");
+                        Location previousLocation = mapMoveList.get(0).getLocation();
+                        System.err.println("taskUpdate() Step 4");
+                        /*
+                        mapButtons.get(previousLocation.getY()).get(previousLocation.
+                                getX()).setText(String.valueOf(terrainMap
+                                [previousLocation.getY()]
+                                [previousLocation.getX()]));
+                        */
+                        System.err.println("taskUpdate() Step 5");
+                        mapMoveList.remove(0);
+                        System.err.println("taskUpdate() Step 6");
+                        locationList.remove(0);
+                        System.err.println("taskUpdate() Step 7");
+                        return true;
+                    } else {
+                        System.err.println("mapButtons is emtpy -- update aborted");
+                        return false;
+                    }
+                } else {
+                    System.err.println("mapMoveList is empty -- update aborted");
+                    return false;
+                }
             }
         };
         
@@ -115,8 +149,8 @@ public class Window extends Application {
         try {
             mapReader = new Scanner(new File(fileName + ".map.txt"));
         } catch(Exception e) {
-            System.out.println(e);
-            System.out.println("Exception occured while loading map!");
+            System.err.println(e);
+            System.err.println("Exception occured while loading map!");
         }
         String line;
         String[] splitLine;
@@ -155,7 +189,7 @@ public class Window extends Application {
         Button newButton = new Button();
         newButton.setPadding(new Insets(0, 0, 0, 0));
         newButton.setOnAction((ActionEvent event) -> {
-            System.out.println("[" + newButton.getLayoutY()/18 + "][" 
+            System.err.println("[" + newButton.getLayoutY()/18 + "][" 
                     + newButton.getLayoutX()/18 + "]");
             event.consume();
         });
@@ -170,8 +204,8 @@ public class Window extends Application {
         try{ // Attempting to create a scanner from the filename
             mapReader = new Scanner(new File(fileName + ".map.txt"));
         } catch(Exception e) { // Exception occurance
-            System.out.println(e); // Printing exception
-            System.out.println("Exception occured while loading map!");
+            System.err.println(e); // Printing exception
+            System.err.println("Exception occured while loading map!");
         }
         String line; // Read line holder
         String[] splitLine; // Delimated line holder
@@ -194,39 +228,48 @@ public class Window extends Application {
     }
     
     // Adding move to queue
-    public synchronized void mapMove(ShipBasic ship, Location location) {
+    public void mapMove(ShipBasic ship, Location location) {
         System.err.println("mapMove()");
         mapMoveList.add(ship);
         locationList.add(location);
     }
     
     // Processing queue
-    public boolean mapUpdate() {
-        System.err.println("---> Update called");
-        
+    public static boolean mapUpdate() {
+        System.err.println("mapUpdate() Step 0");
         if(!mapMoveList.isEmpty()) {
-            System.out.println("mapMoveList is empty -- update aborted");
+            System.err.println("mapUpdate() Step 1");
             if(!mapButtons.isEmpty()) {
+                System.err.println("mapUpdate() Step 2");
                 mapButtons.get(locationList.get(0).getY()).get(locationList
                         .get(0).getX()).setGraphic(customImageView(ship));
+                System.err.println("mapUpdate() Step 3");
                 Location previousLocation = mapMoveList.get(0).getLocation();
+                System.err.println("mapUpdate() Step 4");
+                /*
                 mapButtons.get(previousLocation.getY()).get(previousLocation.
                         getX()).setText(String.valueOf(terrainMap
-                                [previousLocation.getY()]
-                                [previousLocation.getX()]));
+                        [previousLocation.getY()]
+                        [previousLocation.getX()]));
+                */
+                System.err.println("mapUpdate() Step 5");
                 mapMoveList.remove(0);
+                System.err.println("mapUpdate() Step 6");
                 locationList.remove(0);
+                System.err.println("mapUpdate() Step 7");
                 return true;
             } else {
+                System.err.println("mapButtons is emtpy -- update aborted");
                 return false;
             }
         } else {
+            System.err.println("mapMoveList is empty -- update aborted");
             return false;
         }
     }
     
     // Returns a default ImageView
-    public ImageView customImageView(Image image) {
+    public static ImageView customImageView(Image image) {
         ImageView imageView = new ImageView();
         imageView.setImage(image);
         imageView.setFitWidth(18);
@@ -237,12 +280,12 @@ public class Window extends Application {
     }
     
     // Returns a default ImageView
-    public ImageView customImageView(char type) {
+    public static ImageView customImageView(char type) {
         return customImageView(charToImage(type));
     }
     
     // Converts a char to the appropriate Image
-    public Image charToImage(char type) {
+    public static Image charToImage(char type) {
         if(".".equals(String.valueOf(type))) {
             return water;
         }
@@ -258,12 +301,12 @@ public class Window extends Application {
     // Prints the given map to the console
     public void printMap(char[][] map) {
         for(int row = 0; row < 36; row++) {
-            System.out.println("");
+            System.err.println("");
             for(int column = 0; column < 54; column++) {
-                System.out.print(map[row][column]);
+                System.err.print(map[row][column]);
             }
         }
-        System.out.println();
+        System.err.println();
     }
     
     // Prints the current mapList to the console

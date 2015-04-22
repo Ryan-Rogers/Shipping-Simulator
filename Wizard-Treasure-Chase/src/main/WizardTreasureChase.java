@@ -22,11 +22,6 @@ public class WizardTreasureChase
      */
     public static void main(String[] args)
     {
-        Window window = new Window();
-        
-        // Starting window thread
-        WindowThread windowThread = new WindowThread(window);
-        windowThread.start();
         
         try {
             Thread.sleep(10000);
@@ -34,7 +29,7 @@ public class WizardTreasureChase
             Logger.getLogger(WizardTreasureChase.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        TaskMaster tM = new TaskMaster(window);
+        TaskMaster tM = new TaskMaster();
         tM.testLines();
         
     }

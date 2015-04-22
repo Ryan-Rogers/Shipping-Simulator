@@ -10,7 +10,7 @@ import Ship.ShipBasic;
 /**
  * @author Ryan Rogers
  */
-
+/*
 public class DebugMain {
     
     private static Object thread;
@@ -37,4 +37,5 @@ public class DebugMain {
         
     }
 }
+*/
 

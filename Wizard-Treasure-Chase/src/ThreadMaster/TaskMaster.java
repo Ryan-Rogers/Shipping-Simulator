@@ -20,9 +20,9 @@ import javax.swing.JButton;
 public class TaskMaster implements RelayListener
 {
     
-    private MapMaster map;
+    static Window window;
     
-    private Window window;
+    private MapMaster map;
     
     //TODO: remove line
     //ThreadTestGUI TTG;
@@ -33,14 +33,17 @@ public class TaskMaster implements RelayListener
         //tM.testLines();
     }
 
-    public TaskMaster(Window window)
+    public TaskMaster()
     {
         //TODO: RYAN: unlock map size by making button generation dynamic
         map = new MapMaster(8, 10);
         
+        // GUI
+        window = new Window();
+        WindowThread windowThread = new WindowThread(window);
+        windowThread.start();
+        
         //TTG = new ThreadTestGUI();
-
-        this.window = window;
         
         // <editor-fold defaultstate="collapsed" desc="Set buttons to 'O'">        
 //        int c = -1;
@@ -63,6 +66,8 @@ public class TaskMaster implements RelayListener
      */
     public void testLines()
     {
+        
+        
         //TODO: remove all this test code
         RelayMaster relay = new RelayMaster();
         
@@ -70,20 +75,15 @@ public class TaskMaster implements RelayListener
 
         Location loc = new Location(9, 9);
         
-        ShipBasic ship1 = new ShipBasic(new Location(1, 1), relay, 500);
-        ShipBasic ship2 = new ShipBasic(new Location(4, 1), relay, 200);
+        ShipBasic ship1 = new ShipBasic(new Location(1, 1), relay, 1000);
         
         ship1.setTarget(new Location(20, 20));
-        ship2.setTarget(loc);
         
         Thread thread1 = new Thread(ship1);
-        Thread thread2 = new Thread(ship2);
         
         ship1.inform(map.getSurroundings(new Location(1, 1)));
-        ship2.inform(map.getSurroundings(new Location(4, 1)));
         
         ship1.setMentalState("chase");
-        ship2.setMentalState("chase");
         
         thread1.start();
         //thread2.start();
@@ -133,11 +133,10 @@ public class TaskMaster implements RelayListener
                 //TODO: Ryan: Remove casting on next line
                 System.err.println("TM: tell window to move item");
 //                System.err.println((ShipBasic)evt.getSource());
-                ShipBasic ship = (ShipBasic)evt.getSource();
+                
 //                System.err.println(ship);
-                System.err.println(location);
-                window.mapMove(ship, location);
-                System.err.println("$WE MADE IT PAST");
+                System.err.println(location + " for update");
+                window.mapMove((ShipBasic)evt.getSource(), location);
                 //Return on move made
                 break;
             }
