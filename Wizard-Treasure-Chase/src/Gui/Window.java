@@ -6,8 +6,12 @@ import Ship.ShipBasic;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -29,8 +33,10 @@ public class Window extends Application {
     
     static char[][] terrainMap; // [row][column]
     static char[][] mapList = new char[36][54]; // [row][column]
-    static ArrayList<ShipBasic> mapMoveList = new ArrayList<>();
-    static ArrayList<Location> locationList = new ArrayList<>();
+    static ConcurrentLinkedQueue<ShipBasic> shipList 
+            = new ConcurrentLinkedQueue<>();
+    static ConcurrentLinkedQueue<Location> locationList 
+            = new ConcurrentLinkedQueue<>();
     static ArrayList<ArrayList<Button>> mapButtons = new ArrayList<>();
     static GridPane mapPane = new GridPane();
     static WindowThread windowThread;
@@ -51,6 +57,7 @@ public class Window extends Application {
     @Override
     public void start(Stage primaryStage) {
 
+        /*
         // Update task
         Task updateTask = new Task() {
             @Override protected Integer call() throws Exception {
@@ -61,50 +68,15 @@ public class Window extends Application {
                         System.err.println("Update thread has stopped");
                         return 0;
                     }
-                    // if(mapUpdate()) {
-                    if(taskUpdate()) {
-                        System.err.println("Task update completed!");
-                    } else {
-                        System.err.println("---> Update sleeping");
-                        Thread.sleep(1000); // DEFAULT time between empty update
-                    }
+                    Platform.runLater(() -> {
+                        mapUpdate();
+                    });
+                    
                 }
                 return 0;
             }
-            
-            private boolean taskUpdate() {
-                System.err.println("taskUpdate() Step 0");
-                if(!mapMoveList.isEmpty()) {
-                    System.err.println("taskUpdate() Step 1");
-                    if(!mapButtons.isEmpty()) {
-                        System.err.println("taskUpdate() Step 2");
-                        mapButtons.get(locationList.get(0).getY()).get(locationList
-                                .get(0).getX()).setGraphic(customImageView(ship));
-                        System.err.println("taskUpdate() Step 3");
-                        Location previousLocation = mapMoveList.get(0).getLocation();
-                        System.err.println("taskUpdate() Step 4");
-                        /*
-                        mapButtons.get(previousLocation.getY()).get(previousLocation.
-                                getX()).setText(String.valueOf(terrainMap
-                                [previousLocation.getY()]
-                                [previousLocation.getX()]));
-                        */
-                        System.err.println("taskUpdate() Step 5");
-                        mapMoveList.remove(0);
-                        System.err.println("taskUpdate() Step 6");
-                        locationList.remove(0);
-                        System.err.println("taskUpdate() Step 7");
-                        return true;
-                    } else {
-                        System.err.println("mapButtons is emtpy -- update aborted");
-                        return false;
-                    }
-                } else {
-                    System.err.println("mapMoveList is empty -- update aborted");
-                    return false;
-                }
-            }
         };
+        */
         
         // Setup
         StackPane root = new StackPane(); // Creating window pane
@@ -129,7 +101,6 @@ public class Window extends Application {
         loadMapToMap();
         createMapButtons();
         populateMapPane();
-        new Thread(updateTask).start();
         
     }
     
@@ -229,41 +200,35 @@ public class Window extends Application {
     
     // Adding move to queue
     public void mapMove(ShipBasic ship, Location location) {
-        System.err.println("mapMove()");
-        mapMoveList.add(ship);
+        Platform.runLater(() -> {
+            mapUpdate();
+        });
+        shipList.add(ship);
         locationList.add(location);
     }
     
     // Processing queue
     public static boolean mapUpdate() {
-        System.err.println("mapUpdate() Step 0");
-        if(!mapMoveList.isEmpty()) {
-            System.err.println("mapUpdate() Step 1");
-            if(!mapButtons.isEmpty()) {
-                System.err.println("mapUpdate() Step 2");
-                mapButtons.get(locationList.get(0).getY()).get(locationList
-                        .get(0).getX()).setGraphic(customImageView(ship));
-                System.err.println("mapUpdate() Step 3");
-                Location previousLocation = mapMoveList.get(0).getLocation();
-                System.err.println("mapUpdate() Step 4");
+        if(!shipList.isEmpty()) { // Ships need to be updated
+            if(!mapButtons.isEmpty()) { // GUI buttons are loaded
+                ShipBasic currentShip = shipList.remove();
+                Location currentLocation = locationList.remove();
+                mapButtons.get(currentLocation.getY())
+                        .get(currentLocation.getX())
+                        .setGraphic(customImageView(ship));
                 /*
-                mapButtons.get(previousLocation.getY()).get(previousLocation.
-                        getX()).setText(String.valueOf(terrainMap
+                Location previousLocation = currentShip.getLocation();
+                mapButtons.get(previousLocation.getY())
+                        .get(previousLocation.getX())
+                        .setGraphic(customImageView(terrainMap
                         [previousLocation.getY()]
                         [previousLocation.getX()]));
                 */
-                System.err.println("mapUpdate() Step 5");
-                mapMoveList.remove(0);
-                System.err.println("mapUpdate() Step 6");
-                locationList.remove(0);
-                System.err.println("mapUpdate() Step 7");
                 return true;
             } else {
-                System.err.println("mapButtons is emtpy -- update aborted");
                 return false;
             }
         } else {
-            System.err.println("mapMoveList is empty -- update aborted");
             return false;
         }
     }
@@ -330,12 +295,12 @@ public class Window extends Application {
     }
     
     // Returns mapMoveList
-    public ArrayList<ShipBasic> getMapMoveList() {
-        return mapMoveList;
+    public ConcurrentLinkedQueue<ShipBasic> getMapMoveList() {
+        return shipList;
     }
     
     // Returns locationList
-    public ArrayList<Location> getLocationList() {
+    public ConcurrentLinkedQueue<Location> getLocationList() {
         return locationList;
     }
     
