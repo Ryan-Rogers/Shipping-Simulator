@@ -21,8 +21,11 @@ import javafx.stage.Stage;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.scene.control.Accordion;
+import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.Screen;
 
 /**
  * @author Ryan Rogers
@@ -31,8 +34,14 @@ import javafx.scene.image.ImageView;
 // Application
 public class Window extends Application {
     
+    // DEFAULT Variables
+    static double iconSize = 16;
+    static int rows = 36;
+    static int columns = 54;
+    
+    // Variables
     static char[][] terrainMap; // [row][column]
-    static char[][] mapList = new char[36][54]; // [row][column]
+    static char[][] mapList = new char[rows][columns]; // [row][column]
     static ConcurrentLinkedQueue<ShipBasic> shipList 
             = new ConcurrentLinkedQueue<>();
     static ConcurrentLinkedQueue<Location> locationList 
@@ -46,6 +55,7 @@ public class Window extends Application {
     static Image land;
     static Image ship;
     static Image entity;
+    static Image logo;
     
     // Application loop
     public void main(String[] args) {
@@ -56,52 +66,158 @@ public class Window extends Application {
     // Window
     @Override
     public void start(Stage primaryStage) {
-
-        /*
-        // Update task
-        Task updateTask = new Task() {
-            @Override protected Integer call() throws Exception {
-                System.err.println("Update thread has started");
-                int updateCount;
-                for (updateCount = 0; updateCount > -1; updateCount++) {
-                    if(!windowThread.isAlive()) {
-                        System.err.println("Update thread has stopped");
-                        return 0;
-                    }
-                    Platform.runLater(() -> {
-                        mapUpdate();
-                    });
-                    
-                }
-                return 0;
-            }
-        };
-        */
         
         // Setup
-        StackPane root = new StackPane(); // Creating window pane
-        Scene scene = new Scene(root, 972, 648); // Creating scene
+        GridPane root = new GridPane(); // Creating window pane
+        Scene scene = new Scene(root, 0, 0); // Creating scene
         primaryStage.setScene(scene); // Adding scene to window pane
-        primaryStage.setTitle("Wizard Treasure Chase"); // Setting itle
-        primaryStage.show(); // Setting window to be visible
-        // primaryStage.setFullScreen(true); // Setting window to fullscreen
+        primaryStage.setTitle("Wizard Treasure Chase"); // Setting title
+        primaryStage.setFullScreen(true);
+        primaryStage.setX(Screen.getPrimary().getBounds().getMinX());
+        primaryStage.setY(Screen.getPrimary().getBounds().getMinY());
+        primaryStage.setWidth(Screen.getPrimary().getBounds().getWidth());
+        primaryStage.setHeight(Screen.getPrimary().getBounds().getHeight());
+        
+        iconSize = Screen.getPrimary().getBounds().getHeight()/rows;
         
         // Images
         water = new Image("FILE:water.png");
         land = new Image("FILE:land.png");
         ship = new Image("FILE:ship.png");
         entity = new Image("FILE:entity.png");
+        logo = new Image("FILE:logo.png");
         
-        // Map
-        mapPane.setAlignment(Pos.CENTER);
-        root.getChildren().add(mapPane);
-        mapPane.setMinWidth(972);
-        mapPane.setMinHeight(648);
+        // Map pane
+        mapPane.setAlignment(Pos.BOTTOM_LEFT);
+        root.add(mapPane, 0, 0);
+        mapPane.setMinWidth(iconSize*columns);
+        mapPane.setMinHeight(iconSize*rows);
         
+        // Right Pane
+        GridPane rightPane = new GridPane();
+        rightPane.setAlignment(Pos.TOP_RIGHT);
+        rightPane.setMinWidth(iconSize*columns*0.15625);
+        rightPane.setMinHeight(iconSize*rows);
+        root.add(rightPane, 1, 0);
+        
+        // Logo
+        ImageView imageView = new ImageView();
+        imageView.setImage(logo);
+        imageView.setFitWidth(iconSize*columns*0.15625);
+        imageView.setPreserveRatio(true);
+        imageView.setSmooth(true);
+        imageView.setCache(true);
+        Button logoButton = new Button();
+        logoButton.setPadding(new Insets(0, 0, 0, 0));
+        logoButton.setGraphic(imageView);
+        rightPane.add(logoButton, 0, 0);
+        
+        // fileMenuAccordion Items
+        TitledPane openPane = new TitledPane();
+        openPane.setText("Open");
+        TitledPane closePane = new TitledPane();
+        closePane.setText("Close");
+        TitledPane snapShotPane = new TitledPane();
+        snapShotPane.setText("Snap Shot");
+        
+        // Exit button
+        TitledPane exitPane = new TitledPane();
+        exitPane.setText("Exit");
+        /*
+        Button exitButton = new Button();
+        exitButton.setOnAction((ActionEvent event) -> {
+            Thread.currentThread().
+            event.consume();
+        });
+                */
+        
+        // fileMenuAccordion
+        Accordion fileMenuAccordion = new Accordion();
+        fileMenuAccordion.getPanes().addAll(openPane, closePane, 
+                snapShotPane, exitPane);
+        
+        // fileMenu
+        TitledPane fileMenu = new TitledPane();
+        fileMenu.setText("File Menu");
+        fileMenu.setContent(fileMenuAccordion);
+        
+        // shipMenuAccordion Items
+        TitledPane generateShipsPane = new TitledPane();
+        generateShipsPane.setText("Generate Ships");
+        TitledPane updateShipsPane = new TitledPane();
+        updateShipsPane.setText("Update Ships");
+        TitledPane displayAllShips = new TitledPane();
+        displayAllShips.setText("Display All Ships");
+        TitledPane removeAllShips = new TitledPane();
+        removeAllShips.setText("Remove All Ships");
+        
+        // shipMenuAccordion
+        Accordion shipMenuAccordion = new Accordion();
+        shipMenuAccordion.getPanes().addAll(generateShipsPane, updateShipsPane, 
+                displayAllShips, removeAllShips);
+        
+        // shipMenu
+        TitledPane shipMenu = new TitledPane();
+        shipMenu.setText("Dock Menu");
+        shipMenu.setContent(shipMenuAccordion);
+        
+        // portMenuAccordion Items
+        TitledPane unloadShipPane = new TitledPane();
+        unloadShipPane.setText("Unload Ship");
+        TitledPane updateDockPane = new TitledPane();
+        updateDockPane.setText("Update Dock");
+        TitledPane displayAllDocks = new TitledPane();
+        displayAllDocks.setText("Display All Docks");
+        TitledPane displayAllCargos = new TitledPane();
+        displayAllCargos.setText("Display All Cargos");
+        
+        // portMenuAccordion
+        Accordion portMenuAccordion = new Accordion();
+        portMenuAccordion.getPanes().addAll(unloadShipPane, updateDockPane, 
+                displayAllDocks, displayAllCargos);
+        
+        // portMenu
+        TitledPane portMenu = new TitledPane();
+        portMenu.setText("Port Menu");
+        portMenu.setContent(portMenuAccordion);
+        
+        // portMenuAccordion Items
+        TitledPane generateMonstersPane = new TitledPane();
+        generateMonstersPane.setText("Generate Monsters");
+        TitledPane updateMonstersPane = new TitledPane();
+        updateMonstersPane.setText("Update Monsters");
+        TitledPane displayAllMonstersPane = new TitledPane();
+        displayAllMonstersPane.setText("Display All Monsters");
+        TitledPane removeAllMonstersPane = new TitledPane();
+        removeAllMonstersPane.setText("Remove All Monsters");
+        TitledPane summonGodzillaPane = new TitledPane();
+        summonGodzillaPane.setText("Summon Godzilla");
+        
+        // portMenuAccordion
+        Accordion monsterMenuAccordion = new Accordion();
+        monsterMenuAccordion.getPanes().addAll(generateMonstersPane, 
+                updateMonstersPane, displayAllMonstersPane, 
+                removeAllMonstersPane, summonGodzillaPane);
+        
+        // portMenu
+        TitledPane monsterMenu = new TitledPane();
+        monsterMenu.setText("Monster Menu");
+        monsterMenu.setContent(monsterMenuAccordion);
+        
+        // me
+        
+        // Menu Accordion
+        Accordion menuAccordion = new Accordion();
+        rightPane.add(menuAccordion, 0, 1);
+        menuAccordion.getPanes().addAll(fileMenu, shipMenu, portMenu, 
+                monsterMenu);
+        
+        // Map population
         loadMapToMap();
         createMapButtons();
         populateMapPane();
         
+        primaryStage.show(); // Setting window to be visible
     }
     
     // Populates mapPane with mapButtons
@@ -125,8 +241,8 @@ public class Window extends Application {
         }
         String line;
         String[] splitLine;
-        int row = 0;
-        int column = 0;
+        int row;
+        int column;
         while(mapReader.hasNextLine()) {
             line = mapReader.nextLine();
             splitLine = line.split(",");
@@ -139,8 +255,8 @@ public class Window extends Application {
     
     // Creates buttons from map
     public void createMapButtons() {
-        for(int row = 0; row < 36; row++) {
-            for(int column = 0; column < 54; column++) {
+        for(int row = 0; row < rows; row++) {
+            for(int column = 0; column < columns; column++) {
                 
                 // Button
                 Button button = customButton();
@@ -160,8 +276,8 @@ public class Window extends Application {
         Button newButton = new Button();
         newButton.setPadding(new Insets(0, 0, 0, 0));
         newButton.setOnAction((ActionEvent event) -> {
-            System.err.println("[" + newButton.getLayoutY()/18 + "][" 
-                    + newButton.getLayoutX()/18 + "]");
+            System.err.println("[" + newButton.getLayoutY()/iconSize + "][" 
+                    + newButton.getLayoutX()/iconSize + "]");
             event.consume();
         });
         newButton.setGraphic(customImageView('E'));
@@ -216,14 +332,14 @@ public class Window extends Application {
                 mapButtons.get(currentLocation.getY())
                         .get(currentLocation.getX())
                         .setGraphic(customImageView(ship));
-                /*
+                
                 Location previousLocation = currentShip.getLocation();
                 mapButtons.get(previousLocation.getY())
                         .get(previousLocation.getX())
                         .setGraphic(customImageView(terrainMap
                         [previousLocation.getY()]
                         [previousLocation.getX()]));
-                */
+                
                 return true;
             } else {
                 return false;
@@ -237,7 +353,7 @@ public class Window extends Application {
     public static ImageView customImageView(Image image) {
         ImageView imageView = new ImageView();
         imageView.setImage(image);
-        imageView.setFitWidth(18);
+        imageView.setFitWidth(iconSize);
         imageView.setPreserveRatio(true);
         imageView.setSmooth(true);
         imageView.setCache(true);
@@ -265,9 +381,9 @@ public class Window extends Application {
     
     // Prints the given map to the console
     public void printMap(char[][] map) {
-        for(int row = 0; row < 36; row++) {
+        for(int row = 0; row < rows; row++) {
             System.err.println("");
-            for(int column = 0; column < 54; column++) {
+            for(int column = 0; column < columns; column++) {
                 System.err.print(map[row][column]);
             }
         }
