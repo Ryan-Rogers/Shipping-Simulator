@@ -22,9 +22,13 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Screen;
 
 /**
@@ -35,7 +39,7 @@ import javafx.stage.Screen;
 public class Window extends Application {
     
     // DEFAULT Variables
-    static double iconSize = 16;
+    static double iconSize = 20;
     static int rows = 36;
     static int columns = 54;
     
@@ -120,6 +124,13 @@ public class Window extends Application {
         logoButton.setGraphic(imageView);
         rightPane.add(logoButton, 0, 0);
         
+        // Text Area
+        String output;
+        output = "Sample output text";
+        Label outputLabel = new Label();
+        outputLabel.setText(output);
+        rightPane.add(outputLabel, 0, 2);
+        
         // fileMenuAccordion Items
         TitledPane openPane = new TitledPane();
         openPane.setText("Open");
@@ -147,13 +158,28 @@ public class Window extends Application {
         fileMenu.setText("File Menu");
         fileMenu.setContent(fileMenuAccordion);
         
-        // shipMenuAccordion Items
+        // Ship Menu
+        // Ship Menu > Generate Ships
         TitledPane generateShipsPane = new TitledPane();
         generateShipsPane.setText("Generate Ships");
+        GridPane generateShipMenu = new GridPane();
+        generateShipsPane.setContent(generateShipMenu);
+        Label generateShipLabel = new Label("Number of ships to generate:");
+        generateShipMenu.addRow(0, generateShipLabel);
+        TextField generateShipNumber = new TextField("10");
+        generateShipMenu.addRow(1, generateShipNumber);
+        Button generateShipButton = new Button("Generate");
+        generateShipMenu.addRow(2, generateShipButton);
+        
+        // Ship Menu > Update Ships
         TitledPane updateShipsPane = new TitledPane();
         updateShipsPane.setText("Update Ships");
+        
+        // Ship Menu > Display All Ships
         TitledPane displayAllShips = new TitledPane();
         displayAllShips.setText("Display All Ships");
+        
+        // Ship Menu > Remove All Ships
         TitledPane removeAllShips = new TitledPane();
         removeAllShips.setText("Remove All Ships");
         
@@ -210,13 +236,76 @@ public class Window extends Application {
         monsterMenu.setText("Monster Menu");
         monsterMenu.setContent(monsterMenuAccordion);
         
-        // me
+        // aboutAccordion Items
+        TitledPane aboutPane = new TitledPane();
+        aboutPane.setText("Team");
+        
+        GridPane aboutGridPane = new GridPane();
+        aboutPane.setContent(aboutGridPane);
+        
+        Label aboutLabel = new Label();
+        aboutLabel.setText("Space Wizard\n"
+                + "Treasure Hunters\n"
+                + "CSE 1325-002\n"
+                + "April 28, 2015\n"
+                + "Name: Raith\n"
+                + "      Hamzard\n"
+                + "ID: 1001117012\n"
+                + "Name: Ryan\n"
+                + "      Rogers\n"
+                + "ID: 1000663599\n"
+                + "Name: Mason\n"
+                + "      Moreland\n"
+                + "ID: 1001059961\n\n");
+        aboutGridPane.addRow(0, aboutLabel);
+        
+        Button aboutButton = new Button("Popout");
+        aboutButton.setOnAction((ActionEvent event) -> {
+            final Stage dialog = new Stage();
+                dialog.initModality(Modality.APPLICATION_MODAL);
+                dialog.initOwner(primaryStage);
+                VBox dialogVbox = new VBox(20);
+                dialogVbox.getChildren().add(new Label(
+                        "Space Wizard Treasure Hunters\n"
+                        + "CSE 1325-002\n"
+                        + "April 28, 2015\n"
+                        + "Name: Raith Hamzard\n"
+                        + "ID: 1001117012\n"
+                        + "Name: Ryan Rogers\n"
+                        + "ID: 1000663599\n"
+                        + "Name: Mason Moreland\n"
+                        + "ID: 1001059961"));
+                Scene dialogScene = new Scene(dialogVbox, 200, 175);
+                dialog.setScene(dialogScene);
+                dialog.show();
+        });
+        aboutGridPane.addRow(1, aboutButton);
+        
+        // About > GUI
+        TitledPane guiPane = new TitledPane();
+        guiPane.setText("GUI");
+        guiPane.setContent(new Label("The GUI is done\n"
+                + "entirely with JavaFX,\n"
+                + "requires at least 3\n"
+                + "threads to run,\n"
+                + "but is still\n"
+                + "threadsafe for\n"
+                + "the movement AI."));
+        
+        // aboutAccordion
+        Accordion aboutAccordion = new Accordion();
+        aboutAccordion.getPanes().addAll(aboutPane, guiPane);
+        
+        // about
+        TitledPane about = new TitledPane();
+        about.setText("About");
+        about.setContent(aboutAccordion);
         
         // Menu Accordion
         Accordion menuAccordion = new Accordion();
         rightPane.add(menuAccordion, 0, 1);
         menuAccordion.getPanes().addAll(fileMenu, shipMenu, portMenu, 
-                monsterMenu);
+                monsterMenu, about);
         
         // Map population
         loadMapToMap();
