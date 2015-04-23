@@ -69,16 +69,24 @@ public class Window extends Application {
         
         // Setup
         GridPane root = new GridPane(); // Creating window pane
-        Scene scene = new Scene(root, 0, 0); // Creating scene
+        Scene scene = new Scene(root, 1280, 720); // Creating scene
         primaryStage.setScene(scene); // Adding scene to window pane
         primaryStage.setTitle("Wizard Treasure Chase"); // Setting title
+        
+        // Static GUI Code
+        primaryStage.setWidth(1280);
+        primaryStage.setHeight(720);
+        iconSize = 720/rows;
+        
+        /*
+        // Dynamic Fullscreen Code
         primaryStage.setFullScreen(true);
         primaryStage.setX(Screen.getPrimary().getBounds().getMinX());
         primaryStage.setY(Screen.getPrimary().getBounds().getMinY());
         primaryStage.setWidth(Screen.getPrimary().getBounds().getWidth());
         primaryStage.setHeight(Screen.getPrimary().getBounds().getHeight());
-        
         iconSize = Screen.getPrimary().getBounds().getHeight()/rows;
+                */
         
         // Images
         water = new Image("FILE:water.png");
@@ -123,13 +131,11 @@ public class Window extends Application {
         // Exit button
         TitledPane exitPane = new TitledPane();
         exitPane.setText("Exit");
-        /*
-        Button exitButton = new Button();
+        Button exitButton = new Button("Exit");
         exitButton.setOnAction((ActionEvent event) -> {
-            Thread.currentThread().
-            event.consume();
+            System.err.println("Exit button pressed");
         });
-                */
+        exitPane.contentProperty().set(exitButton);
         
         // fileMenuAccordion
         Accordion fileMenuAccordion = new Accordion();
