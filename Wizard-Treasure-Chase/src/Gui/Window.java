@@ -21,13 +21,20 @@ import javafx.stage.Stage;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollBar;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 
@@ -119,8 +126,9 @@ public class Window extends Application {
         imageView.setPreserveRatio(true);
         imageView.setSmooth(true);
         imageView.setCache(true);
-        Button logoButton = new Button();
+        Label logoButton = new Label();
         logoButton.setPadding(new Insets(0, 0, 0, 0));
+        logoButton.setStyle("-fx-base: #000000;");
         logoButton.setGraphic(imageView);
         rightPane.add(logoButton, 0, 0);
         
@@ -129,39 +137,65 @@ public class Window extends Application {
         output = "Sample output text";
         Label outputLabel = new Label();
         outputLabel.setText(output);
-        rightPane.add(outputLabel, 0, 2);
+        ScrollPane outputScroll = new ScrollPane();
+        outputScroll.setContent(outputLabel);
+        rightPane.add(outputScroll, 0, 2);
         
-        // fileMenuAccordion Items
+        // File Menu
+        // File Menu > Open
         TitledPane openPane = new TitledPane();
+        openPane.setStyle("-fx-base: #003380ff;");
         openPane.setText("Open");
-        TitledPane closePane = new TitledPane();
-        closePane.setText("Close");
+        
+        // File Menu > Snap Shot
         TitledPane snapShotPane = new TitledPane();
+        snapShotPane.setStyle("-fx-base: #003380ff;");
         snapShotPane.setText("Snap Shot");
         
-        // Exit button
-        TitledPane exitPane = new TitledPane();
-        exitPane.setText("Exit");
+        // File Menu Area
+        GridPane fileMenuArea = new GridPane();
+        fileMenuArea.setPadding(new Insets(0, 0, 0, 0));
+        
+        // File Menu > Button Area > Close button
+        Button closeButton = new Button("Close");
+        closeButton.setPrefWidth(1000);
+        closeButton.setStyle("-fx-base: #003380ff;");
+        closeButton.setAlignment(Pos.BASELINE_LEFT);
+        closeButton.setOnAction((ActionEvent event) -> {
+            System.err.println("Close button pressed");
+        });
+        fileMenuArea.addRow(1, closeButton);
+        
+        // File Menu > Button Area > Exit button
         Button exitButton = new Button("Exit");
+        exitButton.setPrefWidth(1000);
+        exitButton.setStyle("-fx-base: #003380ff;");
+        exitButton.setAlignment(Pos.BASELINE_LEFT);
         exitButton.setOnAction((ActionEvent event) -> {
             System.err.println("Exit button pressed");
         });
-        exitPane.contentProperty().set(exitButton);
+        fileMenuArea.addRow(2, exitButton);
         
         // fileMenuAccordion
         Accordion fileMenuAccordion = new Accordion();
-        fileMenuAccordion.getPanes().addAll(openPane, closePane, 
-                snapShotPane, exitPane);
+        fileMenuAccordion.getPanes().addAll(openPane, 
+                snapShotPane);
+        fileMenuArea.addRow(0, fileMenuAccordion);
         
         // fileMenu
         TitledPane fileMenu = new TitledPane();
+        fileMenu.setStyle("-fx-base: #3771c8ff;");
         fileMenu.setText("File Menu");
-        fileMenu.setContent(fileMenuAccordion);
+        fileMenu.setContent(fileMenuArea);
         
         // Ship Menu
-        // Ship Menu > Generate Ships
+        GridPane shipMenuArea = new GridPane();
+        shipMenuArea.setPadding(new Insets(0, 0, 0, 0));
+        
+        // Ship Menu > Accordion > Generate Ships
         TitledPane generateShipsPane = new TitledPane();
         generateShipsPane.setText("Generate Ships");
+        generateShipsPane.setStyle("-fx-base: #003380ff;");
         GridPane generateShipMenu = new GridPane();
         generateShipsPane.setContent(generateShipMenu);
         Label generateShipLabel = new Label("Number of ships to generate:");
@@ -171,74 +205,138 @@ public class Window extends Application {
         Button generateShipButton = new Button("Generate");
         generateShipMenu.addRow(2, generateShipButton);
         
-        // Ship Menu > Update Ships
+        // Ship Menu > Accordion > Update Ships
         TitledPane updateShipsPane = new TitledPane();
+        updateShipsPane.setStyle("-fx-base: #003380ff;");
         updateShipsPane.setText("Update Ships");
         
-        // Ship Menu > Display All Ships
-        TitledPane displayAllShips = new TitledPane();
-        displayAllShips.setText("Display All Ships");
-        
-        // Ship Menu > Remove All Ships
-        TitledPane removeAllShips = new TitledPane();
-        removeAllShips.setText("Remove All Ships");
-        
-        // shipMenuAccordion
+        // Ship Menu > Accordion
         Accordion shipMenuAccordion = new Accordion();
-        shipMenuAccordion.getPanes().addAll(generateShipsPane, updateShipsPane, 
-                displayAllShips, removeAllShips);
+        shipMenuAccordion.getPanes().addAll(generateShipsPane, updateShipsPane);
+        shipMenuArea.addRow(0, shipMenuAccordion);
+        
+        // Ship Menu > Button Area > Display All Ships
+        Button displayAllShips = new Button("Display All Ships");
+        displayAllShips.setPrefWidth(1000);
+        displayAllShips.setStyle("-fx-base: #003380ff;");
+        displayAllShips.setAlignment(Pos.BASELINE_LEFT);
+        shipMenuArea.addRow(1, displayAllShips);
+        
+        // Ship Menu > Button Area > Remove All Ships
+        Button removeAllShips = new Button("Remove All Ships");
+        removeAllShips.setPrefWidth(1000);
+        removeAllShips.setStyle("-fx-base: #003380ff;");
+        removeAllShips.setAlignment(Pos.BASELINE_LEFT);
+        shipMenuArea.addRow(2, removeAllShips);
         
         // shipMenu
         TitledPane shipMenu = new TitledPane();
-        shipMenu.setText("Dock Menu");
-        shipMenu.setContent(shipMenuAccordion);
+        shipMenu.setText("Ship Menu");
+        shipMenu.setStyle("-fx-base: #3771c8ff;");
+        shipMenu.setContent(shipMenuArea);
         
-        // portMenuAccordion Items
+        // Port Menu
+        GridPane portMenuArea = new GridPane();
+        portMenuArea.setPadding(new Insets(0, 0, 0, 0));
+       
+        // Port Menu > Accordion > Unload Ship
         TitledPane unloadShipPane = new TitledPane();
+        unloadShipPane.setStyle("-fx-base: #003380ff;");
         unloadShipPane.setText("Unload Ship");
-        TitledPane updateDockPane = new TitledPane();
-        updateDockPane.setText("Update Dock");
-        TitledPane displayAllDocks = new TitledPane();
-        displayAllDocks.setText("Display All Docks");
-        TitledPane displayAllCargos = new TitledPane();
-        displayAllCargos.setText("Display All Cargos");
         
-        // portMenuAccordion
+        // Port Menu > Accordion > Update Dock
+        TitledPane updateDockPane = new TitledPane();
+        updateDockPane.setStyle("-fx-base: #003380ff;");
+        updateDockPane.setText("Update Dock");
+        
+        // Port Menu > Accordion
         Accordion portMenuAccordion = new Accordion();
-        portMenuAccordion.getPanes().addAll(unloadShipPane, updateDockPane, 
-                displayAllDocks, displayAllCargos);
+        portMenuAccordion.getPanes().addAll(unloadShipPane, updateDockPane);
+        portMenuArea.addRow(0, portMenuAccordion);
+        
+        // Port Menu > Display All Docks
+        Button displayAllDocks = new Button("Display All Docks");
+        displayAllDocks.setPrefWidth(1000);
+        displayAllDocks.setStyle("-fx-base: #003380ff;");
+        displayAllDocks.setAlignment(Pos.BASELINE_LEFT);
+        displayAllDocks.setOnAction((ActionEvent event) -> {
+            System.err.println("Display all docks button pressed");
+        });
+        portMenuArea.addRow(1, displayAllDocks);
+        
+        // Port Menu > Display All Cargos
+        Button displayAllCargos = new Button("Display All Cargos");
+        displayAllCargos.setPrefWidth(1000);
+        displayAllCargos.setStyle("-fx-base: #003380ff;");
+        displayAllCargos.setAlignment(Pos.BASELINE_LEFT);
+        displayAllCargos.setOnAction((ActionEvent event) -> {
+            System.err.println("Display all cargos button pressed");
+        });
+        portMenuArea.addRow(2, displayAllCargos);
         
         // portMenu
         TitledPane portMenu = new TitledPane();
         portMenu.setText("Port Menu");
-        portMenu.setContent(portMenuAccordion);
+        portMenu.setStyle("-fx-base: #3771c8ff;");
+        portMenu.setContent(portMenuArea);
+        // End of Port Menu
         
-        // portMenuAccordion Items
-        TitledPane generateMonstersPane = new TitledPane();
-        generateMonstersPane.setText("Generate Monsters");
-        TitledPane updateMonstersPane = new TitledPane();
-        updateMonstersPane.setText("Update Monsters");
-        TitledPane displayAllMonstersPane = new TitledPane();
-        displayAllMonstersPane.setText("Display All Monsters");
-        TitledPane removeAllMonstersPane = new TitledPane();
-        removeAllMonstersPane.setText("Remove All Monsters");
-        TitledPane summonGodzillaPane = new TitledPane();
-        summonGodzillaPane.setText("Summon Godzilla");
+        // Monster Menu
+        GridPane monsterMenuArea = new GridPane();
+        monsterMenuArea.setPadding(new Insets(0, 0, 0, 0));
         
-        // portMenuAccordion
-        Accordion monsterMenuAccordion = new Accordion();
-        monsterMenuAccordion.getPanes().addAll(generateMonstersPane, 
-                updateMonstersPane, displayAllMonstersPane, 
-                removeAllMonstersPane, summonGodzillaPane);
-        
-        // portMenu
+        // Monster Menu
         TitledPane monsterMenu = new TitledPane();
         monsterMenu.setText("Monster Menu");
-        monsterMenu.setContent(monsterMenuAccordion);
+        monsterMenu.setStyle("-fx-base: #3771c8ff;");
+        monsterMenu.setContent(monsterMenuArea);
+        
+        // Monster Menu > Accordion > Generate Monsters
+        TitledPane generateMonstersPane = new TitledPane();
+        generateMonstersPane.setStyle("-fx-base: #003380ff;");
+        generateMonstersPane.setText("Generate Monsters");
+        
+        // Monster Menu > Accordion > Update Monsters
+        TitledPane updateMonstersPane = new TitledPane();
+        updateMonstersPane.setStyle("-fx-base: #003380ff;");
+        updateMonstersPane.setText("Update Monsters");
+        
+        // Monster Menu > Summon Godzilla
+        TitledPane summonGodzilla = new TitledPane();
+        summonGodzilla.setStyle("-fx-base: #003380ff;");
+        summonGodzilla.setText("Summon Godzilla");
+        
+        // Monster Menu > Accordion
+        Accordion monsterMenuAccordion = new Accordion();
+        monsterMenuAccordion.getPanes().addAll(generateMonstersPane, 
+                updateMonstersPane, summonGodzilla);
+        monsterMenuArea.addRow(0, monsterMenuAccordion);
+        
+        // Monster Menu Buttons
+        // Monster Menu > Display All Monsters
+        Button displayAllMonsters = new Button("Display All Monsters");
+        displayAllMonsters.setPrefWidth(1000);
+        displayAllMonsters.setStyle("-fx-base: #003380ff;");
+        displayAllMonsters.setAlignment(Pos.BASELINE_LEFT);
+        displayAllMonsters.setOnAction((ActionEvent event) -> {
+            System.err.println("Display all mosnters button pressed");
+        });
+        monsterMenuArea.addRow(1, displayAllMonsters);
+        
+        // Monster Menu > Remove All Monsters
+        Button removeAllMonsters = new Button("Remove All Monsters");
+        removeAllMonsters.setPrefWidth(1000);
+        removeAllMonsters.setStyle("-fx-base: #003380ff;");
+        removeAllMonsters.setAlignment(Pos.BASELINE_LEFT);
+        removeAllMonsters.setOnAction((ActionEvent event) -> {
+            System.err.println("Remove all monsters button pressed");
+        });
+        monsterMenuArea.addRow(2, removeAllMonsters);
         
         // aboutAccordion Items
         TitledPane aboutPane = new TitledPane();
         aboutPane.setText("Team");
+        aboutPane.setStyle("-fx-base: #003380ff;");
         
         GridPane aboutGridPane = new GridPane();
         aboutPane.setContent(aboutGridPane);
@@ -260,6 +358,8 @@ public class Window extends Application {
         aboutGridPane.addRow(0, aboutLabel);
         
         Button aboutButton = new Button("Popout");
+        aboutButton.setStyle("-fx-base: #003380ff;");
+        aboutButton.setPrefWidth(1000);
         aboutButton.setOnAction((ActionEvent event) -> {
             final Stage dialog = new Stage();
                 dialog.initModality(Modality.APPLICATION_MODAL);
@@ -283,6 +383,7 @@ public class Window extends Application {
         
         // About > GUI
         TitledPane guiPane = new TitledPane();
+        guiPane.setStyle("-fx-base: #003380ff;");
         guiPane.setText("GUI");
         guiPane.setContent(new Label("The GUI is done\n"
                 + "entirely with JavaFX,\n"
@@ -299,6 +400,7 @@ public class Window extends Application {
         // about
         TitledPane about = new TitledPane();
         about.setText("About");
+        about.setStyle("-fx-base: #3771c8ff;");
         about.setContent(aboutAccordion);
         
         // Menu Accordion
