@@ -38,7 +38,7 @@ public class RelayMaster
      */
     public synchronized void fireRelay(MoveEvent evt)
     {
-        System.err.println("fireRelay()");
+        //System.err.println("fireRelay()");
         Object[] listeners = listenerList.getListenerList();
         
         //Only gives the odds indexes
@@ -47,6 +47,6 @@ public class RelayMaster
             //Calls the event occurance method
             ((RelayListener)listeners[i]).onRelay(evt);
         }
-        System.err.println("fireRelay() end");
+        //System.err.println("fireRelay() end");
     }
 }

@@ -11,6 +11,8 @@ import Ship.*;
 import java.awt.Event;
 import Gui.*;
 import Map.MapItem;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 
 /**
@@ -67,28 +69,32 @@ public class TaskMaster implements RelayListener
     public void testLines()
     {
         
-        
-        //TODO: remove all this test code
+        // Relay Creation
         RelayMaster relay = new RelayMaster();
-        
         relay.addListener(this);
-
-        Location loc = new Location(9, 9);
         
-        ShipBasic ship1 = new ShipBasic(new Location(1, 1), relay, 1000);
+        // Sleeping while GUI loads
+        try {
+            Thread.sleep(10000); // DEFAULT: 10 seconds
+        } catch (InterruptedException ex) {
+            System.err.println("TaskMaster failed to sleep while GUI loaded");
+        }
         
-        ship1.setTarget(new Location(20, 20));
+        // DEBUG Ship Creation
+        ShipBasic debugShip = new ShipBasic(new Location(1, 1), relay, 1000);
+        debugShip.setTarget(new Location(10, 10));
+        debugShip.setMentalState("chase");
+        debugShip.inform(map.getSurroundings(new Location(1, 1)));
+        new Thread(debugShip).start();
         
-        Thread thread1 = new Thread(ship1);
-        
-        ship1.inform(map.getSurroundings(new Location(1, 1)));
-        
-        ship1.setMentalState("chase");
-        
-        thread1.start();
-        //thread2.start();
-//
-//        ship.start();
+        /*
+        // DEBUG Second Ship Creation
+        ShipBasic debugShip2 = new ShipBasic(new Location(5, 5), relay, 1000);
+        debugShip2.setTarget(new Location(36, 36));
+        debugShip2.setMentalState("chase");
+        debugShip2.inform(map.getSurroundings(new Location(5, 5)));
+        new Thread(debugShip).start();
+        */
     }
 
     @Override
@@ -100,7 +106,7 @@ public class TaskMaster implements RelayListener
     @Override
     public synchronized void onRelay(MoveEvent evt)
     {
-        System.err.println("TM: onRelay()");
+        // System.err.println("TM: onRelay()");
         
 //        //TODO: erase this test
 //        for(Location location: evt.getMovePriority())
@@ -117,7 +123,7 @@ public class TaskMaster implements RelayListener
             if(location == null)
             {
                 System.err.println("null location");
-                ( (Entity) evt.getSource()).inform(map.getSurroundings(location));
+                ((Entity)evt.getSource()).inform(map.getSurroundings(location));
                 break;
             }
             
@@ -131,11 +137,9 @@ public class TaskMaster implements RelayListener
                 //TODO: intead of casting to Entity, cast to specific object type
                 map.placeMapItem((MapItem)evt.getSource(), location);
                 //TODO: Ryan: Remove casting on next line
-                System.err.println("TM: tell window to move item");
 //                System.err.println((ShipBasic)evt.getSource());
                 
 //                System.err.println(ship);
-                System.err.println(location + " for update");
                 window.mapMove((ShipBasic)evt.getSource(), location);
                 //Return on move made
                 break;

@@ -65,7 +65,7 @@ public class Entity extends MapItem implements Runnable
     @Override
     public Location getLocation()
     {
-        super.getLocation();
+        return super.getLocation();
         //TODO: protect location by using relative values
 //        //northern location (could be null)
 //        Location north = neighbors.values().iterator().next();
@@ -80,7 +80,6 @@ public class Entity extends MapItem implements Runnable
 //        {
 //            if(south != null)
 //        }
-        return null;
     }
     
     
@@ -188,7 +187,7 @@ public class Entity extends MapItem implements Runnable
     protected void sleep()
     {
 //        printStackTrace();
-        System.err.println("SLEEP()");
+        //System.err.println("SLEEP()");
         try
         {
             //Puts the Thread to sleep to space cycles out
@@ -257,7 +256,7 @@ public class Entity extends MapItem implements Runnable
     //TODO: fix this shit
     protected void chaseTarget()
     {
-        System.err.println("chaseTarget()");
+        //System.err.println("chaseTarget()");
         //double heading = Map.MapAbstract.bearing(location, target);
         
         //?
@@ -319,9 +318,8 @@ public class Entity extends MapItem implements Runnable
     @Override
     public void run()
     {
-//        System.err.println("RUN()");
+        System.err.println("Ship thread has started");
         running = true;
         sleep();
-        
     }
 }

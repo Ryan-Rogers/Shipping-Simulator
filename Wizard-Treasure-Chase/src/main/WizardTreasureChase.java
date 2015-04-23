@@ -23,12 +23,6 @@ public class WizardTreasureChase
     public static void main(String[] args)
     {
         
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(WizardTreasureChase.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
         TaskMaster tM = new TaskMaster();
         tM.testLines();
         

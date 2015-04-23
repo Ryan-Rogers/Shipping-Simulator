@@ -36,7 +36,7 @@ public class MapItem
      * Produces a pointer to the MapItem's location object
      * @return 
      */
-    protected Location getLocation()
+    public Location getLocation()
     {
         return location;
     }
