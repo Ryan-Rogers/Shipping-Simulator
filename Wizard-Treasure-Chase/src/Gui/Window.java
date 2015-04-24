@@ -570,12 +570,7 @@ public class Window extends Application {
     
 // Adding move to queue
     public void mapMove(Moveable ship, Location location) {
-<<<<<<< HEAD
-        
-        // new JFXPanel();
-=======
 
->>>>>>> Ryan-Develop
         Platform.runLater(() -> {
             shipList.add(ship);
             locationList.add(location);
