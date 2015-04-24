@@ -50,6 +50,7 @@ public class Window extends Application {
     static char[][] mapList = new char[rows][columns]; // [row][column]
     static ConcurrentLinkedQueue<Moveable> shipList 
             = new ConcurrentLinkedQueue<>();
+    static ConcurrentLinkedQueue<Moveable> mapObjects;
     static ConcurrentLinkedQueue<Location> locationList 
             = new ConcurrentLinkedQueue<>();
     static ArrayList<ArrayList<Button>> mapButtons = new ArrayList<>();
@@ -567,7 +568,8 @@ public class Window extends Application {
     
 // Adding move to queue
     public void mapMove(Moveable ship, Location location) {
-        //new JFXPanel();
+        
+        // new JFXPanel();
         Platform.runLater(() -> {
             shipList.add(ship);
             locationList.add(location);
