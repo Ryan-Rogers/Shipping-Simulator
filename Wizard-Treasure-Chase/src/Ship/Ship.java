@@ -1,3 +1,5 @@
+package Ship;
+
 /************************
  * Class : CSE 1325-002 * 
  * Name  : Raith Hamzah *
@@ -6,6 +8,7 @@
  ************************
  * @author Raith Hamzah *
  *************************/
+import Gui.Window;
 import Map.Location;
 /**
  * The Ship class, with which the main 
@@ -16,7 +19,7 @@ import Map.Location;
  * the main class to judge against the
  * dock class. 
  */
-public class Ship implements Moveable
+public class Ship extends Moveable
 {
     /** Class data members */
     protected String name;
@@ -32,29 +35,37 @@ public class Ship implements Moveable
     
     protected Cargo cargo;
     
-    /** Default class constructor. */
-    public Ship()
-    {
-        super(location, relay, sleepTime);
-        this.name        = "Zenda";
-        this.countryReg  = "Ruritania";
-        this.transponder = 0;
-        this.capacity    = 10;
-        this.length      = 90;
-        this.beam        = 10;
-        this.draft       = 5;
-        this.shipSymbol  = 'S';
-        this.cargo       = new Cargo();
-    }
+    //No empty params allowable
+//    /** Default class constructor. */
+//    public Ship()
+//    {
+//        super(location, relay, sleepTime);
+//        this.name        = "Zenda";
+//        this.countryReg  = "Ruritania";
+//        this.transponder = 0;
+//        this.capacity    = 10;
+//        this.length      = 90;
+//        this.beam        = 10;
+//        this.draft       = 5;
+//        this.shipSymbol  = 'S';
+//        this.cargo       = new Cargo();
+//    }
     
     /**
      * Class constructor based on string input.
      * @param input
+     * @param newLocation
+     * @param newDestination
+     * @param newWindow
+     * @param newGuiThread
      */
-    public Ship(String input, Location location, long sleepTime)
+    public Ship(String input, Location newLocation, Location newDestination, 
+            Window newWindow, Thread newGuiThread)
     {
-        super(location, relay, sleepTime);
-        String[] tokens = input.split(",",7);
+        super(newLocation, newDestination, newWindow, newGuiThread);
+        type = "Ship";
+        
+        String[] tokens = input.split(",");
         
         if (tokens.length == 8)
         {
@@ -80,33 +91,33 @@ public class Ship implements Moveable
         }
     }
 
-    /**
-     * Parameter Based Constructor.
-     * @param name
-     * @param countryReg
-     * @param shipSymbol
-     * @param transponder
-     * @param capacity
-     * @param length
-     * @param beam
-     * @param draft
-     * @param longitute
-     * @param latitude
-     * @param cargo
-     */
-    public Ship(String name, String countryReg, char shipSymbol, long transponder, double capacity, double length, double beam, double draft, double longitute, double latitude, Cargo cargo, Location location, long sleepTime)
-    {
-        //super(location, sleepTime);
-        this.name = name;
-        this.countryReg = countryReg;
-        this.shipSymbol = shipSymbol;
-        this.transponder = transponder;
-        this.capacity = capacity;
-        this.length = length;
-        this.beam = beam;
-        this.draft = draft;
-        this.cargo = cargo;
-    }
+//    /**
+//     * Parameter Based Constructor.
+//     * @param name
+//     * @param countryReg
+//     * @param shipSymbol
+//     * @param transponder
+//     * @param capacity
+//     * @param length
+//     * @param beam
+//     * @param draft
+//     * @param longitute
+//     * @param latitude
+//     * @param cargo
+//     */
+//    public Ship(String name, String countryReg, char shipSymbol, long transponder, double capacity, double length, double beam, double draft, double longitute, double latitude, Cargo cargo, Location location, long sleepTime)
+//    {
+//        //super(location, sleepTime);
+//        this.name = name;
+//        this.countryReg = countryReg;
+//        this.shipSymbol = shipSymbol;
+//        this.transponder = transponder;
+//        this.capacity = capacity;
+//        this.length = length;
+//        this.beam = beam;
+//        this.draft = draft;
+//        this.cargo = cargo;
+//    }
     
     
     
@@ -287,19 +298,19 @@ public class Ship implements Moveable
     public void display()
     {
         System.out.println("---------------------------");
-        System.out.printf("Cargo Ship: %s\n", this.name);
+        System.out.printf("%s: %s\n", type,this.name);
         System.out.printf("Country of Origin: %s\n", this.countryReg);
         System.out.printf("Transponder: %d\n", this.transponder);
         System.out.printf("Length: %2.2f metres\n", this.length);
         System.out.printf("Beam: %2.2f metres\n", this.beam);
         System.out.printf("Draft: %2.2f metres\n", this.draft);       
-        System.out.printf("Capacity: %2.2f tons\n", this.capacity);       
-        System.out.printf("Location: (%f, %f)\n", this.location.getX(), this.location.getY());
+        System.out.printf("Barrel Capacity: 700000\n");       
+        System.out.printf("Location: (%s)\n", currentLocation.toString());
         System.out.printf("Cargo: ");
         if (this.cargo != null)
             this.cargo.display();
         else
-            System.out.printf("Empty\n");
+            System.out.printf("This %s is empty.\n", type);
     }
     
     @Override
@@ -308,7 +319,7 @@ public class Ship implements Moveable
         String returnString = String.format("Cargo Ship,%s,%s,%d,%f,%f,%f,%f,&f,&f", 
                 this.name, this.countryReg, this.transponder,
                 this.length, this.beam, this.draft, this.capacity,
-                this.location.getX(), this.location.getY());
+                this.currentLocation.getX(), this.currentLocation.getY());
         if (this.cargo != null)
         {
             returnString = returnString + "," + this.cargo.toString();

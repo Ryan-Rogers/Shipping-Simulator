@@ -4,7 +4,7 @@
  * Members: Mason Moreland, Ryan Rogers, Raith Hamzah
  */
 
-package MoveableObject;
+package Ship;
 
 import Gui.Window;
 import Map.Location;
@@ -16,20 +16,28 @@ import Map.Location;
 public class Moveable implements Runnable {
     
 // Variables
-    Location currentLocation;
-    Location destination = null;
-    boolean atDestination;
-    Window guiWindow;
-    Thread guiThread;
-    int sleepTime = 500;
+    protected Location currentLocation;
+    protected Location destination;
+    protected boolean atDestination;
+    protected Window guiWindow;
+    protected Thread guiThread;
+    protected int sleepTime;
+    
+    /**
+     * Case sensitive representation of the class name 
+     */
+    protected String type;
     
 // Constructor
     public Moveable(Location newLocation, Location newDestination, 
             Window newWindow, Thread newGuiThread) {
+        destination = null;
+        sleepTime = 500;
         currentLocation = newLocation;
         destination = newDestination;
         guiWindow = newWindow;
         guiThread = newGuiThread;
+        type = "Moveable";
     }
 
 // Runnable

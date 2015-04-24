@@ -1,3 +1,5 @@
+package Ship;
+
 /***************************
  * Class : CSE 1325-002    * 
  * Name  : Raith Hamzah    *
@@ -19,7 +21,6 @@ public class FileHandler
 {
     private Scanner in;
     private Formatter out;
-    private MapConverter convert;
     
     /**
      * Class Constructor.
@@ -28,7 +29,6 @@ public class FileHandler
     {
         this.in  = new Scanner(System.in);
         this.out = new Formatter(System.out);
-        convert = new MapConverter();
     }
     
     /**
@@ -39,7 +39,8 @@ public class FileHandler
      * @throws TypeMismatchException
      * @throws Exception
      */
-    public void setUp(Map other) throws FileNotFoundException, NullPointerException, TypeMismatchException, Exception
+    public void setUp(/* TODO: Add Parameters here */) 
+    throws FileNotFoundException, NullPointerException, TypeMismatchException, Exception
     {
         File setUpFile = new File("complex.map.txt");
         Scanner read = new Scanner(setUpFile);
@@ -52,7 +53,7 @@ public class FileHandler
                 mapGrid[currRow][currColumn] = tokens[2].charAt(0);
 
             }
-        other.setOriginalMap(mapGrid);
+        //other.setOriginalMap(mapGrid);
         read.close();
     }
             
