@@ -1,3 +1,4 @@
+package Ship;
 /************************
  * Class : CSE 1325-002 * 
  * Name  : Raith Hamzah *
