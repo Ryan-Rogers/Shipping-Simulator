@@ -22,7 +22,6 @@ public class WindowThread extends Thread {
     
     @Override
     public void run() {
-        System.err.println("Window thread has started");
         threadWindow.main((String[]) null);
         System.err.println("Window thread has stopped");
     }

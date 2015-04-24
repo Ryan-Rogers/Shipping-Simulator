@@ -38,8 +38,8 @@ public class Window extends Application {
     
 // DEFAULT Variables
     static double iconSize = 20;
-    static int rows = 36;
-    static int columns = 54;
+    static final int rows = 36;
+    static final int columns = 54;
     
 // Variables
     static char[][] terrainMap; // [row][column]
@@ -55,7 +55,9 @@ public class Window extends Application {
 // Images
     static Image water;
     static Image land;
-    static Image ship;
+    static Image oilTanker;
+    static Image containerShip;
+    static Image cargoShip;
     static Image entity;
     static Image logo;
     
@@ -67,17 +69,17 @@ public class Window extends Application {
     
 // Window
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage windowStage) {
         
     // Setup
         GridPane root = new GridPane(); // Creating window pane
         Scene scene = new Scene(root, 1280, 720); // Creating scene
-        primaryStage.setScene(scene); // Adding scene to window pane
-        primaryStage.setTitle("Wizard Treasure Chase"); // Setting title
+        windowStage.setScene(scene); // Adding scene to window pane
+        windowStage.setTitle("Wizard Treasure Chase"); // Setting title
         
     // Static GUI Code
-        primaryStage.setWidth(1280);
-        primaryStage.setHeight(720);
+        windowStage.setWidth(1280);
+        windowStage.setHeight(720);
         iconSize = 720/rows;
         
         /*
@@ -93,7 +95,9 @@ public class Window extends Application {
     // Images
         water = new Image("FILE:water.png");
         land = new Image("FILE:land.png");
-        ship = new Image("FILE:ship.png");
+        oilTanker = new Image("FILE:oiltanker.png");
+        containerShip = new Image("FILE:containership.png");
+        cargoShip = new Image("FILE:cargoship.png");
         entity = new Image("FILE:entity.png");
         logo = new Image("FILE:logo.png");
         
@@ -182,7 +186,7 @@ public class Window extends Application {
         exitButton.setStyle("-fx-base: #003380ff;");
         exitButton.setAlignment(Pos.BASELINE_LEFT);
         exitButton.setOnAction((ActionEvent event) -> {
-            System.err.println("Exit button pressed");
+            windowStage.close();
         });
         fileMenuArea.addRow(2, exitButton);
         
@@ -391,7 +395,7 @@ public class Window extends Application {
         aboutButton.setOnAction((ActionEvent event) -> {
             final Stage dialog = new Stage();
                 dialog.initModality(Modality.APPLICATION_MODAL);
-                dialog.initOwner(primaryStage);
+                dialog.initOwner(windowStage);
                 VBox dialogVbox = new VBox(20);
                 dialogVbox.getChildren().add(new Label(
                         "Space Wizard Treasure Hunters\n"
@@ -443,7 +447,7 @@ public class Window extends Application {
         createMapButtons();
         populateMapPane();
         
-        primaryStage.show(); // Setting window to be visible
+        windowStage.show(); // Setting window to be visible
     }
     
 // Populates mapPane with mapButtons
@@ -558,7 +562,7 @@ public class Window extends Application {
                 Location newLocation = locationList.remove();
                 mapButtons.get(newLocation.getY())
                         .get(newLocation.getX())
-                        .setGraphic(customImageView(ship));
+                        .setGraphic(customImageView(oilTanker));
                 
                 Location previousLocation = currentShip.getLocation();
                 if(currentShip.getLocation().getX() != newLocation.getX()
@@ -605,7 +609,7 @@ public class Window extends Application {
             return land;
         }
         if("S".equals(String.valueOf(type))) {
-            return ship;
+            return oilTanker;
         }
         return entity; // No image exists for the given char
     }

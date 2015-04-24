@@ -10,8 +10,6 @@ import Gui.Window;
 import Gui.WindowThread;
 import Map.Location;
 import MoveableObject.Moveable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Ryan Rogers

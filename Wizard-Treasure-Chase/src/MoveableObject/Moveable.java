@@ -57,49 +57,47 @@ public class Moveable implements Runnable {
             // Calculating differenecs in x's and y's
                 xDifference = currentLocation.getX() - destination.getX();
                 yDifference = currentLocation.getY() - destination.getY();
-                
-            // Moveable is farther from destination x than y
-                if(xDifference * xDifference > yDifference * yDifference) {
-                    
-                // Moveable is to the right of destination
-                    if(currentLocation.getX() > destination.getX()) {
-                        
-                    // Moving moveable left
-                        guiWindow.mapMove(this, new Location(
-                                currentLocation.getX() - 1, 
-                                currentLocation.getY()));
-                    
-                // Moveable is to the left of destination
+            
+                // Moveable is farther from destination x than y
+                    if((xDifference * xDifference) > (yDifference * yDifference)) {
+
+                    // Moveable is to the right of destination
+                        if(currentLocation.getX() > destination.getX()) {
+
+                        // Moving moveable left
+                            moveMe(-1, 0); // x - 1, y
+
+                    // Moveable is to the left of destination
+                        } else {
+
+                        // Moving moveable right
+                            moveMe(1, 0); // x + 1, y
+                        }
+
+                // Moveable is farther from destination y than x
                     } else {
-                        
-                    // Moving moveable right
-                        guiWindow.mapMove(this, new Location(
-                                currentLocation.getX() + 1, 
-                                currentLocation.getY()));
+
+                    // Moveable is above destination
+                        if(currentLocation.getY() > destination.getY()) {
+
+                        // Moving moveable down
+                            moveMe(0, -1); // x, y - 1
+
+                    // Moveable is below destination
+                        } else {
+
+                        // Moving moveable up
+                            moveMe(0, 1); // x, y + 1
+                        }
                     }
-                    
-            // Moveable is farther from destination y than x
-                } else {
-                    
-                // Moveable is above destination
-                    if(currentLocation.getY() > destination.getY()) {
-                        
-                    // Moving moveable down
-                        guiWindow.mapMove(this, new Location(
-                                currentLocation.getX(), 
-                                currentLocation.getY() - 1));
-                        
-                // Moveable is below destination
-                    } else {
-                        
-                    // Moving moveable up
-                        guiWindow.mapMove(this, new Location(
-                                currentLocation.getX(),
-                                currentLocation.getY() + 1));
-                    }
-                }
             }
         }
+    }
+    
+// Call Window to Move Ship
+    private void moveMe(int byX, int byY) {
+        guiWindow.mapMove(this, new Location(currentLocation.getX() + byX, 
+                currentLocation.getY() + byY));
     }
     
 // Set Destination
