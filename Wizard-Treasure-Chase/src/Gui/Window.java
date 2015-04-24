@@ -36,6 +36,10 @@ import javafx.stage.Modality;
 // Application
 public class Window extends Application {
     
+    public static final int MENU_WIDTH = 1000;
+    
+    GridPane rightPane;
+    
 // DEFAULT Variables
     static double iconSize = 20;
     static final int rows = 36;
@@ -109,11 +113,17 @@ public class Window extends Application {
         mapPane.setMinHeight(iconSize*rows);
         
     // Right Pane
-        GridPane rightPane = new GridPane();
+        rightPane = new GridPane();
+        
         rightPane.setAlignment(Pos.TOP_RIGHT);
-        rightPane.setMinWidth(iconSize*columns*0.15625);
+        //rightPane.setMinWidth(iconSize*columns*0.15625);
+        
         rightPane.setStyle("-fx-background-color: #000000;"); // Black
         rightPane.setMinHeight(iconSize*rows);
+        rightPane.setLayoutX(MENU_WIDTH);
+        rightPane.setMaxWidth(MENU_WIDTH);
+        
+        
         root.add(rightPane, 1, 0);
         
     // Logo
@@ -134,7 +144,8 @@ public class Window extends Application {
         Label outputLabel = new Label();
         outputLabel.setText(output);
         outputLabel.setAlignment(Pos.TOP_LEFT);
-        outputLabel.setPrefSize(1000, 1000);
+        outputLabel.setPrefSize(MENU_WIDTH, 1000);
+        outputLabel.setMaxWidth(MENU_WIDTH);
         logoButton.setStyle("-fx-background-color: #000000;"); // Black
         ScrollPane outputScroll = new ScrollPane();
         outputScroll.setContent(outputLabel);
@@ -173,7 +184,8 @@ public class Window extends Application {
         
     // File Menu > Button Area > Close button
         Button closeButton = new Button("Close");
-        closeButton.setPrefWidth(1000);
+        closeButton.setPrefWidth(MENU_WIDTH);
+        closeButton.setMaxWidth(MENU_WIDTH);
         closeButton.setStyle("-fx-base: #003380ff;");
         closeButton.setAlignment(Pos.BASELINE_LEFT);
         closeButton.setOnAction((ActionEvent event) -> {
@@ -183,7 +195,8 @@ public class Window extends Application {
         
     // File Menu > Button Area > Exit button
         Button exitButton = new Button("Exit");
-        exitButton.setPrefWidth(1000);
+        exitButton.setPrefWidth(MENU_WIDTH);
+        exitButton.setMaxWidth(MENU_WIDTH);
         exitButton.setStyle("-fx-base: #003380ff;");
         exitButton.setAlignment(Pos.BASELINE_LEFT);
         exitButton.setOnAction((ActionEvent event) -> {
@@ -233,14 +246,16 @@ public class Window extends Application {
         
     // Ship Menu > Button Area > Display All Ships
         Button displayAllShips = new Button("Display All Ships");
-        displayAllShips.setPrefWidth(1000);
+        displayAllShips.setPrefWidth(MENU_WIDTH);
+        displayAllShips.setMaxWidth(MENU_WIDTH);
         displayAllShips.setStyle("-fx-base: #003380ff;");
         displayAllShips.setAlignment(Pos.BASELINE_LEFT);
         shipMenuArea.addRow(1, displayAllShips);
         
     // Ship Menu > Button Area > Remove All Ships
         Button removeAllShips = new Button("Remove All Ships");
-        removeAllShips.setPrefWidth(1000);
+        removeAllShips.setPrefWidth(MENU_WIDTH);
+        removeAllShips.setMaxWidth(MENU_WIDTH);
         removeAllShips.setStyle("-fx-base: #003380ff;");
         removeAllShips.setAlignment(Pos.BASELINE_LEFT);
         shipMenuArea.addRow(2, removeAllShips);
@@ -272,7 +287,8 @@ public class Window extends Application {
         
     // Port Menu > Display All Docks
         Button displayAllDocks = new Button("Display All Docks");
-        displayAllDocks.setPrefWidth(1000);
+        displayAllDocks.setPrefWidth(MENU_WIDTH);
+        displayAllDocks.setMaxWidth(MENU_WIDTH);
         displayAllDocks.setStyle("-fx-base: #003380ff;");
         displayAllDocks.setAlignment(Pos.BASELINE_LEFT);
         displayAllDocks.setOnAction((ActionEvent event) -> {
@@ -282,7 +298,8 @@ public class Window extends Application {
         
     // Port Menu > Display All Cargos
         Button displayAllCargos = new Button("Display All Cargos");
-        displayAllCargos.setPrefWidth(1000);
+        displayAllCargos.setPrefWidth(MENU_WIDTH);
+        displayAllCargos.setMaxWidth(MENU_WIDTH);
         displayAllCargos.setStyle("-fx-base: #003380ff;");
         displayAllCargos.setAlignment(Pos.BASELINE_LEFT);
         displayAllCargos.setOnAction((ActionEvent event) -> {
@@ -343,7 +360,8 @@ public class Window extends Application {
     // Monster Menu Buttons
     // Monster Menu > Display All Monsters
         Button displayAllMonsters = new Button("Display All Monsters");
-        displayAllMonsters.setPrefWidth(1000);
+        displayAllMonsters.setPrefWidth(MENU_WIDTH);
+        displayAllMonsters.setMaxWidth(MENU_WIDTH);
         displayAllMonsters.setStyle("-fx-base: #003380ff;");
         displayAllMonsters.setAlignment(Pos.BASELINE_LEFT);
         displayAllMonsters.setOnAction((ActionEvent event) -> {
@@ -353,7 +371,8 @@ public class Window extends Application {
         
     // Monster Menu > Remove All Monsters
         Button removeAllMonsters = new Button("Remove All Monsters");
-        removeAllMonsters.setPrefWidth(1000);
+        removeAllMonsters.setPrefWidth(MENU_WIDTH);
+        removeAllMonsters.setMaxWidth(MENU_WIDTH);
         removeAllMonsters.setStyle("-fx-base: #003380ff;");
         removeAllMonsters.setAlignment(Pos.BASELINE_LEFT);
         removeAllMonsters.setOnAction((ActionEvent event) -> {
@@ -392,7 +411,8 @@ public class Window extends Application {
     // About > Team > Popout
         Button aboutButton = new Button("Popout");
         aboutButton.setStyle("-fx-base: #003380ff;");
-        aboutButton.setPrefWidth(1000);
+        aboutButton.setPrefWidth(MENU_WIDTH);
+        aboutButton.setMaxWidth(MENU_WIDTH);
         aboutButton.setOnAction((ActionEvent event) -> {
             final Stage dialog = new Stage();
                 dialog.initModality(Modality.APPLICATION_MODAL);
@@ -439,6 +459,7 @@ public class Window extends Application {
         
     // Menu Accordion
         Accordion menuAccordion = new Accordion();
+        
         rightPane.add(menuAccordion, 0, 1);
         menuAccordion.getPanes().addAll(fileMenu, shipMenu, portMenu, 
                 monsterMenu, about);
@@ -547,7 +568,11 @@ public class Window extends Application {
     
 // Adding move to queue
     public void mapMove(Moveable ship, Location location) {
+<<<<<<< HEAD
         // new JFXPanel();
+=======
+        //new JFXPanel();
+>>>>>>> Mason-3-Dev
         Platform.runLater(() -> {
             shipList.add(ship);
             locationList.add(location);
