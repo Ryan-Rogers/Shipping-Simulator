@@ -63,7 +63,7 @@ public class Window extends Application {
     
 // Application loop
     public void main(String[] args) {
-        System.err.println("The gui has started");
+        System.err.println("The gui is loading...");
         launch(args); // Launching application
     }
     
