@@ -46,6 +46,7 @@ public class Window extends Application {
     static char[][] mapList = new char[rows][columns]; // [row][column]
     static ConcurrentLinkedQueue<Moveable> shipList 
             = new ConcurrentLinkedQueue<>();
+    static ConcurrentLinkedQueue<Moveable> mapObjects;
     static ConcurrentLinkedQueue<Location> locationList 
             = new ConcurrentLinkedQueue<>();
     static ArrayList<ArrayList<Button>> mapButtons = new ArrayList<>();
