@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -39,6 +38,8 @@ public class Window extends Application {
     public static final int MENU_WIDTH = 1000;
     
     GridPane rightPane;
+    
+    ScrollPane outputScroll;
     
 // DEFAULT Variables
     static double iconSize = 20;
@@ -147,8 +148,9 @@ public class Window extends Application {
         outputLabel.setPrefSize(MENU_WIDTH, 1000);
         outputLabel.setMaxWidth(MENU_WIDTH);
         logoButton.setStyle("-fx-background-color: #000000;"); // Black
-        ScrollPane outputScroll = new ScrollPane();
+        outputScroll = new ScrollPane();
         outputScroll.setContent(outputLabel);
+        outputScroll.setPrefHeight(300);
         rightPane.add(outputScroll, 0, 2);
         
     // File Menu
@@ -568,11 +570,7 @@ public class Window extends Application {
     
 // Adding move to queue
     public void mapMove(Moveable ship, Location location) {
-<<<<<<< HEAD
-        // new JFXPanel();
-=======
-        //new JFXPanel();
->>>>>>> Mason-3-Dev
+
         Platform.runLater(() -> {
             shipList.add(ship);
             locationList.add(location);
