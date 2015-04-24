@@ -546,7 +546,7 @@ public class Window extends Application {
     
 // Adding move to queue
     public void mapMove(Moveable ship, Location location) {
-        new JFXPanel();
+        // new JFXPanel();
         Platform.runLater(() -> {
             shipList.add(ship);
             locationList.add(location);
