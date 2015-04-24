@@ -7,8 +7,6 @@
  * @author Raith Hamzah *
  *************************/
 import Map.Location;
-import Creature.Entity;
-import ThreadMaster.RelayMaster;
 /**
  * The Ship class, with which the main 
  * body of the program dictates.
@@ -18,7 +16,7 @@ import ThreadMaster.RelayMaster;
  * the main class to judge against the
  * dock class. 
  */
-public class Ship extends Entity
+public class Ship implements Moveable
 {
     /** Class data members */
     protected String name;
@@ -35,7 +33,7 @@ public class Ship extends Entity
     protected Cargo cargo;
     
     /** Default class constructor. */
-    public Ship(Location location, RelayMaster relay, long sleepTime)
+    public Ship()
     {
         super(location, relay, sleepTime);
         this.name        = "Zenda";
@@ -53,7 +51,7 @@ public class Ship extends Entity
      * Class constructor based on string input.
      * @param input
      */
-    public Ship(String input, Location location, RelayMaster relay, long sleepTime)
+    public Ship(String input, Location location, long sleepTime)
     {
         super(location, relay, sleepTime);
         String[] tokens = input.split(",",7);
@@ -96,9 +94,9 @@ public class Ship extends Entity
      * @param latitude
      * @param cargo
      */
-    public Ship(String name, String countryReg, char shipSymbol, long transponder, double capacity, double length, double beam, double draft, double longitute, double latitude, Cargo cargo, Location location, RelayMaster relay, long sleepTime)
+    public Ship(String name, String countryReg, char shipSymbol, long transponder, double capacity, double length, double beam, double draft, double longitute, double latitude, Cargo cargo, Location location, long sleepTime)
     {
-        super(location, relay, sleepTime);
+        //super(location, sleepTime);
         this.name = name;
         this.countryReg = countryReg;
         this.shipSymbol = shipSymbol;
