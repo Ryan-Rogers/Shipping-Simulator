@@ -111,7 +111,8 @@ public class Window extends Application {
     // Map pane
         mapPane.setAlignment(Pos.BOTTOM_LEFT);
         root.add(mapPane, 0, 0);
-        mapPane.setMinWidth(iconSize*columns);
+        mapPane.setPrefWidth(720);
+        mapPane.setPrefHeight(720);
         mapPane.setMinHeight(iconSize*rows);
         
     // Right Pane
@@ -122,7 +123,6 @@ public class Window extends Application {
         
         rightPane.setStyle("-fx-background-color: #000000;"); // Black
         rightPane.setMinHeight(iconSize*rows);
-        rightPane.setLayoutX(MENU_WIDTH);
         rightPane.setMaxWidth(MENU_WIDTH);
         
         
@@ -343,8 +343,8 @@ public class Window extends Application {
     // Monster Menu > Summon Godzilla
         TitledPane summonGodzilla = new TitledPane();
         summonGodzilla.setText("Summon Godzilla");
+        summonGodzilla.setStyle("-fx-base: #003380ff;");
         /*
-        summonGodzillaMenu.setStyle("-fx-base: #003380ff;");
         GridPane openMenu = new GridPane();
         summonGodzillaPane.setContent(summonGodzillaMenu);
         Label openLabel = new Label("Location X:");
@@ -412,7 +412,7 @@ public class Window extends Application {
         aboutLabel.setWrapText(true);
         aboutLabel.setAlignment(Pos.TOP_LEFT);
         aboutLabel.setMinHeight(200); // Lines * Font
-        aboutGridPane.addRow(0, aboutLabel);
+        aboutGridPane.addRow(1, aboutLabel);
         
     // About > Team > Popout
         Button aboutButton = new Button("Popout");
@@ -438,7 +438,7 @@ public class Window extends Application {
                 dialog.setScene(dialogScene);
                 dialog.show();
         });
-        aboutGridPane.addRow(1, aboutButton);
+        aboutGridPane.addRow(0, aboutButton);
         
     // About > GUI
         TitledPane guiPane = new TitledPane();
