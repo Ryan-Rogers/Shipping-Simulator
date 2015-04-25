@@ -310,6 +310,9 @@ public class Window extends Application {
         TitledPane updateShipsPane = new TitledPane();
         updateShipsPane.setStyle("-fx-base: #003380ff;");
         updateShipsPane.setText("Update Ships");
+        GridPane updateShip = new GridPane();
+        updateShip.setStyle("-fx-base: #003380ff");
+        updateShipsPane.setContent(updateShip);
         
     // Ship Menu > Accordion
         Accordion shipMenuAccordion = new Accordion();
@@ -750,7 +753,7 @@ public class Window extends Application {
                 newMonster = new Leviathan(this, windowThread);
             } else {
                 newMonster = new Kraken(this, windowThread);
-                new MediaPlayer(krakenSound).play();
+                // new MediaPlayer(krakenSound).play();
             }
         }
         newMonster.setLocation(new Location(random.nextInt(54), 
