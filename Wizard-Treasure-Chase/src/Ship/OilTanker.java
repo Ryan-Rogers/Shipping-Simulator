@@ -10,7 +10,7 @@ import Gui.Window;
  *******************************
  * @author Raith Hamzah        *
  *******************************/
-public class OilTanker  extends CargoShip
+public class OilTanker  extends Ship
 {
 
     /**
@@ -26,7 +26,14 @@ public class OilTanker  extends CargoShip
     {
         super(input, newLocation, newDestination, newWindow, newGuiThread);
 
-        this.shipSymbol = 'T';
+        this.cSym = 'T';
+        this.type = "OilTanker";
+    }
+
+    public OilTanker(Window newWindow, Thread newGuiThread)
+    {
+        super(newWindow, newGuiThread);
+        this.cSym = 'T';
         this.type = "OilTanker";
     }
 }

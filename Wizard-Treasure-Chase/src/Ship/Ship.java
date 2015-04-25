@@ -19,12 +19,12 @@ import Map.Location;
  * the main class to judge against the
  * dock class. 
  */
-public class CargoShip extends Moveable
+public class Ship extends Moveable
 {
     /** Class data members */
     protected String name;
     protected String countryReg;
-    protected char shipSymbol;
+    
     
     protected long transponder;
     
@@ -47,9 +47,11 @@ public class CargoShip extends Moveable
 //        this.length      = 90;
 //        this.beam        = 10;
 //        this.draft       = 5;
-//        this.shipSymbol  = 'S';
+//        this.cSym  = 'S';
 //        this.cargo       = new Cargo();
 //    }
+    
+    
     
     /**
      * Class constructor based on string input.
@@ -59,11 +61,12 @@ public class CargoShip extends Moveable
      * @param newWindow
      * @param newGuiThread
      */
-    public CargoShip(String input, Location newLocation, Location newDestination, 
+    public Ship(String input, Location newLocation, Location newDestination, 
             Window newWindow, Thread newGuiThread)
     {
         super(newLocation, newDestination, newWindow, newGuiThread);
         type = "Ship";
+        cSym = 'S';
         
         String[] tokens = input.split(",");
         
@@ -91,11 +94,23 @@ public class CargoShip extends Moveable
         }
     }
 
+    /**
+     * Generates a random ship.
+     * @param newWindow
+     * @param newGuiThread 
+     */
+    public Ship(Window newWindow, Thread newGuiThread)
+    {
+        super(newWindow, newGuiThread);
+        type = "Ship";
+        cSym = 'S';
+    }
+    
 //    /**
 //     * Parameter Based Constructor.
 //     * @param name
 //     * @param countryReg
-//     * @param shipSymbol
+//     * @param cSym
 //     * @param transponder
 //     * @param capacity
 //     * @param length
@@ -105,12 +120,12 @@ public class CargoShip extends Moveable
 //     * @param latitude
 //     * @param cargo
 //     */
-//    public Ship(String name, String countryReg, char shipSymbol, long transponder, double capacity, double length, double beam, double draft, double longitute, double latitude, Cargo cargo, Location location, long sleepTime)
+//    public Ship(String name, String countryReg, char cSym, long transponder, double capacity, double length, double beam, double draft, double longitute, double latitude, Cargo cargo, Location location, long sleepTime)
 //    {
 //        //super(location, sleepTime);
 //        this.name = name;
 //        this.countryReg = countryReg;
-//        this.shipSymbol = shipSymbol;
+//        this.cSym = cSym;
 //        this.transponder = transponder;
 //        this.capacity = capacity;
 //        this.length = length;
@@ -278,7 +293,7 @@ public class CargoShip extends Moveable
      */
     public char getShipSymbol() 
     {
-        return shipSymbol;
+        return cSym;
     }
 
     /**
@@ -287,7 +302,7 @@ public class CargoShip extends Moveable
      */
     public void setShipSymbol(char symbol) 
     {
-        this.shipSymbol = symbol;
+        this.cSym = symbol;
     }
     
     
@@ -330,5 +345,11 @@ public class CargoShip extends Moveable
         }
         return returnString;
     }
+
+//    @Override
+//    protected Location getValidSpawn()
+//    {
+//        TODO: Ryan: notice this
+//    }
     
 }

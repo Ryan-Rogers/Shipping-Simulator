@@ -22,6 +22,7 @@ public class Moveable implements Runnable {
     protected Window guiWindow;
     protected Thread guiThread;
     protected int sleepTime;
+    protected char cSym;
     
     /**
      * Case sensitive representation of the class name 
@@ -32,12 +33,36 @@ public class Moveable implements Runnable {
     public Moveable(Location newLocation, Location newDestination, 
             Window newWindow, Thread newGuiThread) {
         destination = null;
-        sleepTime = 500;
+        sleepTime = 500; //TODO: have child classes set this by weight
         currentLocation = newLocation;
         destination = newDestination;
         guiWindow = newWindow;
         guiThread = newGuiThread;
         type = "Moveable";
+        cSym = 'E';
+    }
+
+    public Moveable(Window newWindow, Thread newGuiThread)
+    {
+        sleepTime = 500; //TODO: have child classes set this by weight
+        currentLocation = getValidSpawn();
+        destination = getValidDestination();
+        guiWindow = newWindow;
+        guiThread = newGuiThread;
+        type = "Moveable";
+        cSym = 'E';
+    }
+    
+    protected Location getValidSpawn()
+    {
+        System.err.println("getValidSpawn: defaults to (0,0)");
+        return new Location(0, 0);
+    }
+    
+    protected Location getValidDestination()
+    {
+        System.err.println("getValidDestination: defaults to 25,25");
+        return new Location(25, 25);
     }
 
 // Runnable
@@ -47,7 +72,7 @@ public class Moveable implements Runnable {
             
         // Loops while moveable is not at destination and GUI is open
             while((currentLocation.getX() != destination.getX()
-                    || currentLocation.getY() != destination.getY())
+                    && currentLocation.getY() != destination.getY())
                     && guiThread.isAlive()) {
                 
                 int xDifference; // Difference in current x and destination x

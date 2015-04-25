@@ -10,7 +10,7 @@ import Gui.Window;
  *******************************
  * @author Raith Hamzah        *
  *******************************/
-public class ContainerShip extends CargoShip
+public class ContainerShip extends Ship
 {
 
     /**
@@ -26,7 +26,16 @@ public class ContainerShip extends CargoShip
     {
         super(input, newLocation, newDestination, newWindow, newGuiThread);
 
-        this.shipSymbol = 'B';
+        this.cSym = 'B';
         this.type = "ContainerShip";
     }
+
+    public ContainerShip(Window newWindow, Thread newGuiThread)
+    {
+        super(newWindow, newGuiThread);
+        this.cSym = 'B';
+        this.type = "ContainerShip";
+    }
+    
+    
 }
