@@ -3,3 +3,5 @@ http://opengameart.org/content/ships-with-ripple-effect
 		containership.png
 		oiltanker.png
 		cargoship.png
+https://blurppy.files.wordpress.com/2014/03/godzilla-sea1500.jpg
+	godzilla.png

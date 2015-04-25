@@ -2,9 +2,13 @@
 package Gui;
 
 import Map.Location;
+import Ship.ContainerShip;
 import Ship.Moveable;
+import Ship.OilTanker;
+import Ship.Ship;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javafx.application.Application;
@@ -25,8 +29,11 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
+import javafx.stage.StageStyle;
 
 /**
  * @author Ryan Rogers
@@ -35,7 +42,7 @@ import javafx.stage.Modality;
 // Application
 public class Window extends Application {
     
-    public static final int MENU_WIDTH = 1000;
+    public static final int MENU_WIDTH = 200;
     
     GridPane rightPane;
     
@@ -51,13 +58,16 @@ public class Window extends Application {
     static char[][] mapList = new char[rows][columns]; // [row][column]
     static ConcurrentLinkedQueue<Moveable> shipList 
             = new ConcurrentLinkedQueue<>();
-    static ConcurrentLinkedQueue<Moveable> mapObjects;
+    static ConcurrentLinkedQueue<Moveable> mapObjects
+            = new ConcurrentLinkedQueue<>();
     static ConcurrentLinkedQueue<Location> locationList 
             = new ConcurrentLinkedQueue<>();
     static ArrayList<ArrayList<Button>> mapButtons = new ArrayList<>();
     static GridPane mapPane = new GridPane();
     static WindowThread windowThread;
     static Label outputLabel;
+    static ConcurrentLinkedQueue<Location> waterLocations 
+            = new ConcurrentLinkedQueue<>();
     
 // Images
     static Image water;
@@ -67,6 +77,7 @@ public class Window extends Application {
     static Image cargoShip;
     static Image entity;
     static Image logo;
+    static Image godzilla;
     
 // Application loop
     public void main(String[] args) {
@@ -82,22 +93,13 @@ public class Window extends Application {
         GridPane root = new GridPane(); // Creating window pane
         Scene scene = new Scene(root, 1280, 720); // Creating scene
         windowStage.setScene(scene); // Adding scene to window pane
+        windowStage.initStyle(StageStyle.UNDECORATED);
         windowStage.setTitle("Wizard Treasure Chase"); // Setting title
         
     // Static GUI Code
         windowStage.setWidth(1280);
         windowStage.setHeight(720);
-        iconSize = 720/rows;
-        
-        /*
-    // Dynamic Fullscreen Code
-        primaryStage.setFullScreen(true);
-        primaryStage.setX(Screen.getPrimary().getBounds().getMinX());
-        primaryStage.setY(Screen.getPrimary().getBounds().getMinY());
-        primaryStage.setWidth(Screen.getPrimary().getBounds().getWidth());
-        primaryStage.setHeight(Screen.getPrimary().getBounds().getHeight());
-        iconSize = Screen.getPrimary().getBounds().getHeight()/rows;
-                */
+        windowStage.show(); // Setting window to be visible
         
     // Images
         water = new Image("FILE:water.png");
@@ -107,25 +109,24 @@ public class Window extends Application {
         cargoShip = new Image("FILE:cargoship.png");
         entity = new Image("FILE:entity.png");
         logo = new Image("FILE:logo.png");
+        godzilla = new Image("FILE:godzilla.png");
         
     // Map pane
-        mapPane.setAlignment(Pos.BOTTOM_LEFT);
+        mapPane.setAlignment(Pos.TOP_LEFT);
         root.add(mapPane, 0, 0);
-        mapPane.setPrefWidth(720);
+        mapPane.setMaxWidth(1080);
+        mapPane.setMaxHeight(720);
+        mapPane.setMinWidth(1080);
+        mapPane.setMinHeight(720);
+        mapPane.setPrefWidth(1080);
         mapPane.setPrefHeight(720);
-        mapPane.setMinHeight(iconSize*rows);
         
     // Right Pane
         rightPane = new GridPane();
-        
         rightPane.setAlignment(Pos.TOP_RIGHT);
-        //rightPane.setMinWidth(iconSize*columns*0.15625);
-        
-        rightPane.setStyle("-fx-background-color: #000000;"); // Black
+        rightPane.setStyle("-fx-base: #3771c8ff;"); // light blue
         rightPane.setMinHeight(iconSize*rows);
         rightPane.setMaxWidth(MENU_WIDTH);
-        
-        
         root.add(rightPane, 1, 0);
         
     // Logo
@@ -134,28 +135,38 @@ public class Window extends Application {
         imageView.setPreserveRatio(true);
         imageView.setSmooth(true);
         imageView.setCache(true);
+        imageView.setStyle("-fx-base: #3771c8ff;"); // light blue
         Label logoButton = new Label();
-        logoButton.setPadding(new Insets(0, 0, 0, 0));
-        logoButton.setStyle("-fx-background-color: #000000;"); // Black
+        logoButton.setPadding(new Insets(15, 15, 15, 15));
+        logoButton.setAlignment(Pos.CENTER);
+        logoButton.setStyle("-fx-base: #3771c8ff;"); // light blue
+        logoButton.setStyle("-fx-background-color: #3771c8ff;"); // Dark blue
         logoButton.setGraphic(imageView);
         rightPane.add(logoButton, 0, 0);
         
     // Text Area
         outputLabel = new Label("Welcome!");
         outputLabel.setAlignment(Pos.TOP_LEFT);
-        outputLabel.setPrefSize(MENU_WIDTH, 1000);
-        outputLabel.setMaxWidth(MENU_WIDTH);
-        logoButton.setStyle("-fx-background-color: #000000;"); // Black
+        outputLabel.setPrefWidth(MENU_WIDTH - 14);
+        outputLabel.setMaxWidth(MENU_WIDTH - 14);
+        outputLabel.setMinWidth(MENU_WIDTH - 14);
+        outputLabel.setPrefHeight(1000);
+        outputLabel.setWrapText(true);
+        outputLabel.setStyle("-fx-base: #3771c8ff; -fx-text-fill: white; -fx-background-color: #003380ff;");
+        outputLabel.setTextFill(Paint.valueOf("000"));
         outputScroll = new ScrollPane();
         outputScroll.setContent(outputLabel);
-        outputScroll.setPrefHeight(300);
+        outputScroll.setPrefHeight(1000);
         rightPane.add(outputScroll, 0, 2);
         
     // File Menu
+        GridPane fileMenuArea = new GridPane();
+        fileMenuArea.setPadding(new Insets(0, 0, 0, 0));
+        
     // File Menu > Open
         TitledPane openPane = new TitledPane();
         openPane.setText("Open");
-        openPane.setStyle("-fx-base: #003380ff;");
+        openPane.setStyle("-fx-base: #003380ff;"); // Dark blue
         GridPane openMenu = new GridPane();
         openPane.setContent(openMenu);
         Label openLabel = new Label("Filename:");
@@ -177,10 +188,6 @@ public class Window extends Application {
         snapShotMenu.addRow(1, snapShotText);
         Button snapShotButton = new Button("Save Snap Shot");
         snapShotMenu.addRow(2, snapShotButton);
-        
-    // File Menu Area
-        GridPane fileMenuArea = new GridPane();
-        fileMenuArea.setPadding(new Insets(0, 0, 0, 0));
         
     // File Menu > Button Area > Close button
         Button closeButton = new Button("Close");
@@ -212,7 +219,7 @@ public class Window extends Application {
         
     // fileMenu
         TitledPane fileMenu = new TitledPane();
-        fileMenu.setStyle("-fx-base: #3771c8ff;");
+        fileMenu.setStyle("-fx-base: #3771c8ff;"); // light blue
         fileMenu.setText("File Menu");
         fileMenu.setContent(fileMenuArea);
         
@@ -232,6 +239,13 @@ public class Window extends Application {
         TextField generateShipNumber = new TextField("10");
         generateShipMenu.addRow(1, generateShipNumber);
         Button generateShipButton = new Button("Generate");
+        generateShipButton.setOnAction((ActionEvent event) -> {
+            System.err.println("Generate ships button pressed");
+            for(int remaining = Integer.valueOf(generateShipNumber.getText())
+                    ; remaining > 0; remaining--) {
+                newRandomShip();
+            }
+        });
         generateShipMenu.addRow(2, generateShipButton);
         
     // Ship Menu > Accordion > Update Ships
@@ -252,9 +266,8 @@ public class Window extends Application {
         displayAllShips.setAlignment(Pos.BASELINE_LEFT);
         displayAllShips.setOnAction((ActionEvent event) -> {
             System.err.println("Display all ships button pressed");
-            // TODO: Ryan
-            // currentMapObjects = mapObjects.toArray();
-            // mapObjects.
+            mapObjects.forEach(Moveable 
+                    -> textOutput(Moveable.toString().split(",")));
         });
         shipMenuArea.addRow(1, displayAllShips);
         
@@ -398,8 +411,7 @@ public class Window extends Application {
         
     // About > Team
         Label aboutLabel = new Label();
-        aboutLabel.setText("Space Wizard\n"
-                + "Treasure Hunters\n"
+        aboutLabel.setText("Space Wizard Treasure Hunters\n"
                 + "CSE 1325-002\n"
                 + "April 28, 2015\n"
                 + "Name: Raith Hamzad\n"
@@ -407,23 +419,26 @@ public class Window extends Application {
                 + "Name: Ryan Rogers\n"
                 + "ID: 1000663599\n"
                 + "Name: Mason Moreland\n"
-                + "ID: 1001059961\n\n");
+                + "ID: 1001059961");
         aboutLabel.setTextAlignment(TextAlignment.LEFT);
         aboutLabel.setWrapText(true);
+        aboutLabel.setPadding(new Insets(5, 5, 5, 5));
         aboutLabel.setAlignment(Pos.TOP_LEFT);
-        aboutLabel.setMinHeight(200); // Lines * Font
+        aboutLabel.setMinHeight(170); // Lines * Font
         aboutGridPane.addRow(1, aboutLabel);
         
     // About > Team > Popout
         Button aboutButton = new Button("Popout");
         aboutButton.setStyle("-fx-base: #003380ff;");
         aboutButton.setPrefWidth(MENU_WIDTH);
+        aboutButton.setAlignment(Pos.TOP_LEFT);
         aboutButton.setMaxWidth(MENU_WIDTH);
         aboutButton.setOnAction((ActionEvent event) -> {
             final Stage dialog = new Stage();
                 dialog.initModality(Modality.APPLICATION_MODAL);
                 dialog.initOwner(windowStage);
                 VBox dialogVbox = new VBox(20);
+                dialogVbox.setStyle("-fx-base: #3771c8ff; -fx-text-fill: white; -fx-background-color: #003380ff;");
                 dialogVbox.getChildren().add(new Label(
                         "Space Wizard Treasure Hunters\n"
                         + "CSE 1325-002\n"
@@ -449,6 +464,7 @@ public class Window extends Application {
                 + "for the movement AI.");
         aboutGuiLabel.setTextAlignment(TextAlignment.LEFT);
         aboutGuiLabel.setWrapText(true);
+        aboutGuiLabel.setPadding(new Insets(5, 5, 5, 5));
         aboutGuiLabel.setAlignment(Pos.TOP_LEFT);
         aboutGuiLabel.setMinHeight(80); // Lines * Font
         guiPane.setContent(aboutGuiLabel);
@@ -475,12 +491,18 @@ public class Window extends Application {
         createMapButtons();
         populateMapPane();
         
-        windowStage.show(); // Setting window to be visible
     }
     
 // Add text to output area
     public void textOutput(String newOutput) {
-        outputLabel.setText(newOutput + "\n" + outputLabel.getText());
+        outputLabel.setText(newOutput + outputLabel.getText());
+    }
+    
+// Add text to output area to multiple lines
+    public void textOutput(String[] newOutput) {
+        for(int line = newOutput.length; line > 0; line--) {
+            outputLabel.setText(newOutput[line - 1] + outputLabel.getText());
+        }
     }
     
 // Populates mapPane with mapButtons
@@ -512,6 +534,9 @@ public class Window extends Application {
             column = Integer.parseInt(splitLine[0]);
             row = Integer.parseInt(splitLine[1]);
             mapList[row][column] = splitLine[2].charAt(0);
+            if(splitLine[2].charAt(0) == '.') {
+                waterLocations.add(new Location(column, row));
+            }
         }
         terrainMap = mapList;
     }
@@ -577,9 +602,31 @@ public class Window extends Application {
         }
     }
     
+// Creating a ship at a random watery location
+    public void newRandomShip() {
+        Moveable newShip;
+        Random random = new Random();
+        if(random.nextInt(3) == 0) {
+            newShip = new Ship(this, windowThread);
+        } else {
+            if(random.nextInt(2) == 0) {
+                newShip = new OilTanker(this, windowThread);
+            } else {
+                newShip = new ContainerShip(this, windowThread);
+            }
+        }
+        newShip.setLocation(new Location(random.nextInt(54), 
+                random.nextInt(36)));
+        newShip.setDestination(new Location(random.nextInt(54), 
+                random.nextInt(36)));
+        System.err.println("Random ship location: " + newShip.getLocation());
+        System.err.println("Random ship destination: " + newShip.getDestination());
+        mapObjects.add(newShip);
+        new Thread(newShip).start();
+    }
+    
 // Adding move to queue
     public void mapMove(Moveable ship, Location location) {
-        
         Platform.runLater(() -> {
             shipList.add(ship);
             locationList.add(location);
@@ -595,7 +642,7 @@ public class Window extends Application {
                 Location newLocation = locationList.remove();
                 mapButtons.get(newLocation.getY())
                         .get(newLocation.getX())
-                        .setGraphic(customImageView(oilTanker));
+                        .setGraphic(customImageView(currentShip.getCSym()));
                 
                 Location previousLocation = currentShip.getLocation();
                 if(currentShip.getLocation().getX() != newLocation.getX()
@@ -604,8 +651,8 @@ public class Window extends Application {
                     mapButtons.get(previousLocation.getY())
                             .get(previousLocation.getX())
                             .setGraphic(customImageView(terrainMap
-                            [previousLocation.getX()]
-                            [previousLocation.getY()]));
+                            [previousLocation.getY()]
+                            [previousLocation.getX()]));
                     currentShip.setLocation(newLocation);
                     }
                 return true;
@@ -641,8 +688,14 @@ public class Window extends Application {
         if("*".equals(String.valueOf(type))) {
             return land;
         }
-        if("S".equals(String.valueOf(type))) {
+        if("T".equals(String.valueOf(type))) {
             return oilTanker;
+        }
+        if("S".equals(String.valueOf(type))) {
+            return cargoShip;
+        }
+        if("B".equals(String.valueOf(type))) {
+            return containerShip;
         }
         return entity; // No image exists for the given char
     }

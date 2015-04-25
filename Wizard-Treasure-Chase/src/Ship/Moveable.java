@@ -19,6 +19,7 @@ public class Moveable implements Runnable {
     protected Location currentLocation;
     protected Location destination;
     protected boolean atDestination;
+    protected Moveable target;
     protected Window guiWindow;
     protected Thread guiThread;
     protected int sleepTime;
@@ -29,7 +30,7 @@ public class Moveable implements Runnable {
      */
     protected String type;
     
-// Constructor
+// New moveable with a destination
     public Moveable(Location newLocation, Location newDestination, 
             Window newWindow, Thread newGuiThread) {
         destination = null;
@@ -42,11 +43,24 @@ public class Moveable implements Runnable {
         cSym = 'E';
     }
 
+// New moveable without a destination
     public Moveable(Window newWindow, Thread newGuiThread)
     {
         sleepTime = 500; //TODO: have child classes set this by weight
-        currentLocation = getValidSpawn();
-        destination = getValidDestination();
+        currentLocation = new Location(0, 0); // DEBUG DEFAULT UNUSED
+        destination = new Location(25, 25); // DEBUG DEFAULT UNUSED
+        guiWindow = newWindow;
+        guiThread = newGuiThread;
+        type = "Moveable";
+        cSym = 'E';
+    }
+
+// New moveable with a target
+    public Moveable(Location newLocation, Moveable newTarget, Window newWindow,
+            Thread newGuiThread) {
+        sleepTime = 500; //TODO: have child classes set this by weight
+        currentLocation = newLocation;
+        target = newTarget;
         guiWindow = newWindow;
         guiThread = newGuiThread;
         type = "Moveable";
@@ -55,19 +69,20 @@ public class Moveable implements Runnable {
     
     protected Location getValidSpawn()
     {
-        System.err.println("getValidSpawn: defaults to (0,0)");
         return new Location(0, 0);
     }
     
     protected Location getValidDestination()
     {
-        System.err.println("getValidDestination: defaults to 25,25");
         return new Location(25, 25);
     }
 
 // Runnable
     @Override
     public void run() {
+        if(target != null) { // Moveable has a target
+            destination = target.getLocation();
+        }
         if(destination != null) { // Moveable has a destination
             
         // Loops while moveable is not at destination and GUI is open
@@ -144,33 +159,18 @@ public class Moveable implements Runnable {
         return currentLocation;
     }
 
+// Get Current Destination
+    public Location getDestination() {
+        return destination;
+    }
+
 // Set Location
     public void setLocation(Location newLocation) {
         currentLocation = newLocation;
     }
-}
-
-/*
-// Proof of concept movement code
-if(this.currentLocation.getX() == destination.getX()) { // current X == destination X
-    if(this.currentLocation.getY() == destination.getY()) { // curent Y == destination Y
-        atDestination = true; // Reached destination & breaking loop
-    } else { // current Y != destination Y
-        if(this.currentLocation.getY() > destination.getY()) { // current Y > destination Y
-            nextMove = new Location(this.currentLocation.getX(), this.currentLocation.getY() - 1);
-            guiWindow.mapMove(this, nextMove);
-        } else { // current Y < destination Y
-            nextMove = new Location(this.currentLocation.getX(), this.currentLocation.getY() + 1);
-            guiWindow.mapMove(this, nextMove);
-        }
-    }
-} else { // current X != destination X
-    if(this.currentLocation.getX() > destination.getX()) { // current X > destination X
-        nextMove = new Location(this.currentLocation.getX() - 1, this.currentLocation.getY());
-        guiWindow.mapMove(this, nextMove);
-    } else { // current X < destination X
-        nextMove = new Location(this.currentLocation.getX() + 1, this.currentLocation.getX());
-        guiWindow.mapMove(this, nextMove);
+    
+// Get cSym
+    public char getCSym() {
+        return cSym;
     }
 }
-*/
