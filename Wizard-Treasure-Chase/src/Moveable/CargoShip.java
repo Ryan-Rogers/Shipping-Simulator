@@ -1,4 +1,4 @@
-package Ship;
+package Moveable;
 
 /************************
  * Class : CSE 1325-002 * 
@@ -19,7 +19,7 @@ import Map.Location;
  * the main class to judge against the
  * dock class. 
  */
-public class Ship extends Moveable
+public class CargoShip extends Move
 {
     /** Class data members */
     protected String name;
@@ -61,7 +61,7 @@ public class Ship extends Moveable
      * @param newWindow
      * @param newGuiThread
      */
-    public Ship(String input, Location newLocation, Location newDestination, 
+    public CargoShip(String input, Location newLocation, Location newDestination, 
             Window newWindow, Thread newGuiThread)
     {
         super(newLocation, newDestination, newWindow, newGuiThread);
@@ -99,11 +99,19 @@ public class Ship extends Moveable
      * @param newWindow
      * @param newGuiThread 
      */
-    public Ship(Window newWindow, Thread newGuiThread)
+    public CargoShip(Window newWindow, Thread newGuiThread)
     {
         super(newWindow, newGuiThread);
         type = "Ship";
         cSym = 'S';
+        this.name        = "Zenda";
+        this.countryReg  = "Ruritania";
+        this.transponder = 0;
+        this.capacity    = 10;
+        this.length      = 90;
+        this.beam        = 10;
+        this.draft       = 5;
+        this.cargo       = new Cargo();
     }
     
 //    /**
@@ -326,6 +334,28 @@ public class Ship extends Moveable
             this.cargo.display();
         else
             System.out.printf("This %s is empty.\n", type);
+    }
+    
+    @Override
+    public String toStringArray() {
+        // String[] returnString;
+        String returnString = new String();
+        returnString += String.format("Cargo Ship: %s\n", this.name);
+        returnString += String.format("Country of Origin: %s\n", this.countryReg);
+        returnString += String.format("Transponder: %d\n", this.transponder);
+        returnString += String.format("Length: %2.2f metres\n", this.length);
+        returnString += String.format("Beam: %2.2f metres\n", this.beam);
+        returnString += String.format("Draft: %2.2f metres\n", this.draft);       
+        returnString += String.format("Capacity: %2.2f tons\n", this.capacity);       
+        returnString += String.format("Location: (%d, %d)\n", this.currentLocation.getX(), this.currentLocation.getY());
+        returnString += String.format("Cargo: ");
+        /*
+        if (this.cargo != null)
+            returnString += this.cargo.display();
+        else
+            returnString += String.format("Empty\n");
+                */
+        return returnString;
     }
     
     @Override

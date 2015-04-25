@@ -4,7 +4,7 @@
  * Members: Mason Moreland, Ryan Rogers, Raith Hamzah
  */
 
-package Ship;
+package Moveable;
 
 import Gui.Window;
 import Map.Location;
@@ -13,13 +13,13 @@ import Map.Location;
  * @author Ryan Rogers
  */
 
-public class Moveable implements Runnable {
+public class Move implements Runnable {
     
 // Variables
     protected Location currentLocation;
     protected Location destination;
     protected boolean atDestination;
-    protected Moveable target;
+    protected Move target;
     protected Window guiWindow;
     protected Thread guiThread;
     protected int sleepTime;
@@ -31,7 +31,7 @@ public class Moveable implements Runnable {
     protected String type;
     
 // New moveable with a destination
-    public Moveable(Location newLocation, Location newDestination, 
+    public Move(Location newLocation, Location newDestination, 
             Window newWindow, Thread newGuiThread) {
         destination = null;
         sleepTime = 500; //TODO: have child classes set this by weight
@@ -44,7 +44,7 @@ public class Moveable implements Runnable {
     }
 
 // New moveable without a destination
-    public Moveable(Window newWindow, Thread newGuiThread)
+    public Move(Window newWindow, Thread newGuiThread)
     {
         sleepTime = 500; //TODO: have child classes set this by weight
         currentLocation = new Location(0, 0); // DEBUG DEFAULT UNUSED
@@ -56,7 +56,7 @@ public class Moveable implements Runnable {
     }
 
 // New moveable with a target
-    public Moveable(Location newLocation, Moveable newTarget, Window newWindow,
+    public Move(Location newLocation, Move newTarget, Window newWindow,
             Thread newGuiThread) {
         sleepTime = 500; //TODO: have child classes set this by weight
         currentLocation = newLocation;
@@ -172,5 +172,10 @@ public class Moveable implements Runnable {
 // Get cSym
     public char getCSym() {
         return cSym;
+    }
+    
+// toStringArray
+    public String toStringArray() {
+        return "Moveable\n";
     }
 }

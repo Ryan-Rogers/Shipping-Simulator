@@ -2,10 +2,13 @@
 package Gui;
 
 import Map.Location;
-import Ship.ContainerShip;
-import Ship.Moveable;
-import Ship.OilTanker;
-import Ship.Ship;
+import Moveable.ContainerShip;
+import Moveable.Kraken;
+import Moveable.Leviathan;
+import Moveable.Move;
+import Moveable.OilTanker;
+import Moveable.SeaSerpent;
+import Moveable.CargoShip;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
@@ -29,7 +32,6 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
@@ -56,9 +58,9 @@ public class Window extends Application {
 // Variables
     static char[][] terrainMap; // [row][column]
     static char[][] mapList = new char[rows][columns]; // [row][column]
-    static ConcurrentLinkedQueue<Moveable> shipList 
+    static ConcurrentLinkedQueue<Move> shipList 
             = new ConcurrentLinkedQueue<>();
-    static ConcurrentLinkedQueue<Moveable> mapObjects
+    static ConcurrentLinkedQueue<Move> mapObjects
             = new ConcurrentLinkedQueue<>();
     static ConcurrentLinkedQueue<Location> locationList 
             = new ConcurrentLinkedQueue<>();
@@ -69,15 +71,28 @@ public class Window extends Application {
     static ConcurrentLinkedQueue<Location> waterLocations 
             = new ConcurrentLinkedQueue<>();
     
-// Images
+// Files
+    static String fileName;
     static Image water;
     static Image land;
+    static Image landalt;
+    static Image sand;
     static Image oilTanker;
     static Image containerShip;
     static Image cargoShip;
     static Image entity;
     static Image logo;
     static Image godzilla;
+    static Image seaserpent;
+    static Image leviathan;
+    static Image kraken;
+    static Image dock;
+    static Image crane;
+    static Image pier;
+    static Image dockship;
+    static Image craneship;
+    static Image piership;
+    
     
 // Application loop
     public void main(String[] args) {
@@ -101,15 +116,31 @@ public class Window extends Application {
         windowStage.setHeight(720);
         windowStage.show(); // Setting window to be visible
         
-    // Images
-        water = new Image("FILE:water.png");
-        land = new Image("FILE:land.png");
-        oilTanker = new Image("FILE:oiltanker.png");
-        containerShip = new Image("FILE:containership.png");
-        cargoShip = new Image("FILE:cargoship.png");
-        entity = new Image("FILE:entity.png");
-        logo = new Image("FILE:logo.png");
-        godzilla = new Image("FILE:godzilla.png");
+    // Files
+        fileName = "complex";
+        String fileHeader = "FILE:";
+        String fileFooter = ".png";
+        String theme = "theme/past/";
+        entity = new Image(fileHeader + "entity" + fileFooter); // No theme
+        water = new Image(fileHeader + theme + "water" + fileFooter);
+        land = new Image(fileHeader + theme + "land" + fileFooter);
+        landalt = new Image(fileHeader + theme + "landalt" + fileFooter);
+        sand = new Image(fileHeader + theme + "sand" + fileFooter);
+        oilTanker = new Image(fileHeader + theme + "oiltanker" + fileFooter);
+        containerShip = new Image(fileHeader + theme + "containership" 
+                + fileFooter);
+        cargoShip = new Image(fileHeader + theme + "cargoship" + fileFooter);
+        logo = new Image(fileHeader + theme + "logo" + fileFooter);
+        godzilla = new Image(fileHeader + theme + "godzilla" + fileFooter);
+        seaserpent = new Image(fileHeader + theme + "seaserpent" + fileFooter);
+        leviathan = new Image(fileHeader + theme + "leviathan" + fileFooter);
+        kraken = new Image(fileHeader + theme + "kraken" + fileFooter);
+        dock = new Image(fileHeader + theme + "dock" + fileFooter);
+        crane = new Image(fileHeader + theme + "crane" + fileFooter);
+        pier = new Image(fileHeader + theme + "pier" + fileFooter);
+        dockship = new Image(fileHeader + theme + "shipdock" + fileFooter);
+        craneship = new Image(fileHeader + theme + "shipcrane" + fileFooter);
+        piership = new Image(fileHeader + theme + "shippier" + fileFooter);
         
     // Map pane
         mapPane.setAlignment(Pos.TOP_LEFT);
@@ -267,7 +298,7 @@ public class Window extends Application {
         displayAllShips.setOnAction((ActionEvent event) -> {
             System.err.println("Display all ships button pressed");
             mapObjects.forEach(Moveable 
-                    -> textOutput(Moveable.toString().split(",")));
+                    -> textOutput(Moveable.toStringArray()));
         });
         shipMenuArea.addRow(1, displayAllShips);
         
@@ -347,6 +378,22 @@ public class Window extends Application {
         TitledPane generateMonstersPane = new TitledPane();
         generateMonstersPane.setStyle("-fx-base: #003380ff;");
         generateMonstersPane.setText("Generate Monsters");
+        GridPane generateMonsterMenu = new GridPane();
+        generateMonstersPane.setContent(generateMonsterMenu);
+        Label generateMonsterLabel = new Label("Number of monsters to generate:");
+        generateMonsterMenu.addRow(0, generateMonsterLabel);
+        TextField generateMonsterNumber = new TextField("10");
+        generateMonsterMenu.addRow(1, generateMonsterNumber);
+        Button generateMonsterButton = new Button("Generate");
+        generateMonsterButton.setOnAction((ActionEvent event) -> {
+            System.err.println("Generate monsters button pressed");
+            for(int remaining = Integer.valueOf(generateMonsterNumber.getText())
+                    ; remaining > 0; remaining--) {
+                newRandomMonster();
+            }
+        });
+        generateMonsterMenu.addRow(2, generateMonsterButton);
+        
         
     // Monster Menu > Accordion > Update Monsters
         TitledPane updateMonstersPane = new TitledPane();
@@ -488,6 +535,7 @@ public class Window extends Application {
         
     // Map population
         loadMapToMap();
+        addSand();
         createMapButtons();
         populateMapPane();
         
@@ -495,13 +543,14 @@ public class Window extends Application {
     
 // Add text to output area
     public void textOutput(String newOutput) {
-        outputLabel.setText(newOutput + outputLabel.getText());
+        outputLabel.setText(newOutput + "\n" + outputLabel.getText());
     }
     
 // Add text to output area to multiple lines
     public void textOutput(String[] newOutput) {
         for(int line = newOutput.length; line > 0; line--) {
-            outputLabel.setText(newOutput[line - 1] + outputLabel.getText());
+            outputLabel.setText(newOutput[line - 1] + "\n" 
+                    + outputLabel.getText());
         }
     }
     
@@ -514,10 +563,46 @@ public class Window extends Application {
         }
     }
     
+// Add Sand to Terrain Map
+    public void addSand() {
+        for(int row = 1; row < 35; row++) {
+            for(int column = 1; column < 53; column++) {
+                if('*' == terrainMap[row][column]) {
+                    if('.' == terrainMap[row + 1][column]) {
+                        terrainMap[row][column] = 'o';
+                    }
+                    else if('.' == terrainMap[row - 1][column]) {
+                        terrainMap[row][column] = 'o';
+                    }
+                    else if('.' == terrainMap[row][column + 1]) {
+                        terrainMap[row][column] = 'o';
+                    }
+                    else if('.' == terrainMap[row][column - 1]) {
+                        terrainMap[row][column] = 'o';
+                    }
+                    /*
+                    // Diagonals
+                    else if('.' == terrainMap[row + 1][column + 1]) {
+                        terrainMap[row][column] = 'o';
+                    }
+                    else if('.' == terrainMap[row - 1][column - 1]) {
+                        terrainMap[row][column] = 'o';
+                    }
+                    else if('.' == terrainMap[row + 1][column - 1]) {
+                        terrainMap[row][column] = 'o';
+                    }
+                    else if('.' == terrainMap[row - 1][column + 1]) {
+                        terrainMap[row][column] = 'o';
+                    }
+                    */
+                }
+            }
+        }
+    }
+    
 // Creates loaded char map
     public void loadMapToMap() {
         Scanner mapReader = null;
-        String fileName = "complex";
         try {
             mapReader = new Scanner(new File(fileName + ".map.txt"));
         } catch(Exception e) {
@@ -604,10 +689,10 @@ public class Window extends Application {
     
 // Creating a ship at a random watery location
     public void newRandomShip() {
-        Moveable newShip;
+        Move newShip;
         Random random = new Random();
         if(random.nextInt(3) == 0) {
-            newShip = new Ship(this, windowThread);
+            newShip = new CargoShip(this, windowThread);
         } else {
             if(random.nextInt(2) == 0) {
                 newShip = new OilTanker(this, windowThread);
@@ -625,8 +710,31 @@ public class Window extends Application {
         new Thread(newShip).start();
     }
     
+// Creating a monster at a random watery location
+    public void newRandomMonster() {
+        Move newMonster;
+        Random random = new Random();
+        if(random.nextInt(3) == 0) {
+            newMonster = new SeaSerpent(this, windowThread);
+        } else {
+            if(random.nextInt(2) == 0) {
+                newMonster = new Leviathan(this, windowThread);
+            } else {
+                newMonster = new Kraken(this, windowThread);
+            }
+        }
+        newMonster.setLocation(new Location(random.nextInt(54), 
+                random.nextInt(36)));
+        newMonster.setDestination(new Location(random.nextInt(54), 
+                random.nextInt(36)));
+        System.err.println("Random monster location: " + newMonster.getLocation());
+        System.err.println("Random monster destination: " + newMonster.getDestination());
+        mapObjects.add(newMonster);
+        new Thread(newMonster).start();
+    }
+    
 // Adding move to queue
-    public void mapMove(Moveable ship, Location location) {
+    public void mapMove(Move ship, Location location) {
         Platform.runLater(() -> {
             shipList.add(ship);
             locationList.add(location);
@@ -638,7 +746,7 @@ public class Window extends Application {
     public static boolean mapUpdate() {
         if(!shipList.isEmpty()) { // Ships need to be updated
             if(!mapButtons.isEmpty()) { // GUI buttons are loaded
-                Moveable currentShip = shipList.remove();
+                Move currentShip = shipList.remove();
                 Location newLocation = locationList.remove();
                 mapButtons.get(newLocation.getY())
                         .get(newLocation.getX())
@@ -682,11 +790,19 @@ public class Window extends Application {
     
 // Converts a char to the appropriate Image
     public static Image charToImage(char type) {
+        Random random = new Random();
         if(".".equals(String.valueOf(type))) {
             return water;
         }
+        if("o".equals(String.valueOf(type))) {
+            return sand;
+        }
         if("*".equals(String.valueOf(type))) {
-            return land;
+            if(random.nextInt(6) > 0) {
+                return land;
+            } else {
+                return landalt;
+            }
         }
         if("T".equals(String.valueOf(type))) {
             return oilTanker;
@@ -696,6 +812,24 @@ public class Window extends Application {
         }
         if("B".equals(String.valueOf(type))) {
             return containerShip;
+        }
+        if("s".equals(String.valueOf(type))) {
+            return seaserpent;
+        }
+        if("L".equals(String.valueOf(type))) {
+            return leviathan;
+        }
+        if("K".equals(String.valueOf(type))) {
+            return kraken;
+        }
+        if("D".equals(String.valueOf(type))) {
+            return dock;
+        }
+        if("C".equals(String.valueOf(type))) {
+            return crane;
+        }
+        if("P".equals(String.valueOf(type))) {
+            return pier;
         }
         return entity; // No image exists for the given char
     }
@@ -732,7 +866,7 @@ public class Window extends Application {
     }
     
 // Returns mapMoveList
-    public ConcurrentLinkedQueue<Moveable> getMapMoveList() {
+    public ConcurrentLinkedQueue<Move> getMapMoveList() {
         return shipList;
     }
     
