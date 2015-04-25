@@ -1,7 +1,6 @@
 
 package Gui;
 
-import Map.FileHandler;
 import Map.Location;
 import Moveable.ContainerShip;
 import Moveable.Kraken;
@@ -10,13 +9,20 @@ import Moveable.Move;
 import Moveable.OilTanker;
 import Moveable.SeaSerpent;
 import Moveable.CargoShip;
+import Moveable.Crane;
+import Moveable.Dock;
+import Moveable.Pier;
 import Moveable.Port;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.application.Platform;
@@ -53,6 +59,29 @@ public class Window extends Application {
 
 // Window Variables
     public static final int MENU_WIDTH = 200; // DEFAULT
+
+    public ArrayList<Location> getWaterLocations()
+    {
+        ArrayList<Location> locations = new ArrayList<>();
+        
+        waterLocations.stream().forEach((lo) -> {
+            locations.add(lo);
+        });
+        
+        return locations;
+    }
+    
+//    public ArrayList<Location> getDockLocations()
+//    {
+//        ArrayList<Location> locations = new ArrayList<>();
+//        
+//        .stream().forEach((lo) -> {
+//            locations.add(lo);
+//        });
+//        
+//        return locations;
+//    }
+    
     GridPane rightPane;
     ScrollPane outputScroll;
     
@@ -74,7 +103,7 @@ public class Window extends Application {
     static GridPane mapPane = new GridPane();
     static WindowThread windowThread;
     static Label outputLabel;
-    static ConcurrentLinkedQueue<Location> waterLocations 
+    private static ConcurrentLinkedQueue<Location> waterLocations 
             = new ConcurrentLinkedQueue<>();
     static Port port = new Port();
     
@@ -546,6 +575,7 @@ public class Window extends Application {
         
     // Map population
         loadMapToMap();
+        loadPortToMap();
         addSand();
         createMapButtons();
         populateMapPane();
@@ -636,6 +666,61 @@ public class Window extends Application {
         terrainMap = mapList;
     }
     
+    public void loadPortToMap()
+    {
+        
+        FileReader portReader = null;
+        try {
+            portReader = new FileReader(new File(fileName + ".port.txt"));
+        } catch(Exception e) {
+            System.err.println(e);
+            System.err.println("Exception occured while loading map!");
+        }
+        
+        String str = "";
+        int c;
+        try {
+            while ((c = portReader.read()) != -1) {
+                str += (char) c;
+            }
+        } catch (IOException ex) {
+            System.err.println("loadPortToMap: Failed to read port.");
+        }
+        
+        String[] fLines = str.split("\n");
+        
+        String[] header = fLines[0].split(",");
+        //name = header[0];
+
+        int i = Integer.parseInt(header[1].substring(1)); //skips the leading space
+        //i += 1; //offset so that x is line #
+        for (int x = 1; x <= i; x++)
+        {
+            //System.err.println(i);
+            mapObjects.add(new Dock(fLines[x], this, windowThread));
+        }
+        //System.err.println(docks.size());
+
+        int y = Integer.parseInt(header[2]);
+        for (int x = i + 1; x <= (i + y); x++) {
+            mapObjects.add(new Crane(fLines[x], this, windowThread));
+        }
+        //System.err.println(docks.size());
+
+        int u = Integer.parseInt(header[3]);
+        for (int x = i + y + 1; x <= (i + y + u); x++) {
+            mapObjects.add(new Pier(fLines[x], this, windowThread));
+        }
+        
+        for(Move temp: mapObjects)
+        {
+            if(temp instanceof Dock)
+            {
+                mapMove(temp, temp.getLocation());
+            }
+        }
+    }
+    
 // Creates buttons from map
     public void createMapButtons() {
         for(int row = 0; row < rows; row++) {
@@ -710,8 +795,9 @@ public class Window extends Application {
                 newShip = new ContainerShip(this, windowThread);
             }
         }
-        newShip.setLocation(new Location(random.nextInt(54), 
-                random.nextInt(36)));
+        //TODO: Mason: remove this comment
+//        newShip.setLocation(new Location(random.nextInt(54), 
+//                random.nextInt(36)));
         newShip.setDestination(new Location(random.nextInt(54), 
                 random.nextInt(36)));
         System.err.println("Random ship location: " + newShip.getLocation());
@@ -861,11 +947,19 @@ public class Window extends Application {
     }
     
 // Returns map
+    /**
+     * 
+     * @return 
+     */
     public char[][] getMapList() {
         return mapList;
     } 
     
-// Saves the recieved mapList
+// 
+    /**
+     * Saves the received mapList
+     * @param newMap 
+     */
     public void setMapList(char[][] newMap) {
         mapList = newMap;
     }
@@ -875,7 +969,11 @@ public class Window extends Application {
         return mapButtons;
     }
     
-// Returns mapMoveList
+// 
+    /**
+     * Returns mapMoveList
+     * @return 
+     */
     public ConcurrentLinkedQueue<Move> getMapMoveList() {
         return shipList;
     }

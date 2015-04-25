@@ -35,7 +35,7 @@ public class WindowThread extends Thread {
     
     public void setFile(String newFile) {
         file = newFile;
-        restart = true;
+        restart = true;;
     }
     
     public void setTheme(String newTheme) {

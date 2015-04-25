@@ -1,5 +1,7 @@
 package Moveable;
 
+import Gui.Window;
+
 /************************
  * Class : CSE 1325-002 * 
  * Name  : Raith Hamzah *
@@ -11,22 +13,22 @@ package Moveable;
 public class Pier extends Dock
 {
 
-    /**
-     * Default class constructor.
-     */
-    public Pier() 
-    {
-        super();
-        this.dockSymbol = 'P';
-        this.type = "Pier";
-    }
+//    /**
+//     * Default class constructor.
+//     */
+//    public Pier() 
+//    {
+//        super();
+//        this.dockSymbol = 'P';
+//        this.type = "Pier";
+//    }
 
     /**
      * CSV Constructor.
      * @param input
      */
-    public Pier(String input) {
-        super(input);
+    public Pier(String input, Window newWindow, Thread newGuiThread) {
+        super(input, newWindow, newGuiThread);
         this.dockSymbol = 'P';
         this.type = "Pier";
     }
