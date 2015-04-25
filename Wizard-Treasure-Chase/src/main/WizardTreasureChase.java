@@ -18,6 +18,8 @@ import Ship.Moveable;
 public class WizardTreasureChase {
     public static void main(String[] args) {
         
+        //123 GO GO GO
+        
     // Window Creation
         Window window = new Window();
         
