@@ -54,6 +54,11 @@ public class Move implements Runnable {
         type = "Moveable";
         cSym = 'E';
     }
+    
+    public void setSleepTime(int newTime)
+    {
+        sleepTime = newTime;
+    }
 
 // New moveable with a target
     public Move(Location newLocation, Move newTarget, Window newWindow,

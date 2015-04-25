@@ -1,6 +1,7 @@
 
 package Gui;
 
+import Map.FileHandler;
 import Map.Location;
 import Moveable.ContainerShip;
 import Moveable.Kraken;
@@ -9,6 +10,8 @@ import Moveable.Move;
 import Moveable.OilTanker;
 import Moveable.SeaSerpent;
 import Moveable.CargoShip;
+import Moveable.Port;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
@@ -44,10 +47,13 @@ import javafx.stage.StageStyle;
 // Application
 public class Window extends Application {
     
-    public static final int MENU_WIDTH = 200;
-    
+// Variables set before run by main
+    static String fileName;
+    static String theme;
+
+// Window Variables
+    public static final int MENU_WIDTH = 200; // DEFAULT
     GridPane rightPane;
-    
     ScrollPane outputScroll;
     
 // DEFAULT Variables
@@ -70,9 +76,9 @@ public class Window extends Application {
     static Label outputLabel;
     static ConcurrentLinkedQueue<Location> waterLocations 
             = new ConcurrentLinkedQueue<>();
+    static Port port = new Port();
     
 // Files
-    static String fileName;
     static Image water;
     static Image land;
     static Image landalt;
@@ -92,7 +98,6 @@ public class Window extends Application {
     static Image dockship;
     static Image craneship;
     static Image piership;
-    
     
 // Application loop
     public void main(String[] args) {
@@ -117,10 +122,8 @@ public class Window extends Application {
         windowStage.show(); // Setting window to be visible
         
     // Files
-        fileName = "complex";
         String fileHeader = "FILE:";
         String fileFooter = ".png";
-        String theme = "theme/past/";
         entity = new Image(fileHeader + "entity" + fileFooter); // No theme
         water = new Image(fileHeader + theme + "water" + fileFooter);
         land = new Image(fileHeader + theme + "land" + fileFooter);
@@ -160,13 +163,16 @@ public class Window extends Application {
         rightPane.setMaxWidth(MENU_WIDTH);
         root.add(rightPane, 1, 0);
         
-    // Logo
+// Logo
+    // Logo Image
         ImageView imageView = new ImageView();
         imageView.setImage(logo);
         imageView.setPreserveRatio(true);
         imageView.setSmooth(true);
         imageView.setCache(true);
         imageView.setStyle("-fx-base: #3771c8ff;"); // light blue
+        
+    // Logo Image Label
         Label logoButton = new Label();
         logoButton.setPadding(new Insets(15, 15, 15, 15));
         logoButton.setAlignment(Pos.CENTER);
@@ -181,13 +187,13 @@ public class Window extends Application {
         outputLabel.setPrefWidth(MENU_WIDTH - 14);
         outputLabel.setMaxWidth(MENU_WIDTH - 14);
         outputLabel.setMinWidth(MENU_WIDTH - 14);
-        outputLabel.setPrefHeight(1000);
+        outputLabel.setPrefHeight(200);
         outputLabel.setWrapText(true);
         outputLabel.setStyle("-fx-base: #3771c8ff; -fx-text-fill: white; -fx-background-color: #003380ff;");
         outputLabel.setTextFill(Paint.valueOf("000"));
         outputScroll = new ScrollPane();
         outputScroll.setContent(outputLabel);
-        outputScroll.setPrefHeight(1000);
+        outputScroll.setPrefHeight(200);
         rightPane.add(outputScroll, 0, 2);
         
     // File Menu
@@ -205,6 +211,11 @@ public class Window extends Application {
         TextField openText = new TextField("complex");
         openMenu.addRow(1, openText);
         Button openButton = new Button("Load");
+        openButton.setOnAction((ActionEvent event) -> {
+            System.err.println("Load button pressed");
+            windowThread.setFile(openText.getText());
+            windowStage.close();
+        });
         openMenu.addRow(2, openButton);
         
     // File Menu > Snap Shot
@@ -538,7 +549,6 @@ public class Window extends Application {
         addSand();
         createMapButtons();
         populateMapPane();
-        
     }
     
 // Add text to output area
@@ -880,6 +890,13 @@ public class Window extends Application {
         windowThread = inputThread;
     }
     
+// Saves the recieved fileName
+    public void setFileName(String file) {
+        fileName = file;
+    }
     
-    
+// Saves the recieved theme
+    public void setTheme(String newTheme) {
+        theme = newTheme;
+    }
 }

@@ -14,13 +14,22 @@ import Gui.WindowThread;
  */
 
 public class WizardTreasureChase {
+    
+    static String file;
+    static String theme;
+    
     public static void main(String[] args) {
+        
+        file = "complex";
+        theme = "Theme/Past/";
         
     // Window Creation
         Window window = new Window();
+        window.setFileName(file);
+        window.setTheme(theme);
         
     // Starting window thread
-        WindowThread windowThread = new WindowThread(window);
+        WindowThread windowThread = new WindowThread(window, file, theme);
         windowThread.start();
         
     }
