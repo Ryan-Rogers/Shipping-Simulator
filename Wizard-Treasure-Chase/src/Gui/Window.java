@@ -35,6 +35,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.AudioClip;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
@@ -103,7 +105,8 @@ public class Window extends Application {
     static Image piership;
 
 // Sounds
-    static AudioClip krakenSound = new AudioClip("Sounds/Kraken.wav");
+    static Media krakenSound = new Media(new File("Sounds/Kraken.wav").toURI()
+            .toString());
     
 // Application loop
     public void main(String[] args) {
@@ -747,7 +750,7 @@ public class Window extends Application {
                 newMonster = new Leviathan(this, windowThread);
             } else {
                 newMonster = new Kraken(this, windowThread);
-                krakenSound.play();
+                new MediaPlayer(krakenSound).play();
             }
         }
         newMonster.setLocation(new Location(random.nextInt(54), 
