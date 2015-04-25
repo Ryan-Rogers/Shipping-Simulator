@@ -13,16 +13,33 @@ package Gui;
 public class WindowThread extends Thread {
     
     Window threadWindow;
+    boolean restart = true;
+    String file;
+    String theme;
     
     // Consutrctor
-    public WindowThread(Window window) {
+    public WindowThread(Window window, String newFile, String newTheme) {
         threadWindow = window;
+        this.file = newFile;
+        this.theme = newTheme;
         threadWindow.setWindowThread(this);
     }
     
     @Override
     public void run() {
-        threadWindow.main((String[]) null);
-        System.err.println("Window thread has stopped");
+        if(restart) {
+            restart = false;            
+            threadWindow.main((String[]) null);
+        }
+    }
+    
+    public void setFile(String newFile) {
+        file = newFile;
+        restart = true;
+    }
+    
+    public void setTheme(String newTheme) {
+        theme = newTheme;
+        restart = true;
     }
 }

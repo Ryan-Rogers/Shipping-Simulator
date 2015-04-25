@@ -34,7 +34,7 @@ public class FileHandler {
         } catch(Exception e) {
         }
         try{
-            moveableReader = new Scanner(new File(fileName + ".moveable.txt"));
+            moveableReader = new Scanner(new File(fileName + ".ship.txt"));
         } catch(Exception e) {
         }
     }
@@ -87,7 +87,7 @@ public class FileHandler {
     public void saveShip(ArrayList<Move> moveableList) {
         PrintWriter write;
         try {
-            write = new PrintWriter(fileName + ".moveable.txt");
+            write = new PrintWriter(fileName + ".ship.txt");
             moveableList.stream().forEach((currentShip) -> {
                 write.print(currentShip.toString() + "\n");
             });
