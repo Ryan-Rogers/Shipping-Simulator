@@ -1,5 +1,7 @@
 package Moveable;
 
+import Gui.Window;
+
 /************************
  * Class : CSE 1325-002 * 
  * Name  : Raith Hamzah *
@@ -11,23 +13,25 @@ package Moveable;
 public class Crane extends Dock
 {
 
-    /**
-     * Default class constructor.
-     */
-    public Crane() 
-    {
-        super();
-        this.dockSymbol = 'C';
-        this.type = "Crane";
-    }
+//    /**
+//     * Default class constructor.
+//     */
+//    public Crane() 
+//    {
+//        super();
+//        this.dockSymbol = 'C';
+//        this.type = "Crane";
+//    }
 
     /**
      * CSV Constructor
      * @param input
+     * @param newWindow
+     * @param newGuiThread
      */
-    public Crane(String input) 
+    public Crane(String input, Window newWindow, Thread newGuiThread) 
     {
-        super(input);
+        super(input, newWindow, newGuiThread);
         this.dockSymbol = 'C';
         type = "Crane";
     }

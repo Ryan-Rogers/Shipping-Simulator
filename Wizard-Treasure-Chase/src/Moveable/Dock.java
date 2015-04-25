@@ -1,5 +1,6 @@
 package Moveable;
 
+import Gui.Window;
 import Map.Location;
 
 /************************
@@ -16,7 +17,7 @@ import Map.Location;
 * in the main class, to which the
 * ship class will interact with.
 */
-public class Dock 
+public class Dock extends Move
 {
     /** Class data members. */
     protected String name;
@@ -29,25 +30,27 @@ public class Dock
     protected double latitude;
     protected char dockSymbol;
     
-    protected Location location;
+//    protected Location location;
     
-    protected String type;
+//    protected String type;
     
     
-    public Dock()
-    {
-        this.name       = "Rudolph's Dock";
-        this.section    = 'N';
-        this.number     = 100;
-        this.depth      = 15;
-        this.length     = 100;
-        this.width      = 6;
-//        this.longitude  = -2.977838;
-//        this.latitude   = 53.410777;
-        location = new Location(0, 0);
-        this.dockSymbol = 'D';
-        type = "Dock";
-    }
+//    public Dock(Window newWindow, Thread newGuiThread)
+//    {
+//        super(newWindow, newGuiThread);
+//        
+//        this.name       = "Rudolph's Dock";
+//        this.section    = 'N';
+//        this.number     = 100;
+//        this.depth      = 15;
+//        this.length     = 100;
+//        this.width      = 6;
+////        this.longitude  = -2.977838;
+////        this.latitude   = 53.410777;
+//        location = getValidSpawn();
+//        this.dockSymbol = 'D';
+//        type = "Dock";
+//    }
 
 //    /**
 //     * Constructor with parameters.
@@ -73,17 +76,16 @@ public class Dock
 ////        this.longitude = longitude;
 //        this.dockSymbol = dockSymbol;
 //    }
-
-    
-    
     
     
     /**
      * Class constructor based on a string input.
      * @param input
      */
-    public Dock(String input)
+    public Dock(String input, Window newWindow, Thread newGuiThread)
     {
+        super(newWindow, newGuiThread);
+        
         String tokens[];
         tokens = input.split(",");
         this.name       = tokens[0];
@@ -94,7 +96,7 @@ public class Dock
         this.width      = Double.parseDouble(tokens[5]);
         this.longitude  = Double.parseDouble(tokens[6]);
         this.latitude   = Double.parseDouble(tokens[7]);
-        location = new Location(longitude, latitude);
+        currentLocation = new Location(longitude, latitude);
         
         this.dockSymbol = 'D';
     }
@@ -276,7 +278,7 @@ public class Dock
         System.out.println("Dock Number: " + this.section + this.number); 
         System.out.printf("Size: %3.0fx%3.0fx%3.0f\n", this.length, this.depth, this.width);
         System.out.printf("Location: (%f, %f)\n", this.longitude, this.latitude);
-        System.out.printf("Location: (%s)\n", location.toString());
+        System.out.printf("Location: (%s)\n", currentLocation.toString());
 
     }
     

@@ -8,6 +8,8 @@ package Moveable;
 
 import Gui.Window;
 import Map.Location;
+import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * @author Ryan Rogers
@@ -43,14 +45,20 @@ public class Move implements Runnable {
         cSym = 'E';
     }
 
-// New moveable without a destination
+    /**
+     * 
+     * @param newWindow
+     * @param newGuiThread 
+     */
     public Move(Window newWindow, Thread newGuiThread)
     {
-        sleepTime = 500; //TODO: have child classes set this by weight
-        currentLocation = new Location(0, 0); // DEBUG DEFAULT UNUSED
-        destination = new Location(25, 25); // DEBUG DEFAULT UNUSED
         guiWindow = newWindow;
         guiThread = newGuiThread;
+        
+        sleepTime = 500; //TODO: have child classes set this by weight
+        currentLocation = getValidSpawn(); // DEBUG DEFAULT UNUSED
+        destination = new Location(25, 25); // DEBUG DEFAULT UNUSED
+        
         type = "Moveable";
         cSym = 'E';
     }
@@ -74,7 +82,15 @@ public class Move implements Runnable {
     
     protected Location getValidSpawn()
     {
-        return new Location(0, 0);
+        ArrayList<Location> waterLocations;
+        
+        waterLocations = guiWindow.getWaterLocations();
+        
+        Random rand = new Random();
+        
+        int index = rand.nextInt(waterLocations.size());
+        
+        return waterLocations.get(index);
     }
     
     protected Location getValidDestination()

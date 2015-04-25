@@ -25,10 +25,15 @@ public class Location
         this.y = location.getY();
     }
     
+    /**
+     * Takes longitude and latitude to create a location
+     * @param longitude
+     * @param latitude 
+     */
     public Location(Double longitude, Double latitude)
     {
-        this.x = Map.MapConverter.lat2row(latitude);
-        this.y = Map.MapConverter.lon2col(longitude);
+        this.x = Map.MapConverter.lon2col(longitude);
+        this.y = Map.MapConverter.lat2row(latitude);
     }
 
 //    protected void setX(int x)
