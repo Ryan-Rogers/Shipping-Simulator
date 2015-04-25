@@ -1,7 +1,6 @@
 
 package Gui;
 
-import Map.FileHandler;
 import Map.Location;
 import Moveable.ContainerShip;
 import Moveable.Kraken;
@@ -35,6 +34,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.AudioClip;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
@@ -77,9 +77,12 @@ public class Window extends Application {
     static ConcurrentLinkedQueue<Location> waterLocations 
             = new ConcurrentLinkedQueue<>();
     static Port port = new Port();
-    
+
 // Files
+// Images
     static Image water;
+    static Image wateralt;
+    static Image wateralt2;
     static Image land;
     static Image landalt;
     static Image sand;
@@ -98,6 +101,9 @@ public class Window extends Application {
     static Image dockship;
     static Image craneship;
     static Image piership;
+
+// Sounds
+    static AudioClip krakenSound = new AudioClip("Sounds/Kraken.wav");
     
 // Application loop
     public void main(String[] args) {
@@ -126,6 +132,8 @@ public class Window extends Application {
         String fileFooter = ".png";
         entity = new Image(fileHeader + "entity" + fileFooter); // No theme
         water = new Image(fileHeader + theme + "water" + fileFooter);
+        wateralt = new Image(fileHeader + theme + "wateralt" + fileFooter);
+        wateralt2 = new Image(fileHeader + theme + "wateralt2" + fileFooter);
         land = new Image(fileHeader + theme + "land" + fileFooter);
         landalt = new Image(fileHeader + theme + "landalt" + fileFooter);
         sand = new Image(fileHeader + theme + "sand" + fileFooter);
@@ -239,6 +247,11 @@ public class Window extends Application {
         closeButton.setAlignment(Pos.BASELINE_LEFT);
         closeButton.setOnAction((ActionEvent event) -> {
             System.err.println("Close button pressed");
+            port = new Port();
+            shipList.clear();
+            mapObjects.clear();
+            locationList.clear();
+            
         });
         fileMenuArea.addRow(1, closeButton);
         
@@ -610,7 +623,10 @@ public class Window extends Application {
         }
     }
     
-// Creates loaded char map
+    /**
+     * 
+     * 
+     */
     public void loadMapToMap() {
         Scanner mapReader = null;
         try {
@@ -731,6 +747,7 @@ public class Window extends Application {
                 newMonster = new Leviathan(this, windowThread);
             } else {
                 newMonster = new Kraken(this, windowThread);
+                krakenSound.play();
             }
         }
         newMonster.setLocation(new Location(random.nextInt(54), 
@@ -802,7 +819,18 @@ public class Window extends Application {
     public static Image charToImage(char type) {
         Random random = new Random();
         if(".".equals(String.valueOf(type))) {
-            return water;
+            switch(random.nextInt(50)) {
+                case 0:
+                    return wateralt2; // 1/5
+                case 1:
+                    return wateralt; // 1/5
+                case 2:
+                    return wateralt; // 1/5
+                case 3:
+                    return wateralt; // 1/5
+                default: // end // 3/5
+                    return water;
+            }
         }
         if("o".equals(String.valueOf(type))) {
             return sand;

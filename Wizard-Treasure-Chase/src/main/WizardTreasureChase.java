@@ -20,16 +20,10 @@ public class WizardTreasureChase {
     
     public static void main(String[] args) {
         
-        file = "complex";
-        theme = "Theme/Past/";
-        
-    // Window Creation
-        Window window = new Window();
-        window.setFileName(file);
-        window.setTheme(theme);
-        
-    // Starting window thread
-        WindowThread windowThread = new WindowThread(window, file, theme);
+    // GUI Window
+        file = "complex"; // Default files
+        theme = "Theme/Future/"; // Default theme
+        WindowThread windowThread = new WindowThread(file, theme);
         windowThread.start();
         
     }

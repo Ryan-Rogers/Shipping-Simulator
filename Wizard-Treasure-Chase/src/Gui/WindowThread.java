@@ -18,17 +18,20 @@ public class WindowThread extends Thread {
     String theme;
     
     // Consutrctor
-    public WindowThread(Window window, String newFile, String newTheme) {
-        threadWindow = window;
+    public WindowThread(String newFile, String newTheme) {
         this.file = newFile;
         this.theme = newTheme;
-        threadWindow.setWindowThread(this);
     }
     
     @Override
     public void run() {
-        if(restart) {
-            restart = false;            
+        while(restart) {
+            restart = false;
+            threadWindow = null;
+            threadWindow = new Window();
+            threadWindow.setWindowThread(this);
+            threadWindow.setFileName(file);
+            threadWindow.setTheme(theme);
             threadWindow.main((String[]) null);
         }
     }
