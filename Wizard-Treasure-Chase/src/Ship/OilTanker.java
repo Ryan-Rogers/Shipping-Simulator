@@ -10,7 +10,7 @@ import Gui.Window;
  *******************************
  * @author Raith Hamzah        *
  *******************************/
-public class OilTanker  extends Ship
+public class OilTanker  extends CargoShip
 {
 
     /**

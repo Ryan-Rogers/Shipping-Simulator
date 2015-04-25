@@ -57,6 +57,7 @@ public class Window extends Application {
     static ArrayList<ArrayList<Button>> mapButtons = new ArrayList<>();
     static GridPane mapPane = new GridPane();
     static WindowThread windowThread;
+    static Label outputLabel;
     
 // Images
     static Image water;
@@ -140,10 +141,7 @@ public class Window extends Application {
         rightPane.add(logoButton, 0, 0);
         
     // Text Area
-        String output;
-        output = "Sample output text";
-        Label outputLabel = new Label();
-        outputLabel.setText(output);
+        outputLabel = new Label("Welcome!");
         outputLabel.setAlignment(Pos.TOP_LEFT);
         outputLabel.setPrefSize(MENU_WIDTH, 1000);
         outputLabel.setMaxWidth(MENU_WIDTH);
@@ -252,6 +250,12 @@ public class Window extends Application {
         displayAllShips.setMaxWidth(MENU_WIDTH);
         displayAllShips.setStyle("-fx-base: #003380ff;");
         displayAllShips.setAlignment(Pos.BASELINE_LEFT);
+        displayAllShips.setOnAction((ActionEvent event) -> {
+            System.err.println("Display all ships button pressed");
+            // TODO: Ryan
+            // currentMapObjects = mapObjects.toArray();
+            // mapObjects.
+        });
         shipMenuArea.addRow(1, displayAllShips);
         
     // Ship Menu > Button Area > Remove All Ships
@@ -472,6 +476,11 @@ public class Window extends Application {
         populateMapPane();
         
         windowStage.show(); // Setting window to be visible
+    }
+    
+// Add text to output area
+    public void textOutput(String newOutput) {
+        outputLabel.setText(newOutput + "\n" + outputLabel.getText());
     }
     
 // Populates mapPane with mapButtons

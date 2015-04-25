@@ -47,7 +47,7 @@ public class Moveable implements Runnable {
             
         // Loops while moveable is not at destination and GUI is open
             while((currentLocation.getX() != destination.getX()
-                    && currentLocation.getY() != destination.getY())
+                    || currentLocation.getY() != destination.getY())
                     && guiThread.isAlive()) {
                 
                 int xDifference; // Difference in current x and destination x
