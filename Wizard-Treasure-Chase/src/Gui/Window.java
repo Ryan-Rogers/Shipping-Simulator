@@ -2,7 +2,7 @@
 package Gui;
 
 import Map.Location;
-import MoveableObject.Moveable;
+import Ship.Moveable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -570,7 +570,7 @@ public class Window extends Application {
     
 // Adding move to queue
     public void mapMove(Moveable ship, Location location) {
-
+        
         Platform.runLater(() -> {
             shipList.add(ship);
             locationList.add(location);

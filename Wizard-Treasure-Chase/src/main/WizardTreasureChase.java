@@ -9,7 +9,7 @@ package main;
 import Gui.Window;
 import Gui.WindowThread;
 import Map.Location;
-import MoveableObject.Moveable;
+import Ship.Moveable;
 
 /**
  * @author Ryan Rogers

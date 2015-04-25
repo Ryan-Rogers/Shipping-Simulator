@@ -1,3 +1,5 @@
+package Map;
+
 /**
  *
  * @author beckerxx
@@ -70,6 +72,11 @@ public class MapConverter {
         double lon = 0.0;
         lon=col*col2lonSlope+minLon;
         return lon;
+    }
+    
+    public static void main(String[] args)
+    {
+        System.out.println(new Location(-3.030611111, 53.405394444));
     }
 
 }

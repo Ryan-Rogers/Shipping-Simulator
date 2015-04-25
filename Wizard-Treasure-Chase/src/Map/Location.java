@@ -24,6 +24,12 @@ public class Location
         this.x = location.getX();
         this.y = location.getY();
     }
+    
+    public Location(Double longitude, Double latitude)
+    {
+        this.x = Map.MapConverter.lat2row(latitude);
+        this.y = Map.MapConverter.lon2col(longitude);
+    }
 
 //    protected void setX(int x)
 //    {
@@ -58,7 +64,7 @@ public class Location
     @Override
     public String toString()
     {
-        return "X: " + x + " Y: " + y;
+        return "(" + x + ", " + y + ")";
     }
     
     

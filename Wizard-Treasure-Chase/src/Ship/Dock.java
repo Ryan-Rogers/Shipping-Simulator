@@ -1,3 +1,7 @@
+package Ship;
+
+import Map.Location;
+
 /************************
  * Class : CSE 1325-002 * 
  * Name  : Raith Hamzah *
@@ -25,7 +29,11 @@ public class Dock
     protected double latitude;
     protected char dockSymbol;
     
-    /** Class constructer. */
+    protected Location location;
+    
+    protected String type;
+    
+    
     public Dock()
     {
         this.name       = "Rudolph's Dock";
@@ -34,35 +42,37 @@ public class Dock
         this.depth      = 15;
         this.length     = 100;
         this.width      = 6;
-        this.longitude  = -2.977838;
-        this.latitude   = 53.410777;
-        this.dockSymbol = 'D'; 
+//        this.longitude  = -2.977838;
+//        this.latitude   = 53.410777;
+        location = new Location(0, 0);
+        this.dockSymbol = 'D';
+        type = "Dock";
     }
 
-    /**
-     * Constructor with parameters.
-     * @param name
-     * @param section
-     * @param number
-     * @param depth
-     * @param length
-     * @param width
-     * @param longitude
-     * @param dockSymbol
-     */
-    public Dock(String name, char section, int number, double depth, 
-                double length, double width, double longitude,
-                char dockSymbol) 
-    {
-        this.name = name;
-        this.section = section;
-        this.number = number;
-        this.depth = depth;
-        this.length = length;
-        this.width = width;
-        this.longitude = longitude;
-        this.dockSymbol = dockSymbol;
-    }
+//    /**
+//     * Constructor with parameters.
+//     * @param name
+//     * @param section
+//     * @param number
+//     * @param depth
+//     * @param length
+//     * @param width
+////     * @param longitude
+//     * @param dockSymbol
+//     */
+//    public Dock(String name, char section, int number, double depth, 
+//                double length, double width, double longitude,
+//                char dockSymbol) 
+//    {
+//        this.name = name;
+//        this.section = section;
+//        this.number = number;
+//        this.depth = depth;
+//        this.length = length;
+//        this.width = width;
+////        this.longitude = longitude;
+//        this.dockSymbol = dockSymbol;
+//    }
 
     
     
@@ -84,6 +94,8 @@ public class Dock
         this.width      = Double.parseDouble(tokens[5]);
         this.longitude  = Double.parseDouble(tokens[6]);
         this.latitude   = Double.parseDouble(tokens[7]);
+        location = new Location(longitude, latitude);
+        
         this.dockSymbol = 'D';
     }
     
@@ -163,46 +175,46 @@ public class Dock
         this.width = newWidth;
     }
     
-    /**
-    * Function to return the dock's current longitudinal position.
-    * @return Returns the dock's current longitudinal position.
-    */
-    public double getLongitude()
-    {
-        return this.longitude;
-    }
+//    /**
+//    * Function to return the dock's current longitudinal position.
+//    * @return Returns the dock's current longitudinal position.
+//    */
+//    public double getLongitude()
+//    {
+//        return this.longitude;
+//    }
     
-    /**
-    * Function to assign a new value
-    * to the longitudinal position of the dock.
-    * @param newLong The new longitude to be assigned.
-    */
-    public void setLongitude(double newLong)
-    {
-        this.longitude = newLong;
-    }
+//    /**
+//    * Function to assign a new value
+//    * to the longitudinal position of the dock.
+//    * @param newLong The new longitude to be assigned.
+//    */
+//    public void setLongitude(double newLong)
+//    {
+//        this.longitude = newLong;
+//    }
     
-    /**
-    * Function to return the dock's current latitudinal position.
-    * @return Returns the dock's current latitudinal position.
-    */
-    public double getLatitude()
-    {
-        return this.latitude;
-    }
-    
-    /**
-    * Function to assign a new value
-    * to the latitudinal position of the dock.
-    * @param newLat The new latitude to be assigned.
-    */
-    public void setLatitude(double newLat)
-    {
-        this.latitude = newLat;
-    }
+//    /**
+//    * Function to return the dock's current latitudinal position.
+//    * @return Returns the dock's current latitudinal position.
+//    */
+//    public double getLatitude()
+//    {
+//        return this.latitude;
+//    }
+//    
+//    /**
+//    * Function to assign a new value
+//    * to the latitudinal position of the dock.
+//    * @param newLat The new latitude to be assigned.
+//    */
+//    public void setLatitude(double newLat)
+//    {
+//        this.latitude = newLat;
+//    }
 
     /**
-     * Get's the dock's name.
+     * Gets the dock's name.
      * @return
      */
     public String getName() 
@@ -264,7 +276,7 @@ public class Dock
         System.out.println("Dock Number: " + this.section + this.number); 
         System.out.printf("Size: %3.0fx%3.0fx%3.0f\n", this.length, this.depth, this.width);
         System.out.printf("Location: (%f, %f)\n", this.longitude, this.latitude);
-        System.out.printf("Location: (%d, %d)\n", MapConverter.lon2col(this.longitude), MapConverter.lat2row(this.latitude));
+        System.out.printf("Location: (%s)\n", location.toString());
 
     }
     
