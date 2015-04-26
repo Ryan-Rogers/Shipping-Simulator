@@ -22,7 +22,7 @@ public class WizardTreasureChase {
         
     // GUI Window
         file = "complex"; // Default files
-        theme = "Theme/Past/"; // Default theme
+        theme = "Theme/Future/"; // Default theme
         WindowThread windowThread = new WindowThread(file, theme);
         windowThread.start();
         
