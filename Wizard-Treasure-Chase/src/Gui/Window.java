@@ -9,14 +9,11 @@ import Moveable.Kraken;
 import Moveable.Leviathan;
 import Moveable.Move;
 import Moveable.OilTanker;
-<<<<<<< HEAD
 import Moveable.SeaSerpent;
 import Moveable.CargoShip;
 import Moveable.Crane;
 import Moveable.Dock;
 import Moveable.Godzilla;
-=======
->>>>>>> Mason-Dev7
 import Moveable.Pier;
 import Moveable.Port;
 import Moveable.SeaSerpent;
@@ -609,7 +606,6 @@ public class Window extends Application
         TitledPane summonGodzilla = new TitledPane();
         summonGodzilla.setText("Summon Godzilla");
         summonGodzilla.setStyle("-fx-base: #003380ff;");
-<<<<<<< HEAD
         GridPane summonGodzillaMenu = new GridPane();
         summonGodzilla.setContent(summonGodzillaMenu);
         Label summonGodzillaLabelX = new Label("Location X:");
@@ -648,20 +644,6 @@ public class Window extends Application
             new MediaPlayer(godzillaSummonSound).play();
         });
         summonGodzillaMenu.addRow(4, summonGodzillaButton);
-=======
-        /*
-        GridPane openMenu = new GridPane();
-        summonGodzillaPane.setContent(summonGodzillaMenu);
-        Label openLabel = new Label("Location X:");
-        summonGodzillaMenu.addRow(0, openLabel);
-        TextField openText = new TextField("1");
-        summonGodzillaMenu.addRow(1, openText);
-        TextField openText = new TextField("1");
-        summonGodzillaMenu.addRow(2, openText);
-        Button openButton = new Button("Summon");
-        summonGodzillaMenu.addRow(3, openButton);
-        */
->>>>>>> Mason-Dev7
         
         // Monster Menu > Accordion
         Accordion monsterMenuAccordion = new Accordion();
@@ -846,19 +828,6 @@ public class Window extends Application
             }
         }
     }
-<<<<<<< HEAD
-    
-    public void loadMapToMap() {
-        Scanner mapReader = null;
-        try {
-            mapReader = new Scanner(new File(fileName + ".map.txt"));
-        } catch(Exception e) {
-            System.err.println(e);
-            System.err.println("Exception occured while loading map!");
-        }
-        String line;
-        String[] splitLine;
-=======
 
     /**
      *
@@ -874,7 +843,6 @@ public class Window extends Application
          }
          String line;
          String[] splitLine;
->>>>>>> Mason-Dev7
         int row;
         int column;
         while (mapReader.hasNextLine()) {
@@ -1025,18 +993,6 @@ public class Window extends Application
      }
      
 // Creating a monster at a random watery location
-<<<<<<< HEAD
-    public void newRandomMonster() {
-        Move newMonster;
-        Random random = new Random();
-        if(random.nextInt(3) == 0) {
-            newMonster = new SeaSerpent(this, windowThread);
-        } else {
-            if(random.nextInt(2) == 0) {
-                newMonster = new Leviathan(this, windowThread);
-            } else {
-                newMonster = new Kraken(this, windowThread);
-=======
      public void newRandomMonster()
      {
          Move newMonster;
@@ -1048,8 +1004,6 @@ public class Window extends Application
                  newMonster = new Leviathan(this, windowThread);
              } else {
                  newMonster = new Kraken(this, windowThread);
-                 // new MediaPlayer(krakenSound).play();
->>>>>>> Mason-Dev7
             }
         }
          newMonster.setLocation(new Location(random.nextInt(54),
@@ -1071,120 +1025,88 @@ public class Window extends Application
             mapUpdate();
         });
     }
-<<<<<<< HEAD
     
-// Processing queue
-    public static boolean mapUpdate() {
-        if(!shipList.isEmpty()) { // Ships need to be updated
-            if(!mapButtons.isEmpty()) { // GUI buttons are loaded
-                Move currentShip = shipList.remove();
-                Location newLocation = locationList.remove();
-                mapButtons.get(newLocation.getY())
-                        .get(newLocation.getX())
-                        .setGraphic(customImageView(currentShip.getCSym()));
-                
-                Location previousLocation = currentShip.getLocation();
-                if(currentShip.getLocation().getX() != newLocation.getX()
-                        || currentShip.getLocation().getY() 
-                        != newLocation.getY()) {
-                    mapButtons.get(previousLocation.getY())
-                            .get(previousLocation.getX())
-                            .setGraphic(customImageView(terrainMap
-                            [previousLocation.getY()]
-                            [previousLocation.getX()]));
-                    currentShip.setLocation(newLocation);
-                    }
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-    
-// Returns a default ImageView
-    public static ImageView customImageView(Image image) {
-        ImageView imageView = new ImageView();
-        imageView.setImage(image);
-        imageView.setFitWidth(iconSize);
-        imageView.setPreserveRatio(true);
-        imageView.setSmooth(true);
-        imageView.setCache(true);
-        return imageView;
-    }
-    
-// Returns a default ImageView
-    public static ImageView customImageView(char type) {
-        return customImageView(charToImage(type));
-    }
-    
-// Converts a char to the appropriate Image
-    public static Image charToImage(char type) {
-        Random random = new Random();
-        if(".".equals(String.valueOf(type))) {
-            switch(random.nextInt(50)) {
-            // 1/50
-                case 0:
-                    return wateralt2;
-            // 3/50
-                case 1:
-                    return wateralt;
-                case 2:
-                    return wateralt;
-                case 3:
-                    return wateralt;
-            // 46/50
-                default:
-                    return water;
-            }
-        }
-        if("o".equals(String.valueOf(type))) {
-            return sand;
-        }
-        if("*".equals(String.valueOf(type))) {
-            if(random.nextInt(6) > 0) {
-                return land;
-            } else {
-                return landalt;
-            }
-        }
-        if("T".equals(String.valueOf(type))) {
-            return oilTanker;
-        }
-        if("S".equals(String.valueOf(type))) {
-            return cargoShip;
-        }
-        if("B".equals(String.valueOf(type))) {
-            return containerShip;
-        }
-        if("s".equals(String.valueOf(type))) {
-            return seaserpent;
-        }
-        if("L".equals(String.valueOf(type))) {
-            return leviathan;
-        }
-        if("K".equals(String.valueOf(type))) {
-            return kraken;
-        }
-        if("D".equals(String.valueOf(type))) {
-            return dock;
-        }
-        if("C".equals(String.valueOf(type))) {
-            return crane;
-        }
-        if("P".equals(String.valueOf(type))) {
-            return pier;
-        }
-        if("G".equals(String.valueOf(type))) {
-            return godzilla;
-        }
-        return entity; // No image exists for the given char
-    }
-    
-=======
 
->>>>>>> Mason-Dev7
+    
+//// Returns a default ImageView
+//    public static ImageView customImageView(Image image) {
+//        ImageView imageView = new ImageView();
+//        imageView.setImage(image);
+//        imageView.setFitWidth(iconSize);
+//        imageView.setPreserveRatio(true);
+//        imageView.setSmooth(true);
+//        imageView.setCache(true);
+//        return imageView;
+//    }
+    
+//// Returns a default ImageView
+//    public static ImageView customImageView(char type) {
+//        return customImageView(charToImage(type));
+//    }
+    
+//// Converts a char to the appropriate Image
+//    public static Image charToImage(char type) {
+//        Random random = new Random();
+//        if(".".equals(String.valueOf(type))) {
+//            switch(random.nextInt(50)) {
+//            // 1/50
+//                case 0:
+//                    return wateralt2;
+//            // 3/50
+//                case 1:
+//                    return wateralt;
+//                case 2:
+//                    return wateralt;
+//                case 3:
+//                    return wateralt;
+//            // 46/50
+//                default:
+//                    return water;
+//            }
+//        }
+//        if("o".equals(String.valueOf(type))) {
+//            return sand;
+//        }
+//        if("*".equals(String.valueOf(type))) {
+//            if(random.nextInt(6) > 0) {
+//                return land;
+//            } else {
+//                return landalt;
+//            }
+//        }
+//        if("T".equals(String.valueOf(type))) {
+//            return oilTanker;
+//        }
+//        if("S".equals(String.valueOf(type))) {
+//            return cargoShip;
+//        }
+//        if("B".equals(String.valueOf(type))) {
+//            return containerShip;
+//        }
+//        if("s".equals(String.valueOf(type))) {
+//            return seaserpent;
+//        }
+//        if("L".equals(String.valueOf(type))) {
+//            return leviathan;
+//        }
+//        if("K".equals(String.valueOf(type))) {
+//            return kraken;
+//        }
+//        if("D".equals(String.valueOf(type))) {
+//            return dock;
+//        }
+//        if("C".equals(String.valueOf(type))) {
+//            return crane;
+//        }
+//        if("P".equals(String.valueOf(type))) {
+//            return pier;
+//        }
+//        if("G".equals(String.valueOf(type))) {
+//            return godzilla;
+//        }
+//        return entity; // No image exists for the given char
+//    }
+
 // Prints the given map to the console
 
      public void printMap(char[][] map)
