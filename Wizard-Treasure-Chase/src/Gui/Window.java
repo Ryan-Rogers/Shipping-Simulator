@@ -117,6 +117,8 @@ public class Window extends Application {
     static Image wateralt2;
     static Image land;
     static Image landalt;
+    static Image landalt2;
+    static Image landalt3;
     static Image sand;
     static Image oilTanker;
     static Image containerShip;
@@ -137,6 +139,15 @@ public class Window extends Application {
 // Sounds
     static Media krakenSound = new Media(new File("Sounds/Kraken.wav").toURI()
             .toString());
+    static Media leviathanSound = new Media(new File("Sounds/Leviathan.wav")
+            .toURI()
+            .toString());
+    static Media godzillaKillsSound = new Media(new File(
+            "Sounds/GodzillaKills.wav").toURI().toString());
+    static Media seaSerpentSound = new Media(new File("Sounds/SeaSerpent.wav")
+            .toURI().toString());
+    static Media godzillaSummonSound = new Media(new File(
+            "Sounds/GodzillaSummon.wav").toURI().toString());
     
 // Application loop
     public void main(String[] args) {
@@ -169,6 +180,8 @@ public class Window extends Application {
         wateralt2 = new Image(fileHeader + theme + "wateralt2" + fileFooter);
         land = new Image(fileHeader + theme + "land" + fileFooter);
         landalt = new Image(fileHeader + theme + "landalt" + fileFooter);
+        landalt2 = new Image(fileHeader + theme + "landalt2" + fileFooter);
+        landalt3 = new Image(fileHeader + theme + "landalt3" + fileFooter);
         sand = new Image(fileHeader + theme + "sand" + fileFooter);
         oilTanker = new Image(fileHeader + theme + "oiltanker" + fileFooter);
         containerShip = new Image(fileHeader + theme + "containership" 
@@ -453,7 +466,6 @@ public class Window extends Application {
             }
         });
         generateMonsterMenu.addRow(2, generateMonsterButton);
-        
         
     // Monster Menu > Accordion > Update Monsters
         TitledPane updateMonstersPane = new TitledPane();
@@ -824,7 +836,8 @@ public class Window extends Application {
         newShip.setDestination(new Location(random.nextInt(54), 
                 random.nextInt(36)));
         System.err.println("Random ship location: " + newShip.getLocation());
-        System.err.println("Random ship destination: " + newShip.getDestination());
+        System.err.println("Random ship destination: "
+                + newShip.getDestination());
         mapObjects.add(newShip);
         new Thread(newShip).start();
     }
@@ -913,15 +926,18 @@ public class Window extends Application {
         Random random = new Random();
         if(".".equals(String.valueOf(type))) {
             switch(random.nextInt(50)) {
+            // 1/50
                 case 0:
-                    return wateralt2; // 1/5
+                    return wateralt2;
+            // 3/50
                 case 1:
-                    return wateralt; // 1/5
+                    return wateralt;
                 case 2:
-                    return wateralt; // 1/5
+                    return wateralt;
                 case 3:
-                    return wateralt; // 1/5
-                default: // end // 3/5
+                    return wateralt;
+            // 46/50
+                default:
                     return water;
             }
         }
