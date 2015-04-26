@@ -61,9 +61,8 @@ public class Port
      * Get's the port's docl list. 
      * @return
      * @throws NullPointerException
-     * @throws Exception
      */
-    public ArrayList<Dock> getDockList() throws NullPointerException, Exception
+    public ArrayList<Dock> getDockList()
     {
         return dockList;
     }
