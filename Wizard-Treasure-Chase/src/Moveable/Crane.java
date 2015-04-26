@@ -32,7 +32,7 @@ public class Crane extends Dock
     public Crane(String input, Window newWindow, Thread newGuiThread) 
     {
         super(input, newWindow, newGuiThread);
-        this.dockSymbol = 'C';
+        this.cSym = 'C';
         type = "Crane";
     }
 

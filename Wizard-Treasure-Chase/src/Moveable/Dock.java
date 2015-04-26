@@ -98,7 +98,7 @@ public class Dock extends Move
         this.latitude   = Double.parseDouble(tokens[7]);
         currentLocation = new Location(longitude, latitude);
         
-        this.dockSymbol = 'D';
+        this.cSym = 'D';
     }
     
     /**

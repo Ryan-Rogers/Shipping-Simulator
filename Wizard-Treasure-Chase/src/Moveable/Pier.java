@@ -29,7 +29,7 @@ public class Pier extends Dock
      */
     public Pier(String input, Window newWindow, Thread newGuiThread) {
         super(input, newWindow, newGuiThread);
-        this.dockSymbol = 'P';
+        this.cSym = 'P';
         this.type = "Pier";
     }
 
