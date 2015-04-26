@@ -11,6 +11,7 @@ import Moveable.SeaSerpent;
 import Moveable.CargoShip;
 import Moveable.Crane;
 import Moveable.Dock;
+import Moveable.Godzilla;
 import Moveable.Pier;
 import Moveable.Port;
 
@@ -40,6 +41,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
@@ -476,18 +478,44 @@ public class Window extends Application {
         TitledPane summonGodzilla = new TitledPane();
         summonGodzilla.setText("Summon Godzilla");
         summonGodzilla.setStyle("-fx-base: #003380ff;");
-        /*
-        GridPane openMenu = new GridPane();
-        summonGodzillaPane.setContent(summonGodzillaMenu);
-        Label openLabel = new Label("Location X:");
-        summonGodzillaMenu.addRow(0, openLabel);
-        TextField openText = new TextField("1");
-        summonGodzillaMenu.addRow(1, openText);
-        TextField openText = new TextField("1");
-        summonGodzillaMenu.addRow(2, openText);
-        Button openButton = new Button("Summon");
-        summonGodzillaMenu.addRow(3, openButton);
-                */
+        GridPane summonGodzillaMenu = new GridPane();
+        summonGodzilla.setContent(summonGodzillaMenu);
+        Label summonGodzillaLabelX = new Label("Location X:");
+        summonGodzillaMenu.addRow(0, summonGodzillaLabelX);
+        TextField summonGodzillaTextX = new TextField("1");
+        summonGodzillaMenu.addRow(1, summonGodzillaTextX);
+        Label summonGodzillaLabelY = new Label("Location Y:");
+        summonGodzillaMenu.addRow(2, summonGodzillaLabelY);
+        TextField summonGodzillaTextY = new TextField("1");
+        summonGodzillaMenu.addRow(3, summonGodzillaTextY);
+        Button summonGodzillaButton = new Button("Summon");
+        summonGodzillaButton.setOnAction((ActionEvent event) -> {
+            System.err.println("Summon godzilla button pressed");
+            // Object[] mapObjectArray = mapObjects.toArray();
+            // Boolean godzillaExists = false;
+            Godzilla oldGodzilla = null;
+            for(Object moveObject : mapObjects) {
+                if(moveObject.getClass().equals(Godzilla.class)) {
+                    oldGodzilla = Godzilla.class.cast(moveObject);
+                }
+            }
+            if(oldGodzilla != null) {
+                mapMove(oldGodzilla, new Location(
+                        Integer.valueOf(summonGodzillaTextX.getText()), 
+                        Integer.valueOf(summonGodzillaTextY.getText())));
+            } else {
+                oldGodzilla = new Godzilla(this, windowThread);
+                oldGodzilla.setLocation(new Location(
+                        Integer.valueOf(summonGodzillaTextX.getText()), 
+                        Integer.valueOf(summonGodzillaTextY.getText())));
+                mapObjects.add(oldGodzilla);
+                mapMove(oldGodzilla, new Location(
+                        Integer.valueOf(summonGodzillaTextX.getText()), 
+                        Integer.valueOf(summonGodzillaTextY.getText())));
+            }
+            new MediaPlayer(godzillaSummonSound).play();
+        });
+        summonGodzillaMenu.addRow(4, summonGodzillaButton);
         
     // Monster Menu > Accordion
         Accordion monsterMenuAccordion = new Accordion();
@@ -672,10 +700,6 @@ public class Window extends Application {
         }
     }
     
-    /**
-     * 
-     * 
-     */
     public void loadMapToMap() {
         Scanner mapReader = null;
         try {
@@ -845,7 +869,6 @@ public class Window extends Application {
                 newMonster = new Leviathan(this, windowThread);
             } else {
                 newMonster = new Kraken(this, windowThread);
-                // new MediaPlayer(krakenSound).play();
             }
         }
         newMonster.setLocation(new Location(random.nextInt(54), 
@@ -969,6 +992,9 @@ public class Window extends Application {
         }
         if("P".equals(String.valueOf(type))) {
             return pier;
+        }
+        if("G".equals(String.valueOf(type))) {
+            return godzilla;
         }
         return entity; // No image exists for the given char
     }
