@@ -15,7 +15,7 @@ import Gui.Window;
 public class Godzilla extends SeaMonster {
     public Godzilla(Window newWindow, Thread newGuiThread) {
         super(newWindow, newGuiThread);
-        this.setTarget(newWindow.getPreyShip(currentLocation));
+        this.setTarget(newWindow.getPreyMonster(currentLocation));
         this.cSym = 'G';
         this.type = "Godzilla";
         sleepTime = 100;

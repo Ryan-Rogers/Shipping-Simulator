@@ -8,22 +8,15 @@ package Gui;
 
 // Map
 import Map.Location;
-<<<<<<< HEAD
 import Map.MapMetrics;
-=======
 import Moveable.Cargo;
->>>>>>> Ryan-Dev5
 
 // Moveable
-import Moveable.CargoShip;
 import Moveable.ContainerShip;
-import Moveable.Crane;
-import Moveable.Dock;
 import Moveable.Kraken;
 import Moveable.Leviathan;
 import Moveable.Move;
 import Moveable.OilTanker;
-import Moveable.SeaSerpent;
 import Moveable.CargoShip;
 import Moveable.Crane;
 import Moveable.Dock;
@@ -44,8 +37,6 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 // JavaFX
 // JavaFX > Application
@@ -546,6 +537,7 @@ public class Window extends Application {
                 mapMove(oldGodzilla, new Location(
                         Integer.valueOf(summonGodzillaTextX.getText()), 
                         Integer.valueOf(summonGodzillaTextY.getText())));
+                new Thread(oldGodzilla).start();
             } else {
                 oldGodzilla = new Godzilla(this, windowThread);
                 oldGodzilla.setLocation(new Location(
