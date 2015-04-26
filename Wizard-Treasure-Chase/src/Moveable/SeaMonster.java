@@ -7,20 +7,27 @@
 package Moveable;
 
 import Gui.Window;
-import Map.Location;
+import java.util.Random;
 
 
 /**
  * @author Ryan Rogers
  */
 // Location newLocation, Move newTarget, Window newWindow, Thread newGuiThread
-public class SeaMonster extends CargoShip {
+public class SeaMonster extends Move {
     
     public SeaMonster(Window newWindow, Thread newGuiThread) {
         super(newWindow, newGuiThread);
-        this.setLocation(newWindow.getWaterLocations().get(newWindow
-                .getWaterLocations().size() - 1));
-        this.setTarget(newWindow.getTarget(this.getClass()));
+//        this.setLocation(newWindow.getWaterLocations().get(newWindow
+//                .getWaterLocations().size() - 1));
+        
+//        this.setTarget(newWindow.getPreyShip(this.getClass()));
+        
+        this.setTarget(newWindow.getPreyShip(currentLocation));
+        
+        
+        
+        sleepTime -= (new Random()).nextInt(300);
         this.cSym = 'E';
         this.type = "SeaMonster";
     }

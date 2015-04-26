@@ -8,6 +8,7 @@ package Gui;
 
 // Map
 import Map.Location;
+import Map.MapMetrics;
 
 // Moveable
 import Moveable.CargoShip;
@@ -96,6 +97,9 @@ public class Window extends Application {
     static char[][] mapList = new char[rows][columns]; // [row][column]
     static ConcurrentLinkedQueue<Move> shipList
             = new ConcurrentLinkedQueue<>();
+    /**
+     * All of the Movers on the map
+     */
     static ConcurrentLinkedQueue<Move> mapObjects
             = new ConcurrentLinkedQueue<>();
     static ConcurrentLinkedQueue<Location> locationList
@@ -157,7 +161,7 @@ public class Window extends Application {
     @Override
     public void start(Stage windowStage) {
     // Variable Initializations
-        theme = "Theme/Past/";
+        theme = "Theme/Future/";
         
     // Setup
         GridPane root = new GridPane(); // Creating window pane
@@ -842,15 +846,100 @@ public class Window extends Application {
         }
     }
     
-    public Move getTarget(Class moveClass) {
-        if(moveClass.equals(SeaMonster.class)) {
-            for(Move mapObject : mapObjects) {
-                if(mapObject.getClass().equals(CargoShip.class)) {
-                    return mapObject;
-                }
+    /**
+     * Returns the closest ship to the passed location.
+     * @param location Location, usually of self, to find the nearest ship.
+     * @return The nearest ship to the location
+     */
+    public Move getPreyMonster(Location location)
+    {
+        //A list is needed to store the ships
+        ArrayList<SeaMonster> monsters = new ArrayList<>();
+        
+        //Add all the ships to the list ships
+        for(Move mover: mapObjects)
+        {
+            if(mover instanceof SeaMonster)
+            {
+                monsters.add((SeaMonster)mover);
             }
         }
-        return null;
+        
+        SeaMonster monstChoice;
+        
+        //Decide which ship is closest
+        if(monsters.isEmpty())
+        {
+            monstChoice = null;
+        }
+        else
+        {
+            //Default
+            monstChoice = monsters.get(0);
+        }
+        
+        Map.MapMetrics mm = new MapMetrics();
+        
+        //Replace the default choice with a closer ship when possible
+        for(int i = 0; i < monsters.size() - 1; i++)
+        {
+            if(mm.distance(monsters.get(i).getLocation(), location)
+                    <
+               mm.distance(monstChoice.getLocation(), location))
+            {
+                monstChoice = monsters.get(i);
+            }
+        }
+        
+        return monstChoice;
+    }
+    
+    /**
+     * Returns the closest ship to the passed location.
+     * @param location Location, usually of self, to find the nearest ship.
+     * @return The nearest ship to the location
+     */
+    public Move getPreyShip(Location location)
+    {
+        //A list is needed to store the ships
+        ArrayList<CargoShip> ships = new ArrayList<>();
+        
+        //Add all the ships to the list ships
+        for(Move mover: mapObjects)
+        {
+            if(mover instanceof CargoShip)
+            {
+                ships.add((CargoShip)mover);
+            }
+        }
+        
+        CargoShip shipChoice;
+        
+        //Decide which ship is closest
+        if(ships.isEmpty())
+        {
+            shipChoice = null;
+        }
+        else
+        {
+            //Default
+            shipChoice = ships.get(0);
+        }
+        
+        Map.MapMetrics mm = new MapMetrics();
+        
+        //Replace the default choice with a closer ship when possible
+        for(int i = 0; i < ships.size() - 1; i++)
+        {
+            if(mm.distance(ships.get(i).getLocation(), location)
+                    <
+               mm.distance(shipChoice.getLocation(), location))
+            {
+                shipChoice = ships.get(i);
+            }
+        }
+        
+        return shipChoice;
     }
     
 // Returns a new button with custom defaults

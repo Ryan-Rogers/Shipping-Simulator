@@ -51,6 +51,12 @@ public class Location
         y = location.y;
     }
 
+    @Override
+    public boolean equals(Object obj)
+    {
+        return ( (((Location)obj).x == x) && (((Location)obj).y == y) );
+    }
+    
     public int getX()
     {
         return x;

@@ -128,7 +128,7 @@ public class Move implements Runnable {
     @Override
     public void run() {
         if(target != null) { // Moveable has a target
-            destination = target.getLocation();
+            destination = target.currentLocation;
         }
         if(destination != null) { // Moveable has a destination
             
@@ -136,6 +136,10 @@ public class Move implements Runnable {
             while((currentLocation.getX() != destination.getX()
                     && currentLocation.getY() != destination.getY())
                     && guiThread.isAlive()) {
+                
+                if(target != null) { // Moveable has a target
+            destination = target.currentLocation;
+        }
                 
                 int xDifference; // Difference in current x and destination x
                 int yDifference; // Difference in current y and destination y
@@ -190,7 +194,7 @@ public class Move implements Runnable {
     }
     
 // Call Window to Move Ship
-    private void moveMe(int byX, int byY) {
+    protected void moveMe(int byX, int byY) {
         guiWindow.mapMove(this, new Location(currentLocation.getX() + byX, 
                 currentLocation.getY() + byY));
     }

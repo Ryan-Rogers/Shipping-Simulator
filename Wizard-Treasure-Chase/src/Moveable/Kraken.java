@@ -15,7 +15,7 @@ import Map.Location;
  * @author Ryan Rogers
  */
 
-public class Kraken extends CargoShip {
+public class Kraken extends SeaMonster {
     public Kraken(Window newWindow, Thread newGuiThread) {
         super(newWindow, newGuiThread);
         this.cSym = 'K';
