@@ -26,6 +26,7 @@ public class Move implements Runnable {
     protected Thread guiThread;
     protected int sleepTime;
     protected char cSym;
+    protected boolean isRunning;
     
     /**
      * Case sensitive representation of the class name 
@@ -36,6 +37,7 @@ public class Move implements Runnable {
     public Move(Location newLocation, Location newDestination, 
             Window newWindow, Thread newGuiThread) {
         destination = null;
+        isRunning = false;
         sleepTime = 500 + new Random().nextInt(500); //TODO: have child classes set this by weight
         currentLocation = newLocation;
         destination = newDestination;
@@ -123,10 +125,11 @@ public class Move implements Runnable {
         
         return dockLocations.get(index);
     }
-
+    
 // Runnable
     @Override
     public void run() {
+        isRunning = true;
         if(target != null) { // Moveable has a target
             destination = target.currentLocation;
         }
@@ -135,7 +138,7 @@ public class Move implements Runnable {
         // Loops while moveable is not at destination and GUI is open
             while((currentLocation.getX() != destination.getX()
                     && currentLocation.getY() != destination.getY())
-                    && guiThread.isAlive()) {
+                    && guiThread.isAlive() && isRunning) {
                 
                 if(target != null) { // Moveable has a target
             destination = target.currentLocation;
@@ -147,6 +150,10 @@ public class Move implements Runnable {
             // Sleeping
                 try { 
                     Thread.sleep(sleepTime);
+                    if(!isRunning)
+                    {
+                        continue;
+                    }
                     
             // Sleep exception
                 } catch (InterruptedException ex) {
@@ -191,6 +198,11 @@ public class Move implements Runnable {
                     }
             }
         }
+    }
+    
+    public void end()
+    {
+        isRunning = false;
     }
     
 // Call Window to Move Ship

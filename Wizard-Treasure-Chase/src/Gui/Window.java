@@ -367,7 +367,7 @@ public class Window extends Application {
         Button displayShipsButton = new Button("Display");
         displayShipsButton.setOnAction((ActionEvent event) -> {
             System.err.println("Display ships button pressed");
-            updateCurrentShips();
+            updateCurrentShips(true);
         });
         updateShip.addRow(0, displayShipsButton);
         Label updateShipLabel = new Label("Index of ship to modify:");
@@ -378,7 +378,7 @@ public class Window extends Application {
         updateShipButton.setOnAction((ActionEvent event) -> {
             System.err.println("Update ships button pressed");
             if(currentShips.isEmpty()) {
-                updateCurrentShips();
+                updateCurrentShips(false);
             }
         });
         updateShip.addRow(3, updateShipButton);
@@ -396,7 +396,7 @@ public class Window extends Application {
         displayAllShips.setAlignment(Pos.BASELINE_LEFT);
         displayAllShips.setOnAction((ActionEvent event) -> {
             System.err.println("Display all ships button pressed");
-            updateCurrentShips();
+            updateCurrentShips(true);
         });
         shipMenuArea.addRow(1, displayAllShips);
 
@@ -407,9 +407,8 @@ public class Window extends Application {
         removeAllShips.setStyle("-fx-base: #003380ff;");
         removeAllShips.setAlignment(Pos.BASELINE_LEFT);
         removeAllShips.setOnAction((ActionEvent event) -> {
-            System.err.println("Display all ships button pressed");
+            System.err.println("Remove all ships button pressed");
             removeAllShips();
-            drawMapObjects();
         });
         shipMenuArea.addRow(2, removeAllShips);
 
@@ -855,6 +854,18 @@ public class Window extends Application {
        }
    }
 
+    public void resetMapButtonImages()
+    {
+        for(int row = 0; row < rows; row++)
+        {
+            for(int column = 0; column < columns; column++)
+            {
+                Button button = mapButtons.get(row).get(column);
+                button.setGraphic(customImageView(mapList[row][column]));
+            }
+        }
+    }
+    
     /**
      * Draws mapList to mapButtons.
      * Clears existing buttons before creating new ones.
@@ -995,18 +1006,41 @@ public class Window extends Application {
     public void drawMapObjects() {
        for(Move mapObject : mapObjects) {
            mapMove(mapObject, mapObject.getLocation());
-       } 
+       }
     }
     
     /**
      * Removes all ships from mapObjects.
      */
     public void removeAllShips() {
-        updateCurrentShips();
-        for(CargoShip currentShip : currentShips) {
-            currentShip = null;
+        
+        updateCurrentShips(false);
+        
+        for(CargoShip currentShip : currentShips)
+        {
+            currentShip.end();
         }
-        updateCurrentShips();
+        
+        shipList.clear();
+        locationList.clear();
+        
+        for(Move mover : mapObjects)
+        {
+            mapList[mover.getLocation().getY()][mover.getLocation().getX()] 
+                = terrainMap[mover.getLocation().getY()][mover.getLocation().getX()];
+            
+            if(mover instanceof CargoShip)
+                mapObjects.remove(mover);
+        }
+        
+        updateCurrentShips(false);
+        
+        drawMapObjects();
+        
+        resetMapButtonImages();
+        
+        
+        
     }
 
 // Creating a ship at a random watery location
@@ -1047,15 +1081,21 @@ public class Window extends Application {
     /**
      * Populates currentShips from mapObjects. Adds currentShips' toStrings
      * to textOutput.
+     * @param print Whether or not to print to the console
      */
-    public void updateCurrentShips() {
-        currentShips = null;
-        currentShips = new ConcurrentLinkedQueue();
+    public void updateCurrentShips(boolean print) {
+        currentShips = new ConcurrentLinkedQueue<CargoShip>();
         for(Move mapObject : mapObjects) {
-            if(mapObject.getClass().equals(CargoShip.class)) {
-                currentShips.add(CargoShip.class.cast(mapObject));
+            if(mapObject instanceof CargoShip) {
+                currentShips.add((CargoShip)mapObject);
             }
         }
+        
+        if(!print)
+        {
+            return;
+        }
+        
         int index = 0;
         for(CargoShip currentShip : currentShips) {
             textOutput("Ship Index: " + index);
