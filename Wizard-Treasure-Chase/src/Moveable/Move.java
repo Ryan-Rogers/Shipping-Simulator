@@ -36,7 +36,7 @@ public class Move implements Runnable {
     public Move(Location newLocation, Location newDestination, 
             Window newWindow, Thread newGuiThread) {
         destination = null;
-        sleepTime = 500; //TODO: have child classes set this by weight
+        sleepTime = 500 + new Random().nextInt(500); //TODO: have child classes set this by weight
         currentLocation = newLocation;
         destination = newDestination;
         guiWindow = newWindow;
@@ -55,7 +55,7 @@ public class Move implements Runnable {
         guiWindow = newWindow;
         guiThread = newGuiThread;
         
-        sleepTime = 500; //TODO: have child classes set this by weight
+        sleepTime = 500 + new Random().nextInt(500);
         currentLocation = getValidSpawn(); // DEBUG DEFAULT UNUSED
         destination = getValidDestination(); // DEBUG DEFAULT UNUSED
         
@@ -73,7 +73,7 @@ public class Move implements Runnable {
         guiWindow = newWindow;
         guiThread = newGuiThread;
         
-        sleepTime = 500; //TODO: have child classes set this by weight
+        sleepTime = 500 + new Random().nextInt(500);
         currentLocation = getValidSpawn(); // DEBUG DEFAULT UNUSED
         destination = null; // DEBUG DEFAULT UNUSED
         
@@ -89,7 +89,7 @@ public class Move implements Runnable {
 // New moveable with a target
     public Move(Location newLocation, Move newTarget, Window newWindow,
             Thread newGuiThread) {
-        sleepTime = 500; //TODO: have child classes set this by weight
+        sleepTime = 500 + new Random().nextInt(500);
         currentLocation = newLocation;
         target = newTarget;
         guiWindow = newWindow;
@@ -214,6 +214,14 @@ public class Move implements Runnable {
 // Set Location
     public void setLocation(Location newLocation) {
         currentLocation = newLocation;
+    }
+    
+    /**
+     * Set target
+     * @param newTarget 
+     */
+    public void setTarget(Move newTarget) {
+        target = newTarget;
     }
     
 // Get cSym

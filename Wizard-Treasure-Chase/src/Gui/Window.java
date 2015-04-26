@@ -25,6 +25,7 @@ import Moveable.Dock;
 import Moveable.Godzilla;
 import Moveable.Pier;
 import Moveable.Port;
+import Moveable.SeaMonster;
 import Moveable.SeaSerpent;
 
 // Java
@@ -840,9 +841,18 @@ public class Window extends Application {
             }
         }
     }
-
-
-
+    
+    public Move getTarget(Class moveClass) {
+        if(moveClass.equals(SeaMonster.class)) {
+            for(Move mapObject : mapObjects) {
+                if(mapObject.getClass().equals(CargoShip.class)) {
+                    return mapObject;
+                }
+            }
+        }
+        return null;
+    }
+    
 // Returns a new button with custom defaults
     public Button customButton()
     {
@@ -870,8 +880,7 @@ public class Window extends Application {
     }
 
 // Creating a ship at a random watery location
-    public void newRandomShip()
-    {
+    public void newRandomShip() {
         Move newShip;
         Random random = new Random();
         if (random.nextInt(3) == 0) {
@@ -885,7 +894,7 @@ public class Window extends Application {
         }
         mapObjects.add(newShip);
         new Thread(newShip).start();
-    }
+    }    
 
 // Creating a monster at a random watery location
     public void newRandomMonster()
@@ -900,11 +909,7 @@ public class Window extends Application {
             } else {
                 newMonster = new Kraken(this, windowThread);
            }
-       }
-        newMonster.setLocation(new Location(random.nextInt(54),
-                random.nextInt(36)));
-        newMonster.setDestination(new Location(random.nextInt(54),
-                random.nextInt(36)));
+        }
         mapObjects.add(newMonster);
         new Thread(newMonster).start();
     }
@@ -998,11 +1003,11 @@ public class Window extends Application {
     {
         Random random = new Random();
         if (".".equals(String.valueOf(type))) {
-            switch (random.nextInt(50)) {
-            // 1/50
+            switch (random.nextInt(100)) {
+            // 1/100
                 case 0:
                     return wateralt2;
-            // 4/50
+            // 4/100
                 case 1:
                     return wateralt;
                 case 2:
@@ -1011,7 +1016,7 @@ public class Window extends Application {
                     return wateralt;
                 case 4:
                     return wateralt;
-            // 45/50
+            // 45/100
                 default:
                     return water;
             }
@@ -1058,28 +1063,23 @@ public class Window extends Application {
         }
         return entity; // No image exists for the given char
     }
-     
-// Prints the current mapList to the console
-
-    public void printMap()
-    {
+    
+    /**
+     * Prints the current mapList to the console
+     */
+    public void printMap() {
         printMap(mapList);
     }
-
-// Returns map
+    
     /**
-     *
      * @return
      */
-    public char[][] getMapList()
-    {
+    public char[][] getMapList() {
         return mapList;
     }
-
-//
+    
     /**
      * Saves the received mapList
-     *
      * @param newMap
      */
     public void setMapList(char[][] newMap)
@@ -1088,15 +1088,12 @@ public class Window extends Application {
     }
 
 // Returns mapButtons
-    public ArrayList<ArrayList<Button>> getMapButtons()
-    {
+    public ArrayList<ArrayList<Button>> getMapButtons() {
         return mapButtons;
     }
 
-//
     /**
      * Returns mapMoveList
-     *
      * @return
      */
     public ConcurrentLinkedQueue<Move> getMapMoveList()
