@@ -830,21 +830,6 @@ public class Window extends Application {
                 newShip = new ContainerShip(this, windowThread);
             }
         }
-        //TODO: Mason: remove this comment
-//        newShip.setLocation(new Location(random.nextInt(54), 
-//                random.nextInt(36)));
-<<<<<<< HEAD
-        newShip.setDestination(new Location(random.nextInt(54), 
-                random.nextInt(36)));
-        System.err.println("Random ship location: " + newShip.getLocation());
-        System.err.println("Random ship destination: "
-                + newShip.getDestination());
-=======
-//        newShip.setDestination(new Location(random.nextInt(54), 
-//                random.nextInt(36)));
-//        System.err.println("Random ship location: " + newShip.getLocation());
-//        System.err.println("Random ship destination: " + newShip.getDestination());
->>>>>>> Mason-Dev6
         mapObjects.add(newShip);
         new Thread(newShip).start();
     }
