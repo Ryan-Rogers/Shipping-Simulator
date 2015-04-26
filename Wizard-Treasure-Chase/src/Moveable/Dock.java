@@ -84,7 +84,7 @@ public class Dock extends Move
      */
     public Dock(String input, Window newWindow, Thread newGuiThread)
     {
-        super(newWindow, newGuiThread);
+        super(newWindow, newGuiThread, false);
         
         String tokens[];
         tokens = input.split(",");
