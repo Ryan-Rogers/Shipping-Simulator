@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.application.Platform;
@@ -41,9 +39,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
@@ -74,16 +70,20 @@ public class Window extends Application {
         return locations;
     }
     
-//    public ArrayList<Location> getDockLocations()
-//    {
-//        ArrayList<Location> locations = new ArrayList<>();
-//        
-//        .stream().forEach((lo) -> {
-//            locations.add(lo);
-//        });
-//        
-//        return locations;
-//    }
+    public ArrayList<Location> getDockLocations()
+    {
+        ArrayList<Location> locations = new ArrayList<>();
+        
+        for(Move move: mapObjects)
+        {
+            if(move instanceof Dock)
+            {
+                locations.add(move.getLocation());
+            }
+        }
+        
+        return locations;
+    }
     
     GridPane rightPane;
     ScrollPane outputScroll;
@@ -92,7 +92,7 @@ public class Window extends Application {
     static double iconSize = 20;
     static final int rows = 36;
     static final int columns = 54;
-    
+
 // Variables
     static char[][] terrainMap; // [row][column]
     static char[][] mapList = new char[rows][columns]; // [row][column]
@@ -234,7 +234,7 @@ public class Window extends Application {
         logoButton.setStyle("-fx-background-color: #3771c8ff;"); // Dark blue
         logoButton.setGraphic(imageView);
         rightPane.add(logoButton, 0, 0);
-        
+
     // Text Area
         outputLabel = new Label("Welcome!");
         outputLabel.setAlignment(Pos.TOP_LEFT);
@@ -833,11 +833,18 @@ public class Window extends Application {
         //TODO: Mason: remove this comment
 //        newShip.setLocation(new Location(random.nextInt(54), 
 //                random.nextInt(36)));
+<<<<<<< HEAD
         newShip.setDestination(new Location(random.nextInt(54), 
                 random.nextInt(36)));
         System.err.println("Random ship location: " + newShip.getLocation());
         System.err.println("Random ship destination: "
                 + newShip.getDestination());
+=======
+//        newShip.setDestination(new Location(random.nextInt(54), 
+//                random.nextInt(36)));
+//        System.err.println("Random ship location: " + newShip.getLocation());
+//        System.err.println("Random ship destination: " + newShip.getDestination());
+>>>>>>> Mason-Dev6
         mapObjects.add(newShip);
         new Thread(newShip).start();
     }

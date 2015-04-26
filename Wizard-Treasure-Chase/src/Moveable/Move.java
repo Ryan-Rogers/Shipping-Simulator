@@ -57,7 +57,25 @@ public class Move implements Runnable {
         
         sleepTime = 500; //TODO: have child classes set this by weight
         currentLocation = getValidSpawn(); // DEBUG DEFAULT UNUSED
-        destination = new Location(25, 25); // DEBUG DEFAULT UNUSED
+        destination = getValidDestination(); // DEBUG DEFAULT UNUSED
+        
+        type = "Moveable";
+        cSym = 'E';
+    }
+    
+        /**
+     * For creating dock only
+     * @param newWindow
+     * @param newGuiThread 
+     */
+    public Move(Window newWindow, Thread newGuiThread, boolean temp)
+    {
+        guiWindow = newWindow;
+        guiThread = newGuiThread;
+        
+        sleepTime = 500; //TODO: have child classes set this by weight
+        currentLocation = getValidSpawn(); // DEBUG DEFAULT UNUSED
+        destination = null; // DEBUG DEFAULT UNUSED
         
         type = "Moveable";
         cSym = 'E';
@@ -95,7 +113,15 @@ public class Move implements Runnable {
     
     protected Location getValidDestination()
     {
-        return new Location(25, 25);
+        ArrayList<Location> dockLocations;
+        
+        dockLocations = guiWindow.getDockLocations();
+        
+        Random rand = new Random();
+        
+        int index = rand.nextInt(dockLocations.size());
+        
+        return dockLocations.get(index);
     }
 
 // Runnable
