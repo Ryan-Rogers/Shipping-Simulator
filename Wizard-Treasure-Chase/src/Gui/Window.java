@@ -7,6 +7,7 @@
 package Gui;
 
 // Map
+import Map.FileHandler;
 import Map.Location;
 import Map.MapMetrics;
 import Moveable.Cargo;
@@ -289,10 +290,16 @@ public class Window extends Application {
         snapShotPane.setContent(snapShotMenu);
         Label snapShotLabel = new Label("File path:");
         snapShotMenu.addRow(0, snapShotLabel);
-        TextField snapShotText = new TextField("snapshots/complex");
+        TextField snapShotText = new TextField("SnapShots/newComplex");
         snapShotMenu.addRow(1, snapShotText);
         Button snapShotButton = new Button("Save Snap Shot");
         snapShotMenu.addRow(2, snapShotButton);
+        snapShotButton.setOnAction((ActionEvent event) -> {
+            System.err.println("Snap Shot button pressed");
+            FileHandler fileHandler = new FileHandler(snapShotText.getText());
+            fileHandler.saveMap(terrainMap);
+            fileHandler.savePort(port);
+        });
 
     // File Menu > Button Area > Close button
         Button closeButton = new Button("Close");
