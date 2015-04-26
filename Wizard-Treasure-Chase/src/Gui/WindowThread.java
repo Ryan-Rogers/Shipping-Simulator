@@ -12,37 +12,18 @@ package Gui;
 // WindowThread runs window
 public class WindowThread extends Thread {
     
+// Variables
     Window threadWindow;
-    boolean restart = true;
-    String file;
-    String theme;
     
-    // Consutrctor
-    public WindowThread(String newFile, String newTheme) {
-        this.file = newFile;
-        this.theme = newTheme;
+// Consutrctor
+    public WindowThread() {
     }
     
     @Override
     public void run() {
-        while(restart) {
-            restart = false;
-            threadWindow = null;
-            threadWindow = new Window();
-            threadWindow.setWindowThread(this);
-            threadWindow.setFileName(file);
-            threadWindow.setTheme(theme);
-            threadWindow.main((String[]) null);
-        }
+        threadWindow = new Window();
+        threadWindow.setWindowThread(this);
+        threadWindow.main((String[]) null);
     }
     
-    public void setFile(String newFile) {
-        file = newFile;
-        restart = true;;
-    }
-    
-    public void setTheme(String newTheme) {
-        theme = newTheme;
-        restart = true;
-    }
 }

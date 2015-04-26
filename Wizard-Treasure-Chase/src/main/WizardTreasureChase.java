@@ -14,16 +14,10 @@ import Gui.WindowThread;
  */
 
 public class WizardTreasureChase {
-    
-    static String file;
-    static String theme;
-    
     public static void main(String[] args) {
         
     // GUI Window
-        file = "complex"; // Default files
-        theme = "Theme/Future/"; // Default theme
-        WindowThread windowThread = new WindowThread(file, theme);
+        WindowThread windowThread = new WindowThread();
         windowThread.start();
         
     }

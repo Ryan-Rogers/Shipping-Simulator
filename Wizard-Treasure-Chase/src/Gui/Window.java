@@ -1,6 +1,15 @@
+
+/*
+ * This is an assigned group project for CSE1325
+ * Members: Mason Moreland, Ryan Rogers, Raith Hamzah
+ */
+
 package Gui;
 
+// Map
 import Map.Location;
+
+// Moveable
 import Moveable.CargoShip;
 import Moveable.ContainerShip;
 import Moveable.Crane;
@@ -17,19 +26,33 @@ import Moveable.Godzilla;
 import Moveable.Pier;
 import Moveable.Port;
 import Moveable.SeaSerpent;
+
+// Java
+// Java > IO
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+
+// Java > Util
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import javafx.application.Application;
+
+// JavaFX
+// JavaFX > Application
 import static javafx.application.Application.launch;
+import javafx.application.Application;
 import javafx.application.Platform;
+
+// JavaFX > Event
 import javafx.event.ActionEvent;
+
+// JavaFX > Geometry
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+
+// JavaFX > Scene
 import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
@@ -45,30 +68,29 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.TextAlignment;
+
+// JavaFX > Stage
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 /**
  * @author Ryan Rogers
+ * JavaFX GUI
  */
-// Application
-public class Window extends Application
-{
-
-// Variables set before run by main
-    static String fileName;
-    static String theme;
-
+public class Window extends Application {
+    
 // Window Variables
-    public static final int MENU_WIDTH = 200; // DEFAULT
-
-// DEFAULT Variables
+    public static final int rightPaneWidth = 200; // DEFAULT
     static double iconSize = 20;
     static final int rows = 36;
     static final int columns = 54;
 
-// Variables
+// GUI Variables
+    GridPane rightPane;
+    ScrollPane outputScroll;
+    static String fileName;
+    static String theme;
     static char[][] terrainMap; // [row][column]
     static char[][] mapList = new char[rows][columns]; // [row][column]
     static ConcurrentLinkedQueue<Move> shipList
@@ -86,7 +108,7 @@ public class Window extends Application
     static Port port = new Port();
 
 // Files
-// Images
+// Files > Images
     static Image water;
     static Image wateralt;
     static Image wateralt2;
@@ -111,7 +133,7 @@ public class Window extends Application
     static Image craneship;
     static Image piership;
 
-// Sounds
+// Files > Sounds
     static Media krakenSound = new Media(new File("Sounds/Kraken.wav").toURI()
             .toString());
     static Media leviathanSound = new Media(new File("Sounds/Leviathan.wav")
@@ -124,186 +146,30 @@ public class Window extends Application
     static Media godzillaSummonSound = new Media(new File(
             "Sounds/GodzillaSummon.wav").toURI().toString());
 
-// Processing queue
-    public static boolean mapUpdate()
-    {
-        if (!shipList.isEmpty()) { // Ships need to be updated
-            if (!mapButtons.isEmpty()) { // GUI buttons are loaded
-                Move currentShip = shipList.remove();
-                Location newLocation = locationList.remove();
-                mapButtons.get(newLocation.getY())
-                        .get(newLocation.getX())
-                        .setGraphic(customImageView(currentShip.getCSym()));
-                
-                Location previousLocation = new Location(currentShip.getLocation());
-                if (currentShip.getLocation().getX() != newLocation.getX()
-                        || currentShip.getLocation().getY()
-                        != newLocation.getY()) {
-                    
-                    mapButtons.get(previousLocation.getY())
-                            .get(previousLocation.getX())
-                            .setGraphic(customImageView(terrainMap[previousLocation.getY()][previousLocation.getX()]));
-                    
-                    currentShip.setLocation(newLocation);
-                    
-                    for(Move otherMover: mapObjects)
-                    {
-                        if(currentShip.equals(otherMover))
-                        {
-                            continue;
-                        } else {
-                            if(otherMover.getLocation().getX()
-                                    == previousLocation.getX()
-                                    && otherMover.getLocation().getY()
-                                    == previousLocation.getY())
-                            {
-                            mapButtons.get(previousLocation.getY())
-                            .get(previousLocation.getX())
-                            .setGraphic(customImageView(otherMover.getCSym()));
-                            }
-                        }
-                    }
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-        }
-        return false;
-    }
-    
-
-// Returns a default ImageView
-    public static ImageView customImageView(Image image)
-    {
-        ImageView imageView = new ImageView();
-        imageView.setImage(image);
-        imageView.setFitWidth(iconSize);
-        imageView.setPreserveRatio(true);
-        imageView.setSmooth(true);
-        imageView.setCache(true);
-        return imageView;
-    }
-
-// Returns a default ImageView
-    public static ImageView customImageView(char type)
-    {
-        return customImageView(charToImage(type));
-    }
-
-// Converts a char to the appropriate Image
-    public static Image charToImage(char type)
-    {
-        Random random = new Random();
-        if (".".equals(String.valueOf(type))) {
-            switch (random.nextInt(50)) {
-                // 1/50
-                case 0:
-                    return wateralt2;
-                    // 3/50
-                case 1:
-                    return wateralt;
-                case 2:
-                    return wateralt;
-                case 3:
-                    return wateralt;
-                    // 46/50
-                default:
-                    return water;
-            }
-        }
-        if ("o".equals(String.valueOf(type))) {
-            return sand;
-        }
-        if ("*".equals(String.valueOf(type))) {
-            if (random.nextInt(6) > 0) {
-                return land;
-            } else {
-                return landalt;
-            }
-        }
-        if ("T".equals(String.valueOf(type))) {
-            return oilTanker;
-        }
-        if ("S".equals(String.valueOf(type))) {
-            return cargoShip;
-        }
-        if ("B".equals(String.valueOf(type))) {
-            return containerShip;
-        }
-        if ("s".equals(String.valueOf(type))) {
-            return seaserpent;
-        }
-        if ("L".equals(String.valueOf(type))) {
-            return leviathan;
-        }
-        if ("K".equals(String.valueOf(type))) {
-            return kraken;
-        }
-        if ("D".equals(String.valueOf(type))) {
-            return dock;
-        }
-        if ("C".equals(String.valueOf(type))) {
-            return crane;
-        }
-        if ("P".equals(String.valueOf(type))) {
-            return pier;
-        }
-        return entity; // No image exists for the given char
-    }
-    GridPane rightPane;
-    ScrollPane outputScroll;
-    public ArrayList<Location> getWaterLocations()
-    {
-        ArrayList<Location> locations = new ArrayList<>();
-        
-        waterLocations.stream().forEach((lo) -> {
-            locations.add(lo);
-        });
-        
-        return locations;
-    }
-    public ArrayList<Location> getDockLocations()
-    {
-        ArrayList<Location> locations = new ArrayList<>();
-        
-        for (Move move : mapObjects) {
-            if (move instanceof Dock) {
-                locations.add(move.getLocation());
-            }
-        }
-
-        return locations;
-    }
-
 // Application loop
-    
-    public void main(String[] args)
-    {
+    public void main(String[] args) {
         System.err.println("The gui is loading...");
         launch(args); // Launching application
     }
 
 // Window
     @Override
-    public void start(Stage windowStage)
-    {
-
-        // Setup
+    public void start(Stage windowStage) {
+    // Variable Initializations
+        theme = "Theme/Past/";
+        
+    // Setup
         GridPane root = new GridPane(); // Creating window pane
         Scene scene = new Scene(root, 1280, 720); // Creating scene
         windowStage.setScene(scene); // Adding scene to window pane
         windowStage.initStyle(StageStyle.UNDECORATED);
         windowStage.setTitle("Wizard Treasure Chase"); // Setting title
 
-        // Static GUI Code
-        windowStage.setWidth(1280);
-        windowStage.setHeight(720);
-        windowStage.show(); // Setting window to be visible
+    // Static GUI Code
+        windowStage.setWidth(1280); // DEFAULT
+        windowStage.setHeight(720); // DEFAULT
 
-        // Files
+    // Files
         String fileHeader = "FILE:";
         String fileFooter = ".png";
         entity = new Image(fileHeader + "entity" + fileFooter); // No theme
@@ -331,7 +197,8 @@ public class Window extends Application
         craneship = new Image(fileHeader + theme + "shipcrane" + fileFooter);
         piership = new Image(fileHeader + theme + "shippier" + fileFooter);
 
-        // Map pane
+// Main Pane
+    // Map pane
         mapPane.setAlignment(Pos.TOP_LEFT);
         root.add(mapPane, 0, 0);
         mapPane.setMaxWidth(1080);
@@ -341,16 +208,16 @@ public class Window extends Application
         mapPane.setPrefWidth(1080);
         mapPane.setPrefHeight(720);
 
-        // Right Pane
+    // Right Pane
         rightPane = new GridPane();
         rightPane.setAlignment(Pos.TOP_RIGHT);
         rightPane.setStyle("-fx-base: #3771c8ff;"); // light blue
         rightPane.setMinHeight(iconSize * rows);
-        rightPane.setMaxWidth(MENU_WIDTH);
+        rightPane.setMaxWidth(rightPaneWidth);
         root.add(rightPane, 1, 0);
 
 // Logo
-        // Logo Image
+    // Logo Image
         ImageView imageView = new ImageView();
         imageView.setImage(logo);
         imageView.setPreserveRatio(true);
@@ -358,7 +225,7 @@ public class Window extends Application
         imageView.setCache(true);
         imageView.setStyle("-fx-base: #3771c8ff;"); // light blue
 
-        // Logo Image Label
+    // Logo Image Label
         Label logoButton = new Label();
         logoButton.setPadding(new Insets(15, 15, 15, 15));
         logoButton.setAlignment(Pos.CENTER);
@@ -367,26 +234,28 @@ public class Window extends Application
         logoButton.setGraphic(imageView);
         rightPane.add(logoButton, 0, 0);
 
-        // Text Area
+    // Text Area
         outputLabel = new Label("Welcome!");
         outputLabel.setAlignment(Pos.TOP_LEFT);
-        outputLabel.setPrefWidth(MENU_WIDTH - 14);
-        outputLabel.setMaxWidth(MENU_WIDTH - 14);
-        outputLabel.setMinWidth(MENU_WIDTH - 14);
+        outputLabel.setPrefWidth(rightPaneWidth - 14);
+        outputLabel.setMaxWidth(rightPaneWidth - 14);
+        outputLabel.setMinWidth(rightPaneWidth - 14);
         outputLabel.setPrefHeight(200);
         outputLabel.setWrapText(true);
-        outputLabel.setStyle("-fx-base: #3771c8ff; -fx-text-fill: white; -fx-background-color: #003380ff;");
+        outputLabel.setStyle("-fx-base: #3771c8ff; -fx-text-fill: white;"
+                + " -fx-background-color: #003380ff;");
         outputLabel.setTextFill(Paint.valueOf("000"));
         outputScroll = new ScrollPane();
         outputScroll.setContent(outputLabel);
         outputScroll.setPrefHeight(200);
         rightPane.add(outputScroll, 0, 2);
 
-        // File Menu
+// File Menu
+    // File Menu Area
         GridPane fileMenuArea = new GridPane();
         fileMenuArea.setPadding(new Insets(0, 0, 0, 0));
 
-        // File Menu > Open
+    // File Menu > Open
         TitledPane openPane = new TitledPane();
         openPane.setText("Open");
         openPane.setStyle("-fx-base: #003380ff;"); // Dark blue
@@ -398,13 +267,16 @@ public class Window extends Application
         openMenu.addRow(1, openText);
         Button openButton = new Button("Load");
         openButton.setOnAction((ActionEvent event) -> {
-            System.err.println("Load button pressed");
-            windowThread.setFile(openText.getText());
-            windowStage.close();
+            textOutput("Loading new files"); // Notifying user of load
+            fileName = openText.getText(); // Saving new fileName from GUI
+            loadMapList(); // Loading map in fileName to mapList
+            createMapButtons(); // Drawing mapList to mapButtons
+            populateMapPane(); // Adding mapButtons to mapPane
+            loadPortToMap(); // Loading Port from file
         });
         openMenu.addRow(2, openButton);
 
-        // File Menu > Snap Shot
+    // File Menu > Snap Shot
         TitledPane snapShotPane = new TitledPane();
         snapShotPane.setText("Snap Shot");
         snapShotPane.setStyle("-fx-base: #003380ff;");
@@ -417,10 +289,10 @@ public class Window extends Application
         Button snapShotButton = new Button("Save Snap Shot");
         snapShotMenu.addRow(2, snapShotButton);
 
-        // File Menu > Button Area > Close button
+    // File Menu > Button Area > Close button
         Button closeButton = new Button("Close");
-        closeButton.setPrefWidth(MENU_WIDTH);
-        closeButton.setMaxWidth(MENU_WIDTH);
+        closeButton.setPrefWidth(rightPaneWidth);
+        closeButton.setMaxWidth(rightPaneWidth);
         closeButton.setStyle("-fx-base: #003380ff;");
         closeButton.setAlignment(Pos.BASELINE_LEFT);
         closeButton.setOnAction((ActionEvent event) -> {
@@ -429,14 +301,13 @@ public class Window extends Application
             shipList.clear();
             mapObjects.clear();
             locationList.clear();
-
         });
         fileMenuArea.addRow(1, closeButton);
 
-        // File Menu > Button Area > Exit button
+    // File Menu > Button Area > Exit button
         Button exitButton = new Button("Exit");
-        exitButton.setPrefWidth(MENU_WIDTH);
-        exitButton.setMaxWidth(MENU_WIDTH);
+        exitButton.setPrefWidth(rightPaneWidth);
+        exitButton.setMaxWidth(rightPaneWidth);
         exitButton.setStyle("-fx-base: #003380ff;");
         exitButton.setAlignment(Pos.BASELINE_LEFT);
         exitButton.setOnAction((ActionEvent event) -> {
@@ -444,24 +315,24 @@ public class Window extends Application
         });
         fileMenuArea.addRow(2, exitButton);
 
-        // fileMenuAccordion
+    // fileMenuAccordion
         Accordion fileMenuAccordion = new Accordion();
         fileMenuAccordion.getPanes().addAll(openPane,
                 snapShotPane);
         fileMenuArea.addRow(0, fileMenuAccordion);
 
-        // fileMenu
+    // fileMenu
         TitledPane fileMenu = new TitledPane();
         fileMenu.setStyle("-fx-base: #3771c8ff;"); // light blue
         fileMenu.setText("File Menu");
         fileMenu.setContent(fileMenuArea);
 
-        // Ship Menu
-        // Ship Menu Area
+// Ship Menu
+    // Ship Menu Area
         GridPane shipMenuArea = new GridPane();
         shipMenuArea.setPadding(new Insets(0, 0, 0, 0));
 
-        // Ship Menu > Accordion > Generate Ships
+    // Ship Menu > Accordion > Generate Ships
         TitledPane generateShipsPane = new TitledPane();
         generateShipsPane.setText("Generate Ships");
         generateShipsPane.setStyle("-fx-base: #003380ff;");
@@ -474,13 +345,13 @@ public class Window extends Application
         Button generateShipButton = new Button("Generate");
         generateShipButton.setOnAction((ActionEvent event) -> {
             System.err.println("Generate ships button pressed");
-            for (int remaining = Integer.valueOf(generateShipNumber.getText()); remaining > 0; remaining--) {
+            for(int remaining = Integer.valueOf(generateShipNumber.getText()); remaining > 0; remaining--) {
                 newRandomShip();
             }
         });
         generateShipMenu.addRow(2, generateShipButton);
 
-        // Ship Menu > Accordion > Update Ships
+    // Ship Menu > Accordion > Update Ships
         TitledPane updateShipsPane = new TitledPane();
         updateShipsPane.setStyle("-fx-base: #003380ff;");
         updateShipsPane.setText("Update Ships");
@@ -488,15 +359,15 @@ public class Window extends Application
         updateShip.setStyle("-fx-base: #003380ff");
         updateShipsPane.setContent(updateShip);
 
-        // Ship Menu > Accordion
+    // Ship Menu > Accordion
         Accordion shipMenuAccordion = new Accordion();
         shipMenuAccordion.getPanes().addAll(generateShipsPane, updateShipsPane);
         shipMenuArea.addRow(0, shipMenuAccordion);
 
-        // Ship Menu > Button Area > Display All Ships
+    // Ship Menu > Button Area > Display All Ships
         Button displayAllShips = new Button("Display All Ships");
-        displayAllShips.setPrefWidth(MENU_WIDTH);
-        displayAllShips.setMaxWidth(MENU_WIDTH);
+        displayAllShips.setPrefWidth(rightPaneWidth);
+        displayAllShips.setMaxWidth(rightPaneWidth);
         displayAllShips.setStyle("-fx-base: #003380ff;");
         displayAllShips.setAlignment(Pos.BASELINE_LEFT);
         displayAllShips.setOnAction((ActionEvent event) -> {
@@ -506,43 +377,44 @@ public class Window extends Application
         });
         shipMenuArea.addRow(1, displayAllShips);
 
-        // Ship Menu > Button Area > Remove All Ships
+    // Ship Menu > Button Area > Remove All Ships
         Button removeAllShips = new Button("Remove All Ships");
-        removeAllShips.setPrefWidth(MENU_WIDTH);
-        removeAllShips.setMaxWidth(MENU_WIDTH);
+        removeAllShips.setPrefWidth(rightPaneWidth);
+        removeAllShips.setMaxWidth(rightPaneWidth);
         removeAllShips.setStyle("-fx-base: #003380ff;");
         removeAllShips.setAlignment(Pos.BASELINE_LEFT);
         shipMenuArea.addRow(2, removeAllShips);
 
-        // shipMenu
+    // shipMenu
         TitledPane shipMenu = new TitledPane();
         shipMenu.setText("Ship Menu");
         shipMenu.setStyle("-fx-base: #3771c8ff;");
         shipMenu.setContent(shipMenuArea);
 
-        // Port Menu
+// Port Menu
+    // Port Menu Area
         GridPane portMenuArea = new GridPane();
         portMenuArea.setPadding(new Insets(0, 0, 0, 0));
 
-        // Port Menu > Accordion > Unload Ship
+    // Port Menu > Accordion > Unload Ship
         TitledPane unloadShipPane = new TitledPane();
         unloadShipPane.setStyle("-fx-base: #003380ff;");
         unloadShipPane.setText("Unload Ship");
 
-        // Port Menu > Accordion > Update Dock
+    // Port Menu > Accordion > Update Dock
         TitledPane updateDockPane = new TitledPane();
         updateDockPane.setStyle("-fx-base: #003380ff;");
         updateDockPane.setText("Update Dock");
 
-        // Port Menu > Accordion
+    // Port Menu > Accordion
         Accordion portMenuAccordion = new Accordion();
         portMenuAccordion.getPanes().addAll(unloadShipPane, updateDockPane);
         portMenuArea.addRow(0, portMenuAccordion);
 
-        // Port Menu > Display All Docks
+    // Port Menu > Display All Docks
         Button displayAllDocks = new Button("Display All Docks");
-        displayAllDocks.setPrefWidth(MENU_WIDTH);
-        displayAllDocks.setMaxWidth(MENU_WIDTH);
+        displayAllDocks.setPrefWidth(rightPaneWidth);
+        displayAllDocks.setMaxWidth(rightPaneWidth);
         displayAllDocks.setStyle("-fx-base: #003380ff;");
         displayAllDocks.setAlignment(Pos.BASELINE_LEFT);
         displayAllDocks.setOnAction((ActionEvent event) -> {
@@ -550,10 +422,10 @@ public class Window extends Application
         });
         portMenuArea.addRow(1, displayAllDocks);
 
-        // Port Menu > Display All Cargos
+    // Port Menu > Display All Cargos
         Button displayAllCargos = new Button("Display All Cargos");
-        displayAllCargos.setPrefWidth(MENU_WIDTH);
-        displayAllCargos.setMaxWidth(MENU_WIDTH);
+        displayAllCargos.setPrefWidth(rightPaneWidth);
+        displayAllCargos.setMaxWidth(rightPaneWidth);
         displayAllCargos.setStyle("-fx-base: #003380ff;");
         displayAllCargos.setAlignment(Pos.BASELINE_LEFT);
         displayAllCargos.setOnAction((ActionEvent event) -> {
@@ -561,24 +433,24 @@ public class Window extends Application
         });
         portMenuArea.addRow(2, displayAllCargos);
 
-        // portMenu
+    // portMenu
         TitledPane portMenu = new TitledPane();
         portMenu.setText("Port Menu");
         portMenu.setStyle("-fx-base: #3771c8ff;");
         portMenu.setContent(portMenuArea);
-        // End of Port Menu
 
-        // Monster Menu
+// Monster Menu
+    // Monster Menu Area
         GridPane monsterMenuArea = new GridPane();
         monsterMenuArea.setPadding(new Insets(0, 0, 0, 0));
 
-        // Monster Menu
+    // Monster Menu Pane
         TitledPane monsterMenu = new TitledPane();
         monsterMenu.setText("Monster Menu");
         monsterMenu.setStyle("-fx-base: #3771c8ff;");
         monsterMenu.setContent(monsterMenuArea);
 
-        // Monster Menu > Accordion > Generate Monsters
+    // Monster Menu > Accordion > Generate Monsters
         TitledPane generateMonstersPane = new TitledPane();
         generateMonstersPane.setStyle("-fx-base: #003380ff;");
         generateMonstersPane.setText("Generate Monsters");
@@ -591,18 +463,18 @@ public class Window extends Application
         Button generateMonsterButton = new Button("Generate");
         generateMonsterButton.setOnAction((ActionEvent event) -> {
             System.err.println("Generate monsters button pressed");
-            for (int remaining = Integer.valueOf(generateMonsterNumber.getText()); remaining > 0; remaining--) {
+            for(int remaining = Integer.valueOf(generateMonsterNumber.getText()); remaining > 0; remaining--) {
                 newRandomMonster();
             }
         });
         generateMonsterMenu.addRow(2, generateMonsterButton);
 
-        // Monster Menu > Accordion > Update Monsters
+    // Monster Menu > Accordion > Update Monsters
         TitledPane updateMonstersPane = new TitledPane();
         updateMonstersPane.setStyle("-fx-base: #003380ff;");
         updateMonstersPane.setText("Update Monsters");
 
-        // Monster Menu > Summon Godzilla
+    // Monster Menu > Summon Godzilla
         TitledPane summonGodzilla = new TitledPane();
         summonGodzilla.setText("Summon Godzilla");
         summonGodzilla.setStyle("-fx-base: #003380ff;");
@@ -645,17 +517,17 @@ public class Window extends Application
         });
         summonGodzillaMenu.addRow(4, summonGodzillaButton);
         
-        // Monster Menu > Accordion
+    // Monster Menu > Accordion
         Accordion monsterMenuAccordion = new Accordion();
         monsterMenuAccordion.getPanes().addAll(generateMonstersPane,
                 updateMonstersPane, summonGodzilla);
         monsterMenuArea.addRow(0, monsterMenuAccordion);
 
-        // Monster Menu Buttons
-        // Monster Menu > Display All Monsters
+// Monster Menu Buttons
+    // Monster Menu > Display All Monsters
         Button displayAllMonsters = new Button("Display All Monsters");
-        displayAllMonsters.setPrefWidth(MENU_WIDTH);
-        displayAllMonsters.setMaxWidth(MENU_WIDTH);
+        displayAllMonsters.setPrefWidth(rightPaneWidth);
+        displayAllMonsters.setMaxWidth(rightPaneWidth);
         displayAllMonsters.setStyle("-fx-base: #003380ff;");
         displayAllMonsters.setAlignment(Pos.BASELINE_LEFT);
         displayAllMonsters.setOnAction((ActionEvent event) -> {
@@ -663,10 +535,10 @@ public class Window extends Application
         });
         monsterMenuArea.addRow(1, displayAllMonsters);
 
-        // Monster Menu > Remove All Monsters
+    // Monster Menu > Remove All Monsters
         Button removeAllMonsters = new Button("Remove All Monsters");
-        removeAllMonsters.setPrefWidth(MENU_WIDTH);
-        removeAllMonsters.setMaxWidth(MENU_WIDTH);
+        removeAllMonsters.setPrefWidth(rightPaneWidth);
+        removeAllMonsters.setMaxWidth(rightPaneWidth);
         removeAllMonsters.setStyle("-fx-base: #003380ff;");
         removeAllMonsters.setAlignment(Pos.BASELINE_LEFT);
         removeAllMonsters.setOnAction((ActionEvent event) -> {
@@ -674,17 +546,18 @@ public class Window extends Application
         });
         monsterMenuArea.addRow(2, removeAllMonsters);
 
-        // About
+// About Menu
+    // About Area
         TitledPane aboutPane = new TitledPane();
         aboutPane.setText("Team");
         aboutPane.setStyle("-fx-base: #003380ff;");
 
-        // About Area
+    // About Pane
         GridPane aboutGridPane = new GridPane();
         aboutGridPane.setPadding(new Insets(0, 0, 0, 0));
         aboutPane.setContent(aboutGridPane);
 
-        // About > Team
+    // About > Team
         Label aboutLabel = new Label();
         aboutLabel.setText("Space Wizard Treasure Hunters\n"
                 + "CSE 1325-002\n"
@@ -702,12 +575,12 @@ public class Window extends Application
         aboutLabel.setMinHeight(170); // Lines * Font
         aboutGridPane.addRow(1, aboutLabel);
 
-        // About > Team > Popout
+    // About > Team > Popout
         Button aboutButton = new Button("Popout");
         aboutButton.setStyle("-fx-base: #003380ff;");
-        aboutButton.setPrefWidth(MENU_WIDTH);
+        aboutButton.setPrefWidth(rightPaneWidth);
         aboutButton.setAlignment(Pos.TOP_LEFT);
-        aboutButton.setMaxWidth(MENU_WIDTH);
+        aboutButton.setMaxWidth(rightPaneWidth);
         aboutButton.setOnAction((ActionEvent event) -> {
             final Stage dialog = new Stage();
             dialog.initModality(Modality.APPLICATION_MODAL);
@@ -730,7 +603,7 @@ public class Window extends Application
         });
         aboutGridPane.addRow(0, aboutButton);
 
-        // About > GUI
+    // About > GUI
         TitledPane guiPane = new TitledPane();
         guiPane.setStyle("-fx-base: #003380ff;");
         guiPane.setText("GUI");
@@ -744,29 +617,27 @@ public class Window extends Application
         aboutGuiLabel.setMinHeight(80); // Lines * Font
         guiPane.setContent(aboutGuiLabel);
 
-        // aboutAccordion
+    // aboutAccordion
         Accordion aboutAccordion = new Accordion();
         aboutAccordion.getPanes().addAll(aboutPane, guiPane);
 
-        // about
+    // about
         TitledPane about = new TitledPane();
         about.setText("About");
         about.setStyle("-fx-base: #3771c8ff;");
         about.setContent(aboutAccordion);
 
-        // Menu Accordion
+    // Menu Accordion
         Accordion menuAccordion = new Accordion();
 
+    // Adding main menu accordion to rightPane
         rightPane.add(menuAccordion, 0, 1);
         menuAccordion.getPanes().addAll(fileMenu, shipMenu, portMenu,
                 monsterMenu, about);
-
-        // Map population
-        loadMapToMap();
-        loadPortToMap();
-        addSand();
-        createMapButtons();
-        populateMapPane();
+        
+    // Showing GUI
+        windowStage.show(); // Setting window to be visible
+        
     }
 
 // Add text to output area
@@ -778,27 +649,30 @@ public class Window extends Application
 // Add text to output area to multiple lines
     public void textOutput(String[] newOutput)
     {
-        for (int line = newOutput.length; line > 0; line--) {
+        for(int line = newOutput.length; line > 0; line--) {
             outputLabel.setText(newOutput[line - 1] + "\n"
                     + outputLabel.getText());
         }
     }
 
-// Populates mapPane with mapButtons
-    public void populateMapPane()
-    {
-        for (ArrayList<Button> y : mapButtons) {
-            for (Button x : y) {
+    /**
+     * Adds mapButtons to the mapPane after clearing it.
+     */
+    public void populateMapPane() {
+        mapPane.getChildren().clear();
+        for(ArrayList<Button> y : mapButtons) {
+            for(Button x : y) {
                 mapPane.add(x, y.indexOf(x), mapButtons.indexOf(y));
             }
         }
     }
 
 // Add Sand to Terrain Map
-    public void addSand()
-    {
-        for (int row = 1; row < 35; row++) {
-            for (int column = 1; column < 53; column++) {
+    public void addSand() {
+    // Up to 1
+        for(int row = 1; row < 35; row++) {
+            for(int column = 1; column < 53; column++) {
+            // Directional up to 1
                 if ('*' == terrainMap[row][column]) {
                     if ('.' == terrainMap[row + 1][column]) {
                         terrainMap[row][column] = 'o';
@@ -809,8 +683,7 @@ public class Window extends Application
                     } else if ('.' == terrainMap[row][column - 1]) {
                         terrainMap[row][column] = 'o';
                     }
-                    /*
-                    // Diagonals
+                // Diagonal up to 1
                     else if('.' == terrainMap[row + 1][column + 1]) {
                     terrainMap[row][column] = 'o';
                     }
@@ -823,26 +696,42 @@ public class Window extends Application
                     else if('.' == terrainMap[row - 1][column + 1]) {
                     terrainMap[row][column] = 'o';
                     }
-                    */
+                }
+            }
+        }
+    // Up to 2
+        for(int row = 2; row < 34; row++) {
+            for(int column = 2; column < 52; column++) {
+            // Directional up to 2
+                if ('*' == terrainMap[row][column]) {
+                    if ('.' == terrainMap[row + 2][column]) {
+                        terrainMap[row][column] = 'o';
+                    } else if ('.' == terrainMap[row - 2][column]) {
+                        terrainMap[row][column] = 'o';
+                    } else if ('.' == terrainMap[row][column + 2]) {
+                        terrainMap[row][column] = 'o';
+                    } else if ('.' == terrainMap[row][column - 2]) {
+                        terrainMap[row][column] = 'o';
+                    }
                 }
             }
         }
     }
 
     /**
-     *
-     *
-     */    public void loadMapToMap()
-     {
-         Scanner mapReader = null;
-         try {
-             mapReader = new Scanner(new File(fileName + ".map.txt"));
-         } catch (Exception e) {
-             System.err.println(e);
-             System.err.println("Exception occured while loading map!");
-         }
-         String line;
-         String[] splitLine;
+     * Loads the map from fileName to mapList and waterLocations.
+     * Creates an extra copy of the terrain to remain unchanged in terrainMap.
+     */
+    public void loadMapList(){
+        Scanner mapReader = null;
+        try {
+            mapReader = new Scanner(new File(fileName + ".map.txt"));
+        } catch (Exception e) {
+            System.err.println(e);
+            System.err.println("Exception occured while loading map!");
+        }
+        String line;
+        String[] splitLine;
         int row;
         int column;
         while (mapReader.hasNextLine()) {
@@ -856,168 +745,172 @@ public class Window extends Application
             }
         }
         terrainMap = mapList;
-     }
-     public void loadPortToMap()
-     {
-         
-         FileReader portReader = null;
-         try {
-             portReader = new FileReader(new File(fileName + ".port.txt"));
-         } catch (Exception e) {
-             System.err.println(e);
-             System.err.println("Exception occured while loading map!");
-         }
-         
-         String str = "";
-         int c;
-         try {
-             while ((c = portReader.read()) != -1) {
-                 str += (char) c;
-             }
-         } catch (IOException ex) {
-             System.err.println("loadPortToMap: Failed to read port.");
-         }
-         
-         String[] fLines = str.split("\n");
-         
-         String[] header = fLines[0].split(",");
-         //name = header[0];
-         
-         int i = Integer.parseInt(header[1].substring(1)); //skips the leading space
-         //i += 1; //offset so that x is line #
-         for (int x = 1; x <= i; x++) {
-             //System.err.println(i);
-             mapObjects.add(new Dock(fLines[x], this, windowThread));
-         }
-         //System.err.println(docks.size());
-         
-         int y = Integer.parseInt(header[2]);
-         for (int x = i + 1; x <= (i + y); x++) {
-             mapObjects.add(new Crane(fLines[x], this, windowThread));
-         }
-         //System.err.println(docks.size());
-         
-         int u = Integer.parseInt(header[3]);
-         for (int x = i + y + 1; x <= (i + y + u); x++) {
-             mapObjects.add(new Pier(fLines[x], this, windowThread));
-         }
-         
-         for (Move temp : mapObjects) {
-             if (temp instanceof Dock) {
-                 mapMove(temp, temp.getLocation());
-                 //terrainMap[temp.getLocation().getY()][temp.getLocation().getX()] = temp.getCSym();
-             }
+        addSand();
+    }
+
+    public ArrayList<Location> getWaterLocations() {
+        ArrayList<Location> locations = new ArrayList<>();
+        waterLocations.stream().forEach((lo) -> {
+            locations.add(lo);
+        });
+        return locations;
+    }
+        
+    public ArrayList<Location> getDockLocations() {
+        ArrayList<Location> locations = new ArrayList<>();
+        for(Move move : mapObjects) {
+            if (move instanceof Dock) {
+                locations.add(move.getLocation());
+            }
+        }
+        return locations;
+    }
+    
+    public void loadPortToMap()
+    {
+
+        FileReader portReader = null;
+        try {
+            portReader = new FileReader(new File(fileName + ".port.txt"));
+        } catch (Exception e) {
+            System.err.println(e);
+            System.err.println("Exception occured while loading map!");
+        }
+
+        String str = "";
+        int c;
+        try {
+            while ((c = portReader.read()) != -1) {
+                str += (char) c;
+            }
+        } catch (IOException ex) {
+            System.err.println("loadPortToMap: Failed to read port.");
+        }
+
+        String[] fLines = str.split("\n");
+
+        String[] header = fLines[0].split(",");
+        //name = header[0];
+
+        int i = Integer.parseInt(header[1].substring(1)); //skips the leading space
+        //i += 1; //offset so that x is line #
+        for(int x = 1; x <= i; x++) {
+            //System.err.println(i);
+            mapObjects.add(new Dock(fLines[x], this, windowThread));
+        }
+        //System.err.println(docks.size());
+
+        int y = Integer.parseInt(header[2]);
+        for(int x = i + 1; x <= (i + y); x++) {
+            mapObjects.add(new Crane(fLines[x], this, windowThread));
+        }
+        //System.err.println(docks.size());
+
+        int u = Integer.parseInt(header[3]);
+        for(int x = i + y + 1; x <= (i + y + u); x++) {
+            mapObjects.add(new Pier(fLines[x], this, windowThread));
+        }
+
+        for(Move temp : mapObjects) {
+            if (temp instanceof Dock) {
+                mapMove(temp, temp.getLocation());
+                //terrainMap[temp.getLocation().getY()][temp.getLocation().getX()] = temp.getCSym();
+            }
+       }
+   }
+
+    /**
+     * Draws mapList to mapButtons.
+     * Clears existing buttons before creating new ones.
+     */
+    public void createMapButtons() {
+        mapButtons.clear();
+        for(int row = 0; row < rows; row++) {
+            for(int column = 0; column < columns; column++) {
+
+            // Button
+                Button button = customButton();
+                button.setGraphic(customImageView(mapList[row][column]));
+
+            // Adding buttons to mapButtons<<>>
+                if (mapButtons.size() <= row) {
+                    mapButtons.add(new ArrayList<>());
+                }
+                mapButtons.get(row).add(button);
+            }
         }
     }
 
-// Creates buttons from map
-     public void createMapButtons()
-     {
-         for (int row = 0; row < rows; row++) {
-             for (int column = 0; column < columns; column++) {
-                 
-                 // Button
-                 Button button = customButton();
-                 button.setGraphic(customImageView(mapList[row][column]));
-                 
-                 // Adding buttons to mapButtons<<>>
-                 if (mapButtons.size() <= row) {
-                     mapButtons.add(new ArrayList<>());
-                 }
-                 mapButtons.get(row).add(button);
-             }
-         }
-     }
-     
+
+
 // Returns a new button with custom defaults
-     public Button customButton()
-     {
-         Button newButton = new Button();
-         newButton.setPadding(new Insets(0, 0, 0, 0));
-         newButton.setOnAction((ActionEvent event) -> {
-             System.err.println("[" + newButton.getLayoutY() / iconSize + "]["
-                     + newButton.getLayoutX() / iconSize + "]");
-             event.consume();
-         });
-         newButton.setGraphic(customImageView('E'));
-         return newButton;
-     }
-     
-// Creates loaded buttonList
-     public void loadMapToButtonArray()
-     {
-         Scanner mapReader = null; // Scanner holder
-         String fileName = "complex"; // DEFAULT VALUE
-         try { // Attempting to create a scanner from the filename
-             mapReader = new Scanner(new File(fileName + ".map.txt"));
-         } catch (Exception e) { // Exception occurance
-             System.err.println(e); // Printing exception
-             System.err.println("Exception occured while loading map!");
-         }
-         String line; // Read line holder
-         String[] splitLine; // Delimated line holder
-         int row = 0; // Current row counter for new array creation
-         int column = 0; // Current column counter
-         while (mapReader.hasNextLine()) { // Checking if file is finished
-             line = mapReader.nextLine(); // Getting line
-             splitLine = line.split(","); // Deliminating line
-             row = Integer.parseInt(splitLine[1]); // Counting rows
-             column = Integer.parseInt(splitLine[0]); // Counting columns
-             if (mapButtons.size() <= row) { // Checking if row is finished
-                 mapButtons.add(new ArrayList<>()); // Creating a new row
-             } else { // Current row is not finished
-                 mapList[row][column] = splitLine[2].charAt(0);
-                 Button newButton
-                         = new Button(String.valueOf(mapList[row][column]));
-                 mapButtons.get(row).add(newButton); // Adding new button to list
-             }
-         }
-     }
-     
+    public Button customButton()
+    {
+        Button newButton = new Button();
+        newButton.setPadding(new Insets(0, 0, 0, 0));
+        newButton.setOnAction((ActionEvent event) -> 
+        {
+            System.err.println("[" + newButton.getLayoutY() / iconSize + "]["
+                    + newButton.getLayoutX() / iconSize + "]");
+            event.consume();
+        });
+        newButton.setGraphic(customImageView('E'));
+        return newButton;
+    }
+
+    /**
+     * Increments through mapObjects and places every item to their current
+     * location on the map.
+     * Intended to be used when changing themes.
+     */
+    public void redrawMap() {
+       for(Move mapObject : mapObjects) {
+           mapMove(mapObject, mapObject.getLocation());
+       } 
+    }
+
 // Creating a ship at a random watery location
-     public void newRandomShip()
-     {
-         Move newShip;
-         Random random = new Random();
-         if (random.nextInt(3) == 0) {
-             newShip = new CargoShip(this, windowThread);
-         } else {
-             if (random.nextInt(2) == 0) {
-                 newShip = new OilTanker(this, windowThread);
-             } else {
-                 newShip = new ContainerShip(this, windowThread);
-             }
-         }
-         mapObjects.add(newShip);
-         new Thread(newShip).start();
-     }
-     
-// Creating a monster at a random watery location
-     public void newRandomMonster()
-     {
-         Move newMonster;
-         Random random = new Random();
-         if (random.nextInt(3) == 0) {
-             newMonster = new SeaSerpent(this, windowThread);
-         } else {
-             if (random.nextInt(2) == 0) {
-                 newMonster = new Leviathan(this, windowThread);
-             } else {
-                 newMonster = new Kraken(this, windowThread);
+    public void newRandomShip()
+    {
+        Move newShip;
+        Random random = new Random();
+        if (random.nextInt(3) == 0) {
+            newShip = new CargoShip(this, windowThread);
+        } else {
+            if (random.nextInt(2) == 0) {
+                newShip = new OilTanker(this, windowThread);
+            } else {
+                newShip = new ContainerShip(this, windowThread);
             }
         }
-         newMonster.setLocation(new Location(random.nextInt(54),
-                 random.nextInt(36)));
-         newMonster.setDestination(new Location(random.nextInt(54),
-                 random.nextInt(36)));
-         System.err.println("Random monster location: " + newMonster.getLocation());
-         System.err.println("Random monster destination: " + newMonster.getDestination());
-         mapObjects.add(newMonster);
+        mapObjects.add(newShip);
+        new Thread(newShip).start();
+    }
+
+// Creating a monster at a random watery location
+    public void newRandomMonster()
+    {
+        Move newMonster;
+        Random random = new Random();
+        if (random.nextInt(3) == 0) {
+            newMonster = new SeaSerpent(this, windowThread);
+        } else {
+            if (random.nextInt(2) == 0) {
+                newMonster = new Leviathan(this, windowThread);
+            } else {
+                newMonster = new Kraken(this, windowThread);
+           }
+       }
+        newMonster.setLocation(new Location(random.nextInt(54),
+                random.nextInt(36)));
+        newMonster.setDestination(new Location(random.nextInt(54),
+                random.nextInt(36)));
+        mapObjects.add(newMonster);
         new Thread(newMonster).start();
     }
 
 // Adding move to queue
-     public void mapMove(Move ship, Location newLocation)
+    public void mapMove(Move ship, Location newLocation)
     {
         Platform.runLater(() -> {
             shipList.add(ship);
@@ -1025,100 +918,146 @@ public class Window extends Application
             mapUpdate();
         });
     }
-    
-
-    
-//// Returns a default ImageView
-//    public static ImageView customImageView(Image image) {
-//        ImageView imageView = new ImageView();
-//        imageView.setImage(image);
-//        imageView.setFitWidth(iconSize);
-//        imageView.setPreserveRatio(true);
-//        imageView.setSmooth(true);
-//        imageView.setCache(true);
-//        return imageView;
-//    }
-    
-//// Returns a default ImageView
-//    public static ImageView customImageView(char type) {
-//        return customImageView(charToImage(type));
-//    }
-    
-//// Converts a char to the appropriate Image
-//    public static Image charToImage(char type) {
-//        Random random = new Random();
-//        if(".".equals(String.valueOf(type))) {
-//            switch(random.nextInt(50)) {
-//            // 1/50
-//                case 0:
-//                    return wateralt2;
-//            // 3/50
-//                case 1:
-//                    return wateralt;
-//                case 2:
-//                    return wateralt;
-//                case 3:
-//                    return wateralt;
-//            // 46/50
-//                default:
-//                    return water;
-//            }
-//        }
-//        if("o".equals(String.valueOf(type))) {
-//            return sand;
-//        }
-//        if("*".equals(String.valueOf(type))) {
-//            if(random.nextInt(6) > 0) {
-//                return land;
-//            } else {
-//                return landalt;
-//            }
-//        }
-//        if("T".equals(String.valueOf(type))) {
-//            return oilTanker;
-//        }
-//        if("S".equals(String.valueOf(type))) {
-//            return cargoShip;
-//        }
-//        if("B".equals(String.valueOf(type))) {
-//            return containerShip;
-//        }
-//        if("s".equals(String.valueOf(type))) {
-//            return seaserpent;
-//        }
-//        if("L".equals(String.valueOf(type))) {
-//            return leviathan;
-//        }
-//        if("K".equals(String.valueOf(type))) {
-//            return kraken;
-//        }
-//        if("D".equals(String.valueOf(type))) {
-//            return dock;
-//        }
-//        if("C".equals(String.valueOf(type))) {
-//            return crane;
-//        }
-//        if("P".equals(String.valueOf(type))) {
-//            return pier;
-//        }
-//        if("G".equals(String.valueOf(type))) {
-//            return godzilla;
-//        }
-//        return entity; // No image exists for the given char
-//    }
 
 // Prints the given map to the console
 
-     public void printMap(char[][] map)
-     {
-         for (int row = 0; row < rows; row++) {
-            System.err.println("");
-            for (int column = 0; column < columns; column++) {
-                System.err.print(map[row][column]);
+    public void printMap(char[][] map)
+    {
+        for(int row = 0; row < rows; row++) {
+           System.err.println("");
+           for(int column = 0; column < columns; column++) {
+               System.err.print(map[row][column]);
+           }
+       }
+       System.err.println();
+    }
+    
+// Processing queue
+    public static void mapUpdate() {
+        if (!shipList.isEmpty()) { // Ships need to be updated
+            if (!mapButtons.isEmpty()) { // GUI buttons are loaded
+                Move currentShip = shipList.remove();
+                Location newLocation = locationList.remove();
+                mapButtons.get(newLocation.getY())
+                        .get(newLocation.getX())
+                        .setGraphic(customImageView(currentShip.getCSym()));
+                
+                Location previousLocation = new Location(currentShip
+                        .getLocation());
+                if (currentShip.getLocation().getX() != newLocation.getX()
+                        || currentShip.getLocation().getY()
+                        != newLocation.getY()) {
+                    
+                    mapButtons.get(previousLocation.getY())
+                            .get(previousLocation.getX())
+                            .setGraphic(customImageView(terrainMap
+                            [previousLocation.getY()]
+                            [previousLocation.getX()]));
+                    
+                    currentShip.setLocation(newLocation);
+                    for(Move otherMover: mapObjects)
+                    {
+                        if(!currentShip.equals(otherMover)) {
+                            if(otherMover.getLocation().getX()
+                                    == previousLocation.getX()
+                                    && otherMover.getLocation().getY()
+                                    == previousLocation.getY()) {
+                                mapButtons.get(previousLocation.getY())
+                                .get(previousLocation.getX())
+                                .setGraphic(customImageView(otherMover
+                                        .getCSym()));
+                            }
+                        }
+                    }
+                }
             }
         }
-        System.err.println();
-     }
+    }
+    
+
+// Returns a default ImageView
+    public static ImageView customImageView(Image image)
+    {
+        ImageView imageView = new ImageView();
+        imageView.setImage(image);
+        imageView.setFitWidth(iconSize);
+        imageView.setPreserveRatio(true);
+        imageView.setSmooth(true);
+        imageView.setCache(true);
+        return imageView;
+    }
+
+// Returns a default ImageView
+    public static ImageView customImageView(char type)
+    {
+        return customImageView(charToImage(type));
+    }
+
+// Converts a char to the appropriate Image
+    public static Image charToImage(char type)
+    {
+        Random random = new Random();
+        if (".".equals(String.valueOf(type))) {
+            switch (random.nextInt(50)) {
+            // 1/50
+                case 0:
+                    return wateralt2;
+            // 4/50
+                case 1:
+                    return wateralt;
+                case 2:
+                    return wateralt;
+                case 3:
+                    return wateralt;
+                case 4:
+                    return wateralt;
+            // 45/50
+                default:
+                    return water;
+            }
+        }
+        if ("o".equals(String.valueOf(type))) {
+            return sand;
+        }
+        if ("*".equals(String.valueOf(type))) {
+            if (random.nextInt(6) > 0) {
+                return land;
+            } else {
+                return landalt;
+            }
+        }
+        if ("T".equals(String.valueOf(type))) {
+            return oilTanker;
+        }
+        if ("S".equals(String.valueOf(type))) {
+            return cargoShip;
+        }
+        if ("B".equals(String.valueOf(type))) {
+            return containerShip;
+        }
+        if ("s".equals(String.valueOf(type))) {
+            return seaserpent;
+        }
+        if ("L".equals(String.valueOf(type))) {
+            return leviathan;
+        }
+        if ("K".equals(String.valueOf(type))) {
+            return kraken;
+        }
+        if ("D".equals(String.valueOf(type))) {
+            return dock;
+        }
+        if ("C".equals(String.valueOf(type))) {
+            return crane;
+        }
+        if ("P".equals(String.valueOf(type))) {
+            return pier;
+        }
+        if ("G".equals(String.valueOf(type))) {
+            return godzilla;
+        }
+        return entity; // No image exists for the given char
+    }
      
 // Prints the current mapList to the console
 
