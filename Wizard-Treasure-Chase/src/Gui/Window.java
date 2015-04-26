@@ -8,6 +8,7 @@ package Gui;
 
 // Map
 import Map.Location;
+import Moveable.Cargo;
 
 // Moveable
 import Moveable.CargoShip;
@@ -39,6 +40,8 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 // JavaFX
 // JavaFX > Application
@@ -107,6 +110,7 @@ public class Window extends Application {
     private static ConcurrentLinkedQueue<Location> waterLocations
             = new ConcurrentLinkedQueue<>();
     static Port port = new Port();
+    static ConcurrentLinkedQueue<CargoShip> currentShips;
 
 // Files
 // Files > Images
@@ -232,6 +236,8 @@ public class Window extends Application {
         logoButton.setAlignment(Pos.CENTER);
         logoButton.setStyle("-fx-base: #3771c8ff;"); // light blue
         logoButton.setStyle("-fx-background-color: #3771c8ff;"); // Dark blue
+        logoButton.setPrefWidth(rightPaneWidth);
+        logoButton.setMaxWidth(rightPaneWidth);
         logoButton.setGraphic(imageView);
         rightPane.add(logoButton, 0, 0);
 
@@ -241,7 +247,7 @@ public class Window extends Application {
         outputLabel.setPrefWidth(rightPaneWidth - 14);
         outputLabel.setMaxWidth(rightPaneWidth - 14);
         outputLabel.setMinWidth(rightPaneWidth - 14);
-        outputLabel.setPrefHeight(200);
+        outputLabel.setPrefHeight(2000);
         outputLabel.setWrapText(true);
         outputLabel.setStyle("-fx-base: #3771c8ff; -fx-text-fill: white;"
                 + " -fx-background-color: #003380ff;");
@@ -298,10 +304,10 @@ public class Window extends Application {
         closeButton.setAlignment(Pos.BASELINE_LEFT);
         closeButton.setOnAction((ActionEvent event) -> {
             System.err.println("Close button pressed");
-            port = new Port();
-            shipList.clear();
-            mapObjects.clear();
-            locationList.clear();
+            mapObjects.clear(); // Removing all Move from mapObjects
+            mapList = new char[36][54]; // Loading map in fileName to mapList
+            createMapButtons(); // Drawing mapList to mapButtons
+            populateMapPane(); // Adding mapButtons to mapPane
         });
         fileMenuArea.addRow(1, closeButton);
 
@@ -346,7 +352,8 @@ public class Window extends Application {
         Button generateShipButton = new Button("Generate");
         generateShipButton.setOnAction((ActionEvent event) -> {
             System.err.println("Generate ships button pressed");
-            for(int remaining = Integer.valueOf(generateShipNumber.getText()); remaining > 0; remaining--) {
+            for(int remaining = Integer.valueOf(generateShipNumber
+                    .getText()); remaining > 0; remaining--) {
                 newRandomShip();
             }
         });
@@ -359,7 +366,25 @@ public class Window extends Application {
         GridPane updateShip = new GridPane();
         updateShip.setStyle("-fx-base: #003380ff");
         updateShipsPane.setContent(updateShip);
-
+        Button displayShipsButton = new Button("Display");
+        displayShipsButton.setOnAction((ActionEvent event) -> {
+            System.err.println("Display ships button pressed");
+            updateCurrentShips();
+        });
+        updateShip.addRow(0, displayShipsButton);
+        Label updateShipLabel = new Label("Index of ship to modify:");
+        updateShip.addRow(1, updateShipLabel);
+        TextField updateShipID = new TextField("0");
+        updateShip.addRow(2, updateShipID);
+        Button updateShipButton = new Button("Select");
+        updateShipButton.setOnAction((ActionEvent event) -> {
+            System.err.println("Update ships button pressed");
+            if(currentShips.isEmpty()) {
+                updateCurrentShips();
+            }
+        });
+        updateShip.addRow(3, updateShipButton);
+        
     // Ship Menu > Accordion
         Accordion shipMenuAccordion = new Accordion();
         shipMenuAccordion.getPanes().addAll(generateShipsPane, updateShipsPane);
@@ -373,8 +398,7 @@ public class Window extends Application {
         displayAllShips.setAlignment(Pos.BASELINE_LEFT);
         displayAllShips.setOnAction((ActionEvent event) -> {
             System.err.println("Display all ships button pressed");
-            mapObjects.forEach(Moveable
-                    -> textOutput(Moveable.toStringArray()));
+            updateCurrentShips();
         });
         shipMenuArea.addRow(1, displayAllShips);
 
@@ -384,6 +408,11 @@ public class Window extends Application {
         removeAllShips.setMaxWidth(rightPaneWidth);
         removeAllShips.setStyle("-fx-base: #003380ff;");
         removeAllShips.setAlignment(Pos.BASELINE_LEFT);
+        removeAllShips.setOnAction((ActionEvent event) -> {
+            System.err.println("Display all ships button pressed");
+            removeAllShips();
+            drawMapObjects();
+        });
         shipMenuArea.addRow(2, removeAllShips);
 
     // shipMenu
@@ -420,6 +449,9 @@ public class Window extends Application {
         displayAllDocks.setAlignment(Pos.BASELINE_LEFT);
         displayAllDocks.setOnAction((ActionEvent event) -> {
             System.err.println("Display all docks button pressed");
+            for(Dock currentDock : port.getDockList()) {
+                textOutput(currentDock.toString());
+            }
         });
         portMenuArea.addRow(1, displayAllDocks);
 
@@ -431,6 +463,9 @@ public class Window extends Application {
         displayAllCargos.setAlignment(Pos.BASELINE_LEFT);
         displayAllCargos.setOnAction((ActionEvent event) -> {
             System.err.println("Display all cargos button pressed");
+            for(Cargo currentCargo : port.getCargoList()) {
+                textOutput(currentCargo.toString());
+            }
         });
         portMenuArea.addRow(2, displayAllCargos);
 
@@ -814,6 +849,7 @@ public class Window extends Application {
 
         for(Move temp : mapObjects) {
             if (temp instanceof Dock) {
+                port.getDockList().add(Dock.class.cast(temp));
                 mapMove(temp, temp.getLocation());
                 //terrainMap[temp.getLocation().getY()][temp.getLocation().getX()] = temp.getCSym();
             }
@@ -871,12 +907,22 @@ public class Window extends Application {
     /**
      * Increments through mapObjects and places every item to their current
      * location on the map.
-     * Intended to be used when changing themes.
      */
-    public void redrawMap() {
+    public void drawMapObjects() {
        for(Move mapObject : mapObjects) {
            mapMove(mapObject, mapObject.getLocation());
        } 
+    }
+    
+    /**
+     * Removes all ships from mapObjects.
+     */
+    public void removeAllShips() {
+        updateCurrentShips();
+        for(CargoShip currentShip : currentShips) {
+            currentShip = null;
+        }
+        updateCurrentShips();
     }
 
 // Creating a ship at a random watery location
@@ -912,6 +958,25 @@ public class Window extends Application {
         }
         mapObjects.add(newMonster);
         new Thread(newMonster).start();
+    }
+    
+    /**
+     * Populates currentShips from mapObjects. Adds currentShips' toStrings
+     * to textOutput.
+     */
+    public void updateCurrentShips() {
+        currentShips = null;
+        currentShips = new ConcurrentLinkedQueue();
+        for(Move mapObject : mapObjects) {
+            if(mapObject.getClass().equals(CargoShip.class)) {
+                currentShips.add(CargoShip.class.cast(mapObject));
+            }
+        }
+        int index = 0;
+        for(CargoShip currentShip : currentShips) {
+            textOutput("Ship Index: " + index);
+            textOutput(currentShip.toString());
+        }
     }
 
 // Adding move to queue
