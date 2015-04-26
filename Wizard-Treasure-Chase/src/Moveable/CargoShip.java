@@ -92,6 +92,12 @@ public class CargoShip extends Move
             this.draft       = Double.parseDouble(tokens[6]);
             this.cargo       = null;
         }
+        
+        if(cargo != null)
+        {
+            sleepTime += 250;
+        }
+        
     }
 
     /**
