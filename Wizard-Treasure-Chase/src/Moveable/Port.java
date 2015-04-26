@@ -9,6 +9,9 @@ package Moveable;
  * @author Raith Hamzah *
  *************************/
 import java.util.ArrayList;
+import Moveable.Crane;
+import Moveable.Pier;
+
 /**
  * Port class: Encapsulates offloaded cargo
  * and the current docks it holds.
@@ -100,22 +103,26 @@ public class Port
         this.cargoList = offloadedCargo;
     }
     
+    /**
+     * @return String with Dock properties
+     */
     @Override
-    public String toString() 
-    {
-        String returnString = String.format("%s,%d,%d\n", this.name,
-                               this.dockList.size(), 
-                               this.cargoList.size());
-        for (Dock d: this.dockList)
-        {
-            returnString = returnString + d.toString();
+    public String toString() { // Ex: Liverpool, 20,5,5,0
+        int cranes = 0;
+        for(Dock dock : dockList) {
+            if(dock.getClass().isInstance(Crane.class)) {
+                cranes++;
+            }
         }
-        for (Cargo c: this.cargoList)
-        {
-            returnString = returnString + c.toString();
+        int piers = 0;
+        for(Dock dock : dockList) {
+            if(dock.getClass().isInstance(Pier.class)) {
+                piers++;
+            }
         }
-        return returnString;
-        
+        int docks = dockList.size() - cranes - piers;
+        return name + ", " + docks + "," + cranes + "," + piers + ","
+                + cargoList.size();
     }
     
     public ArrayList<Cargo> getCargoList() {

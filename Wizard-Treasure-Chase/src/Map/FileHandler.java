@@ -65,18 +65,13 @@ public class FileHandler {
     
     public void saveMap(char[][] inputMap) {
         PrintWriter write;
-        int row = 0;
-        int column = 0;
         try {
             write = new PrintWriter(fileName + ".map.txt");
-            while(row != 54 || column != 35) {
-                if(row == 54) {
-                    row = 0;
-                    column ++;
+            for(int row = 0; row < 36; row++) {
+                for(int column = 0; column < 54; column++) {
+                    write.println(column + "," + row + "," 
+                            + inputMap[row][column]);
                 }
-                write.print(row + "," + column + "," + inputMap[row][column]);
-                write.println();
-                row ++;
             }
             write.close();
         } catch(Exception e) {

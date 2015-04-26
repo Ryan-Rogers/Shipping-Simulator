@@ -282,15 +282,14 @@ public class Dock extends Move
 
     }
     
+    /**
+     * @return String of dock properties
+     */
     @Override
-    public String toString()
-    {
-        String returnString = String.format("%s,%c,%d,%f,%f,%f,%f,%f\n",
-                               this.name, this.section, this.number,
-                               this.length, this.width, this.depth,
-                               this.longitude, this.latitude);
-        
-        return returnString;
+    public String toString() {
+        // Ex: Canada Dock,N,8,100.000000,15.000000,6.000000,-3.005000,53.436500
+        return name+","+section+","+number+","+length+","+width+","+depth+","+
+                longitude+","+latitude;
     }
-
+    
 }
