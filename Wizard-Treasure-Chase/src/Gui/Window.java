@@ -91,7 +91,12 @@ public class Window extends Application {
     ScrollPane outputScroll;
     static String fileName;
     static String theme;
-    static char[][] terrainMap; // [row][column]
+    /**
+     * Holds only the terrain cSym that were found at map file load.
+     * Format:
+     * [row/y][column/x]
+     */
+    static char[][] terrainMap;
     static char[][] mapList = new char[rows][columns]; // [row][column]
     static ConcurrentLinkedQueue<Move> shipList
             = new ConcurrentLinkedQueue<>();
@@ -478,11 +483,17 @@ public class Window extends Application {
             editShip.setLength(Double.valueOf(shipLengthText.getText()));
             editShip.setDraft(Double.valueOf(shipDraftText.getText()));
             editShip.setCapacity(Double.valueOf(shipCapacityText.getText()));
-            editShip.setLongitude(Double.valueOf(shipLongitudeText.getText()));
-            editShip.setLatitude(Double.valueOf(shipLatitudeText.getText()));
-            editShip.setLocation(new Location(
+            if(shipYText.getText().equals("") // Checking if X, Y empty in GUI
+                    || shipXText.getText().equals("")) {
+                editShip.setLocation(new Location(
                     Integer.valueOf(shipXText.getText()), 
                     Integer.valueOf(shipYText.getText())));
+            } else { // Setting location by lat, lon if X, Y empty in GUI
+                editShip.setLongitude(Double.valueOf(
+                        shipLongitudeText.getText()));
+                editShip.setLatitude(Double.valueOf(
+                        shipLatitudeText.getText()));
+            }
             editShip.getCargo().setLabel(shipCargoText.getText());
             editShip.getCargo().setWeight(Double.valueOf(
                     shipCargoWeightText.getText()));
@@ -668,30 +679,23 @@ public class Window extends Application {
         Button summonGodzillaButton = new Button("Summon");
         summonGodzillaButton.setOnAction((ActionEvent event) -> {
             System.err.println("Summon godzilla button pressed");
-            // Object[] mapObjectArray = mapObjects.toArray();
-            // Boolean godzillaExists = false;
-            Godzilla oldGodzilla = null;
-            for(Object moveObject : mapObjects) {
-                if(moveObject.getClass().equals(Godzilla.class)) {
-                    oldGodzilla = Godzilla.class.cast(moveObject);
+            new MediaPlayer(godzillaSummonSound).play();
+            Location inputLocation = new Location(
+                        Integer.valueOf(summonGodzillaTextX.getText()), 
+                        Integer.valueOf(summonGodzillaTextY.getText()));
+            Boolean godzillaExists = false;
+            for(Move mapObject : mapObjects) { // Checking if Godzilla exists
+                if(mapObject instanceof Godzilla) { // If Godzilla found
+                    mapMove(mapObject, inputLocation); // Move to input X, Y
+                    godzillaExists = true;
                 }
             }
-            if(oldGodzilla != null) {
-                mapMove(oldGodzilla, new Location(
-                        Integer.valueOf(summonGodzillaTextX.getText()), 
-                        Integer.valueOf(summonGodzillaTextY.getText())));
-                new Thread(oldGodzilla).start();
-            } else {
-                oldGodzilla = new Godzilla(this, windowThread);
-                oldGodzilla.setLocation(new Location(
-                        Integer.valueOf(summonGodzillaTextX.getText()), 
-                        Integer.valueOf(summonGodzillaTextY.getText())));
-                mapObjects.add(oldGodzilla);
-                mapMove(oldGodzilla, new Location(
-                        Integer.valueOf(summonGodzillaTextX.getText()), 
-                        Integer.valueOf(summonGodzillaTextY.getText())));
+            if(!godzillaExists) { // Godzilla does not yet exist; must create
+                Godzilla newGodzilla = new Godzilla(this, windowThread);
+                mapObjects.add(newGodzilla); // Adding godzilla to map objects
+                mapMove(newGodzilla, inputLocation); // Initial draw
+                new Thread(newGodzilla).start(); // Starting godzilla's thread
             }
-            new MediaPlayer(godzillaSummonSound).play();
         });
         summonGodzillaMenu.addRow(4, summonGodzillaButton);
         
@@ -819,9 +823,16 @@ public class Window extends Application {
     }
 
 // Add text to output area
-    public void textOutput(String newOutput)
-    {
-        outputLabel.setText(newOutput + "\n" + outputLabel.getText());
+    public void textOutput(String newOutput) {
+        outputLabel.setText(newOutput +"\n"+ outputLabel.getText());
+        
+        /*
+        // CSV Version
+        String[] deliminatedNewOutputs = newOutput.split(",");
+        for(String deliminatedOutput : deliminatedNewOutputs) {
+            outputLabel.setText(deliminatedOutput +"\n"+ outputLabel.getText());
+        }
+        */
     }
 
 // Add text to output area to multiple lines
@@ -1234,36 +1245,57 @@ public class Window extends Application {
     /**
      * Populates currentShips from mapObjects. Adds currentShips' toStrings
      * to textOutput.
-     * @param print Whether or not to print to the console
+     * @param printing Whether or not to print to the console
      */
-    public void updateCurrentShips(boolean print) {
-        currentShips = new ConcurrentLinkedQueue<CargoShip>();
+    public void updateCurrentShips(boolean printing) {
+        currentShips = new ConcurrentLinkedQueue<>();
         for(Move mapObject : mapObjects) {
             if(mapObject instanceof CargoShip) {
                 currentShips.add((CargoShip)mapObject);
             }
         }
         
-        if(!print)
-        {
-            return;
-        }
-        
-        int index = 0;
-        for(CargoShip currentShip : currentShips) {
-            textOutput("Ship Index: " + index);
-            textOutput(currentShip.toString());
+        if(printing) {
+            int index = 0;
+            for(CargoShip currentShip : currentShips) {
+                textOutput("\nShip Index: "+ index 
+                        +"\n"+ currentShip.toStringArray());
+                index++;
+            }
         }
     }
 
 // Adding move to queue
     public void mapMove(Move ship, Location newLocation)
     {
-        Platform.runLater(() -> {
-            shipList.add(ship);
-            locationList.add(newLocation);
-            mapUpdate();
-        });
+        if(newLocation != null) {
+            Platform.runLater(() -> {
+                shipList.add(ship);
+                locationList.add(newLocation);
+                mapUpdate();
+            });
+    // Removing ship from the map when mapMove gets null for newLocation
+        } else { // newLocation == null
+            ship.end();
+            mapObjects.remove(ship); // Removing ship from mapObjects
+            Move otherMoveAtShipLocation = null; // Holds Move at newLocation
+            for(Move mapObject : mapObjects) { // Saving Move at newLocation
+                if(mapObject.getLocation().equals(ship.getLocation())) {
+                    otherMoveAtShipLocation = mapObject;
+                }
+            }
+        // Setting image at newLocation for other Move at newLocation
+            if(otherMoveAtShipLocation != null) { // Other Move found
+                mapButtons.get(newLocation.getY()).get(newLocation.getX())
+                        .setGraphic(customImageView(otherMoveAtShipLocation
+                        .getCSym()));
+            } else { // Setting image at newLocation for terrain
+                mapButtons.get(newLocation.getY()).get(newLocation.getX())
+                        .setGraphic(customImageView(terrainMap
+                        [newLocation.getY()][newLocation.getX()]));
+            }
+            updateCurrentShips(false);
+        }
     }
 
 // Prints the given map to the console

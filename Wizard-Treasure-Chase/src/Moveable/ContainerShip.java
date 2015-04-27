@@ -48,7 +48,7 @@ public class ContainerShip extends CargoShip
         returnString += String.format("Beam: %2.2f metres\n", this.beam);
         returnString += String.format("Draft: %2.2f metres\n", this.draft);       
         returnString += String.format("Number of Holds: 1\n");       
-        returnString += String.format("Location: (%f, %f)\n", this.currentLocation.getX(), this.currentLocation.getY());
+        returnString += String.format("Location: (%d, %d)\n", this.currentLocation.getX(), this.currentLocation.getY());
         returnString += String.format("Cargo: ");
         /*
         if (this.cargo != null)
