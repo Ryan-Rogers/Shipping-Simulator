@@ -129,6 +129,7 @@ public class Move implements Runnable {
 // Runnable
     @Override
     public void run() {
+        
         isRunning = true;
         if(target != null) { // Moveable has a target
             destination = target.currentLocation;
@@ -136,34 +137,36 @@ public class Move implements Runnable {
         if(destination != null) { // Moveable has a destination
             
         // Loops while moveable is not at destination and GUI is open
-            while((currentLocation.getX() != destination.getX()
-                    && currentLocation.getY() != destination.getY())
-                    && guiThread.isAlive() && isRunning) {
+            while(guiThread.isAlive() && isRunning) {
                 
-                if(target != null) { // Moveable has a target
-            destination = target.currentLocation;
-        }
-                
-                int xDifference; // Difference in current x and destination x
-                int yDifference; // Difference in current y and destination y
-                
-            // Sleeping
-                try { 
-                    Thread.sleep(sleepTime);
-                    if(!isRunning)
-                    {
-                        continue;
+                if(currentLocation.getX() == destination.getX()
+                        && currentLocation.getY() == destination.getY()) {
+                    destination = new Location(10, 10);
+                } else {
+
+                    if(target != null) { // Moveable has a target
+                        destination = target.currentLocation;
                     }
-                    
-            // Sleep exception
-                } catch (InterruptedException ex) {
-                    System.err.println("ShipBasic run() failed to sleep");
-                }
-                
-            // Calculating differenecs in x's and y's
-                xDifference = currentLocation.getX() - destination.getX();
-                yDifference = currentLocation.getY() - destination.getY();
-            
+
+                    int xDifference; // Difference in current x and destination x
+                    int yDifference; // Difference in current y and destination y
+
+                // Sleeping
+                    try { 
+                        Thread.sleep(sleepTime);
+                        if(!isRunning) {
+                            continue;
+                        }
+
+                // Sleep exception
+                    } catch (InterruptedException ex) {
+                        System.err.println("ShipBasic run() failed to sleep");
+                    }
+
+                // Calculating differenecs in x's and y's
+                    xDifference = currentLocation.getX() - destination.getX();
+                    yDifference = currentLocation.getY() - destination.getY();
+
                 // Moveable is farther from destination x than y
                     if((xDifference * xDifference) > (yDifference * yDifference)) {
 
@@ -196,6 +199,7 @@ public class Move implements Runnable {
                             moveMe(0, 1); // x, y + 1
                         }
                     }
+                }
             }
         }
     }
@@ -206,7 +210,7 @@ public class Move implements Runnable {
     }
     
 // Call Window to Move Ship
-    protected void moveMe(int byX, int byY) {
+    public void moveMe(int byX, int byY) {
         guiWindow.mapMove(this, new Location(currentLocation.getX() + byX, 
                 currentLocation.getY() + byY));
     }

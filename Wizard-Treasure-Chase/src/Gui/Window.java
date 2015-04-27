@@ -113,6 +113,7 @@ public class Window extends Application {
 
 // Files
 // Files > Images
+    static Image splash;
     static Image water;
     static Image wateralt;
     static Image wateralt2;
@@ -176,6 +177,7 @@ public class Window extends Application {
     // Files
         String fileHeader = "FILE:";
         String fileFooter = ".png";
+        splash = new Image(fileHeader + "LoadingScreen" + fileFooter); // No theme
         entity = new Image(fileHeader + "entity" + fileFooter); // No theme
         water = new Image(fileHeader + theme + "water" + fileFooter);
         wateralt = new Image(fileHeader + theme + "wateralt" + fileFooter);
@@ -205,12 +207,13 @@ public class Window extends Application {
     // Map pane
         mapPane.setAlignment(Pos.TOP_LEFT);
         root.add(mapPane, 0, 0);
+        root.setStyle("-fx-base: #000;"); // Black
         mapPane.setMaxWidth(1080);
         mapPane.setMaxHeight(720);
         mapPane.setMinWidth(1080);
         mapPane.setMinHeight(720);
         mapPane.setPrefWidth(1080);
-        mapPane.setPrefHeight(720);
+        mapPane.setPrefHeight(720);        
 
     // Right Pane
         rightPane = new GridPane();
@@ -371,24 +374,93 @@ public class Window extends Application {
         GridPane updateShip = new GridPane();
         updateShip.setStyle("-fx-base: #003380ff");
         updateShipsPane.setContent(updateShip);
-        Button displayShipsButton = new Button("Display");
-        displayShipsButton.setOnAction((ActionEvent event) -> {
-            System.err.println("Display ships button pressed");
-            updateCurrentShips(true);
-        });
-        updateShip.addRow(0, displayShipsButton);
-        Label updateShipLabel = new Label("Index of ship to modify:");
-        updateShip.addRow(1, updateShipLabel);
+        
+        Label updateShipLabel = new Label("Index:");
+        updateShip.addRow(0, updateShipLabel);
         TextField updateShipID = new TextField("0");
-        updateShip.addRow(2, updateShipID);
-        Button updateShipButton = new Button("Select");
-        updateShipButton.setOnAction((ActionEvent event) -> {
+        updateShipID.setPrefWidth(30);
+        updateShip.addRow(0, updateShipID);
+        
+        Button selectShipButton = new Button("Select");
+        selectShipButton.setOnAction((ActionEvent event) -> {
             System.err.println("Update ships button pressed");
-            if(currentShips.isEmpty()) {
-                updateCurrentShips(false);
-            }
+            CargoShip editShip = (CargoShip)currentShips.toArray()
+                    [Integer.getInteger(updateShipID.getText())];
         });
-        updateShip.addRow(3, updateShipButton);
+        updateShip.addRow(0, selectShipButton);
+        
+        Label shipNameLabel = new Label("Name:");
+        updateShip.addRow(1, shipNameLabel);
+        TextField shipNameText = new TextField("");
+        shipNameText.setPrefWidth(50);
+        updateShip.addRow(1, shipNameText);
+        
+        Label shipCountryLabel = new Label("Country:");
+        updateShip.addRow(2, shipCountryLabel);
+        TextField shipCountryText = new TextField("");
+        shipCountryText.setPrefWidth(50);
+        updateShip.addRow(2, shipCountryText);
+        
+        Label shipTransponderLabel = new Label("Transponder:");
+        updateShip.addRow(3, shipTransponderLabel);
+        TextField shipTransponderText = new TextField("");
+        shipTransponderText.setPrefWidth(50);
+        updateShip.addRow(3, shipTransponderText);
+        
+        Label shipLengthLabel = new Label("Length:");
+        updateShip.addRow(4, shipLengthLabel);
+        TextField shipLengthText = new TextField("");
+        shipLengthText.setPrefWidth(50);
+        updateShip.addRow(4, shipLengthText);
+        
+        Label shipDraftLabel = new Label("Draft:");
+        updateShip.addRow(5, shipDraftLabel);
+        TextField shipDraftText = new TextField("");
+        shipDraftText.setPrefWidth(50);
+        updateShip.addRow(5, shipDraftText);
+        
+        Label shipCapacityLabel = new Label("Capacity:");
+        updateShip.addRow(6, shipCapacityLabel);
+        TextField shipCapacityText = new TextField("");
+        shipCapacityText.setPrefWidth(50);
+        updateShip.addRow(6, shipCapacityText);
+        
+        Label shipLongitudeLabel = new Label("Longitude:");
+        updateShip.addRow(7, shipLongitudeLabel);
+        TextField shipLongitudeText = new TextField("");
+        shipLongitudeText.setPrefWidth(50);
+        updateShip.addRow(7, shipLongitudeText);
+        TextField shipYText = new TextField("");
+        shipYText.setPrefWidth(50);
+        updateShip.addRow(7, shipYText);
+        
+        Label shipLatitudeLabel = new Label("Latitude:");
+        updateShip.addRow(8, shipLatitudeLabel);
+        TextField shipLatitudeText = new TextField("");
+        shipLatitudeText.setPrefWidth(50);
+        updateShip.addRow(8, shipLatitudeText);
+        TextField shipXText = new TextField("");
+        shipXText.setPrefWidth(50);
+        updateShip.addRow(8, shipXText);
+        
+        Label shipCargoLabel = new Label("Cargo:");
+        updateShip.addRow(9, shipCargoLabel);
+        TextField shipCargoText = new TextField("");
+        shipCargoText.setPrefWidth(50);
+        updateShip.addRow(9, shipCargoText);
+        
+        Label shipCargoWeightLabel = new Label("Weight:");
+        updateShip.addRow(10, shipCargoWeightLabel);
+        TextField shipCargoWeightText = new TextField("");
+        shipCargoWeightText.setPrefWidth(50);
+        updateShip.addRow(10, shipCargoWeightText);
+        
+        Button updateShipButton = new Button("Update");
+        updateShipButton.setOnAction((ActionEvent event) -> {
+            System.err.println("Update ship button pressed");
+            
+        });
+        updateShip.addRow(0, updateShipButton);
         
     // Ship Menu > Accordion
         Accordion shipMenuAccordion = new Accordion();
@@ -858,9 +930,18 @@ public class Window extends Application {
                 mapMove(temp, temp.getLocation());
                 //terrainMap[temp.getLocation().getY()][temp.getLocation().getX()] = temp.getCSym();
             }
-       }
-   }
-
+        }
+    }
+    
+    public void moveEnd(Move chaser, Move target) {
+        Platform.runLater(() -> {
+            if(chaser.getClass().isInstance(CargoShip.class)) {
+                port.getCargoList().add(((CargoShip)chaser).getCargo());
+                chaser.setDestination(new Location(10, 10));
+            }
+        });
+    }
+    
     public void resetMapButtonImages()
     {
         for(int row = 0; row < rows; row++)
