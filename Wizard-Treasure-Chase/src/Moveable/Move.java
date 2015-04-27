@@ -8,6 +8,7 @@ package Moveable;
 
 import Gui.Window;
 import Map.Location;
+import Map.MapConverter;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -108,7 +109,7 @@ public class Move implements Runnable {
         
         Random rand = new Random();
         
-        int index = rand.nextInt(waterLocations.size());
+        int index = rand.nextInt(Math.abs(waterLocations.size()));
         
         return waterLocations.get(index);
     }
@@ -229,6 +230,14 @@ public class Move implements Runnable {
 // Get Current Destination
     public Location getDestination() {
         return destination;
+    }
+    
+    public double getLongitude() {
+        return MapConverter.row2lat(currentLocation.getY());
+    }
+    
+    public double getLatitude() {
+        return MapConverter.col2lon(currentLocation.getX());
     }
 
 // Set Location

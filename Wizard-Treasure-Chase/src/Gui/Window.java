@@ -161,7 +161,7 @@ public class Window extends Application {
     @Override
     public void start(Stage windowStage) {
     // Variable Initializations
-        theme = "Theme/Future/";
+        theme = "Theme/Past/";
         
     // Setup
         GridPane root = new GridPane(); // Creating window pane
@@ -378,9 +378,11 @@ public class Window extends Application {
         Label updateShipLabel = new Label("Index:");
         updateShip.addRow(0, updateShipLabel);
         TextField updateShipID = new TextField("0");
-        updateShipID.setPrefWidth(30);
+        updateShipID.setMaxWidth(30);
         updateShip.addRow(0, updateShipID);
         
+        /*
+        // Ship select button
         Button selectShipButton = new Button("Select");
         selectShipButton.setOnAction((ActionEvent event) -> {
             System.err.println("Update ships button pressed");
@@ -388,79 +390,145 @@ public class Window extends Application {
                     [Integer.getInteger(updateShipID.getText())];
         });
         updateShip.addRow(0, selectShipButton);
+        */
         
         Label shipNameLabel = new Label("Name:");
         updateShip.addRow(1, shipNameLabel);
         TextField shipNameText = new TextField("");
-        shipNameText.setPrefWidth(50);
+        shipNameText.setMaxWidth(100);
         updateShip.addRow(1, shipNameText);
         
         Label shipCountryLabel = new Label("Country:");
         updateShip.addRow(2, shipCountryLabel);
         TextField shipCountryText = new TextField("");
-        shipCountryText.setPrefWidth(50);
+        shipCountryText.setMaxWidth(100);
         updateShip.addRow(2, shipCountryText);
         
         Label shipTransponderLabel = new Label("Transponder:");
         updateShip.addRow(3, shipTransponderLabel);
         TextField shipTransponderText = new TextField("");
-        shipTransponderText.setPrefWidth(50);
+        shipTransponderText.setMaxWidth(50);
         updateShip.addRow(3, shipTransponderText);
         
         Label shipLengthLabel = new Label("Length:");
         updateShip.addRow(4, shipLengthLabel);
         TextField shipLengthText = new TextField("");
-        shipLengthText.setPrefWidth(50);
+        shipLengthText.setMaxWidth(50);
         updateShip.addRow(4, shipLengthText);
         
         Label shipDraftLabel = new Label("Draft:");
         updateShip.addRow(5, shipDraftLabel);
         TextField shipDraftText = new TextField("");
-        shipDraftText.setPrefWidth(50);
+        shipDraftText.setMaxWidth(50);
         updateShip.addRow(5, shipDraftText);
         
         Label shipCapacityLabel = new Label("Capacity:");
         updateShip.addRow(6, shipCapacityLabel);
         TextField shipCapacityText = new TextField("");
-        shipCapacityText.setPrefWidth(50);
+        shipCapacityText.setMaxWidth(50);
         updateShip.addRow(6, shipCapacityText);
         
         Label shipLongitudeLabel = new Label("Longitude:");
         updateShip.addRow(7, shipLongitudeLabel);
         TextField shipLongitudeText = new TextField("");
-        shipLongitudeText.setPrefWidth(50);
+        shipLongitudeText.setMaxWidth(50);
         updateShip.addRow(7, shipLongitudeText);
         TextField shipYText = new TextField("");
-        shipYText.setPrefWidth(50);
+        shipYText.setMaxWidth(50);
         updateShip.addRow(7, shipYText);
         
         Label shipLatitudeLabel = new Label("Latitude:");
         updateShip.addRow(8, shipLatitudeLabel);
         TextField shipLatitudeText = new TextField("");
-        shipLatitudeText.setPrefWidth(50);
+        shipLatitudeText.setMaxWidth(50);
         updateShip.addRow(8, shipLatitudeText);
         TextField shipXText = new TextField("");
-        shipXText.setPrefWidth(50);
+        shipXText.setMaxWidth(50);
         updateShip.addRow(8, shipXText);
         
         Label shipCargoLabel = new Label("Cargo:");
         updateShip.addRow(9, shipCargoLabel);
         TextField shipCargoText = new TextField("");
-        shipCargoText.setPrefWidth(50);
+        shipCargoText.setMaxWidth(100);
         updateShip.addRow(9, shipCargoText);
         
         Label shipCargoWeightLabel = new Label("Weight:");
         updateShip.addRow(10, shipCargoWeightLabel);
         TextField shipCargoWeightText = new TextField("");
-        shipCargoWeightText.setPrefWidth(50);
+        shipCargoWeightText.setMaxWidth(50);
         updateShip.addRow(10, shipCargoWeightText);
         
-        Button updateShipButton = new Button("Update");
+        Button updateShipButton = new Button("Load");
         updateShipButton.setOnAction((ActionEvent event) -> {
-            System.err.println("Update ship button pressed");
+            System.err.println("Load ship button pressed");
+            updateCurrentShips(false); // Updating currentShips
+            for(int counter = Integer.valueOf(updateShipID.getText()); 
+                    counter > 0; counter--) {
+                currentShips.poll();
+                // Removing ships from currentShips until we're at index
+            }
+            CargoShip editShip = currentShips.poll(); // Setting ship to edit
             
+            // Updating GUI to new values
+            shipNameText.setText(editShip.getName());
+            shipCountryText.setText(editShip.getCountryReg());
+            shipTransponderText.setText(
+                    String.valueOf(editShip.getTransponder()));
+            shipLengthText.setText(
+                    String.valueOf(editShip.getLength()));
+            shipDraftText.setText(
+                    String.valueOf(editShip.getDraft()));
+            shipCapacityText.setText(
+                    String.valueOf(editShip.getCapacity()));
+            shipLongitudeText.setText(
+                    String.valueOf(editShip.getLongitude()));
+            shipYText.setText(
+                    String.valueOf(editShip.getLocation().getY()));
+            shipLatitudeText.setText(
+                    String.valueOf(editShip.getLatitude()));
+            shipXText.setText(
+                    String.valueOf(editShip.getLocation().getX()));
+            shipCargoText.setText(editShip.getCargo().getLabel());
+            shipCargoWeightText.setText(String.valueOf(
+                    editShip.getCargo().getWeight()));
         });
-        updateShip.addRow(0, updateShipButton);
+        updateShip.addRow(11, updateShipButton);
+        
+        Button saveShipButton = new Button("Save");
+        saveShipButton.setOnAction((ActionEvent event) -> {
+            System.err.println("Save ship button pressed");
+            updateCurrentShips(false); // Updating currentShips
+            for(int counter = Integer.valueOf(updateShipID.getText()); 
+                    counter > 0; counter--) {
+                currentShips.poll();
+                // Removing ships from currentShips until we're at index
+            }
+            CargoShip editShip = currentShips.poll(); // Setting ship to edit
+            /*
+            // Saving new values from GUI
+            editShip.setName(shipNameText.getText());
+            shipCountryText.getText());
+            shipTransponderText.getText(
+                    String.valueOf(editShip.getTransponder()));
+            shipLengthText.getText(
+                    String.valueOf(editShip.getLength()));
+            shipDraftText.getText(
+                    String.valueOf(editShip.getDraft()));
+            shipCapacityText.getText(
+                    String.valueOf(editShip.getCapacity()));
+            shipLongitudeText.getText(
+                    String.valueOf(editShip.getLongitude()));
+            shipYText.getText(
+                    String.valueOf(editShip.getLocation().getY()));
+            shipLatitudeText.getText(
+                    String.valueOf(editShip.getLatitude()));
+            shipXText.getText(
+                    String.valueOf(editShip.getLocation().getX()));
+            shipCargoText.getText(editShip.getCargo().getLabel());
+            shipCargoWeightText.getText(String.valueOf(
+                    editShip.getCargo().getWeight()));*/
+        });
+        updateShip.addRow(11, updateShipButton);
         
     // Ship Menu > Accordion
         Accordion shipMenuAccordion = new Accordion();
