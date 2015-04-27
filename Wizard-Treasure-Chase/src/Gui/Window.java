@@ -458,6 +458,39 @@ public class Window extends Application {
         shipCargoWeightText.setMaxWidth(50);
         updateShip.addRow(10, shipCargoWeightText);
         
+    // Ship Menu > Update Ship > Save Button
+        Button saveShipButton = new Button("Save");
+        saveShipButton.setOnAction((ActionEvent event) -> {
+            System.err.println("Save ship button pressed");
+            updateCurrentShips(false); // Updating currentShips
+            for(int counter = Integer.valueOf(updateShipID.getText()); 
+                    counter > 0; counter--) {
+                currentShips.poll();
+                // Removing ships from currentShips until we're at index
+            }
+            CargoShip editShip = currentShips.poll(); // Setting ship to edit
+            
+            // Saving new values from GUI
+            editShip.setName(shipNameText.getText());
+            editShip.setCountryReg(shipCountryText.getText());
+            editShip.setTransponder(Long.valueOf(
+                    shipTransponderText.getText()));
+            editShip.setLength(Double.valueOf(shipLengthText.getText()));
+            editShip.setDraft(Double.valueOf(shipDraftText.getText()));
+            editShip.setCapacity(Double.valueOf(shipCapacityText.getText()));
+            editShip.setLongitude(Double.valueOf(shipLongitudeText.getText()));
+            editShip.setLatitude(Double.valueOf(shipLatitudeText.getText()));
+            editShip.setLocation(new Location(
+                    Integer.valueOf(shipXText.getText()), 
+                    Integer.valueOf(shipYText.getText())));
+            editShip.getCargo().setLabel(shipCargoText.getText());
+            editShip.getCargo().setWeight(Double.valueOf(
+                    shipCargoWeightText.getText()));
+        });
+        updateShip.addRow(11, saveShipButton);
+        
+        
+    // Ship Menu > Update Ship > Load Button
         Button updateShipButton = new Button("Load");
         updateShipButton.setOnAction((ActionEvent event) -> {
             System.err.println("Load ship button pressed");
@@ -491,42 +524,6 @@ public class Window extends Application {
             shipCargoText.setText(editShip.getCargo().getLabel());
             shipCargoWeightText.setText(String.valueOf(
                     editShip.getCargo().getWeight()));
-        });
-        updateShip.addRow(11, updateShipButton);
-        
-        Button saveShipButton = new Button("Save");
-        saveShipButton.setOnAction((ActionEvent event) -> {
-            System.err.println("Save ship button pressed");
-            updateCurrentShips(false); // Updating currentShips
-            for(int counter = Integer.valueOf(updateShipID.getText()); 
-                    counter > 0; counter--) {
-                currentShips.poll();
-                // Removing ships from currentShips until we're at index
-            }
-            CargoShip editShip = currentShips.poll(); // Setting ship to edit
-            /*
-            // Saving new values from GUI
-            editShip.setName(shipNameText.getText());
-            shipCountryText.getText());
-            shipTransponderText.getText(
-                    String.valueOf(editShip.getTransponder()));
-            shipLengthText.getText(
-                    String.valueOf(editShip.getLength()));
-            shipDraftText.getText(
-                    String.valueOf(editShip.getDraft()));
-            shipCapacityText.getText(
-                    String.valueOf(editShip.getCapacity()));
-            shipLongitudeText.getText(
-                    String.valueOf(editShip.getLongitude()));
-            shipYText.getText(
-                    String.valueOf(editShip.getLocation().getY()));
-            shipLatitudeText.getText(
-                    String.valueOf(editShip.getLatitude()));
-            shipXText.getText(
-                    String.valueOf(editShip.getLocation().getX()));
-            shipCargoText.getText(editShip.getCargo().getLabel());
-            shipCargoWeightText.getText(String.valueOf(
-                    editShip.getCargo().getWeight()));*/
         });
         updateShip.addRow(11, updateShipButton);
         

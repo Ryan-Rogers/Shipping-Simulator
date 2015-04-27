@@ -232,12 +232,40 @@ public class Move implements Runnable {
         return destination;
     }
     
+    /**
+     * May need to invert.
+     * @return MapConverter conversion of Y to latitude
+     */
     public double getLongitude() {
         return MapConverter.row2lat(currentLocation.getY());
     }
     
+    /**
+     * May need to invert.
+     * @return MapConverter conversion of X to longitude
+     */
     public double getLatitude() {
         return MapConverter.col2lon(currentLocation.getX());
+    }
+    
+    /**
+     * MapConvert conversion of latitude to X
+     * May need to invert.
+     * @param newLongitude
+     */
+    public void setLongitude(Double newLongitude) {
+        currentLocation = new Location(currentLocation.getX(), 
+                MapConverter.lat2row(newLongitude));
+    }
+    
+    /**
+     * MapConvert conversion of longitude to X
+     * May need to invert.
+     * @param newLatitude
+     */
+    public void setLatitude(Double newLatitude) {
+        currentLocation = new Location(currentLocation.getX(), 
+                MapConverter.lat2row(newLatitude));
     }
 
 // Set Location
