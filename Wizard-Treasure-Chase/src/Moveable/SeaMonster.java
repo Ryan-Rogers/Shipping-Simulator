@@ -17,6 +17,8 @@ import javafx.scene.media.Media;
 // Location newLocation, Move newTarget, Window newWindow, Thread newGuiThread
 public class SeaMonster extends Move {
     
+    protected String name;
+    
     public SeaMonster(Window newWindow, Thread newGuiThread) {
         super(newWindow, newGuiThread);
 //        this.setLocation(newWindow.getWaterLocations().get(newWindow
@@ -28,9 +30,18 @@ public class SeaMonster extends Move {
         sleepTime = 500 + new Random().nextInt(100);
         this.cSym = 'E';
         this.type = "SeaMonster";
+        this.name = "SeaMonster";
     }
     
     public String battlecry() {
         return "SeaMonster battle cry";
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public void setName(String newName) {
+        this.name = newName;
     }
 }

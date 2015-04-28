@@ -122,6 +122,10 @@ public class Window extends Application {
     static Port port = new Port();
     static ConcurrentLinkedQueue<CargoShip> currentShips;
     static ConcurrentLinkedQueue<Dock> currentDocks;
+    static ConcurrentLinkedQueue<Thread> mapThreads
+            = new ConcurrentLinkedQueue<>();
+    static int monstersSummoned;
+    static boolean paused = false;
 
 // Files
 // Files > Images
@@ -296,6 +300,21 @@ public class Window extends Application {
             loadPortToMap(); // Loading Port from file
         });
         openMenu.addRow(4, openButton);
+        Button playButton = new Button("Play/Pause");
+        playButton.setOnAction((ActionEvent event) -> {
+            System.err.println("Play button pressed");
+            if(paused) {
+                paused = false;
+                textOutput("Now playing");
+            } else {
+                paused = true;
+                textOutput("Now paused");
+            }
+            for(Move mapObject : mapObjects) {
+                mapObject.setPaused(paused);
+            }
+        });
+        openMenu.addRow(5, playButton);
 
     // File Menu > Snap Shot
         TitledPane snapShotPane = new TitledPane();
@@ -831,7 +850,12 @@ public class Window extends Application {
                 Godzilla newGodzilla = new Godzilla(this, windowThread);
                 mapObjects.add(newGodzilla); // Adding godzilla to map objects
                 mapMove(newGodzilla, inputLocation); // Initial draw
-                new Thread(newGodzilla).start(); // Starting godzilla's thread
+                newGodzilla.setTarget(getPreyShip(newGodzilla.getLocation()));
+                Thread newGodzillaThread = new Thread(newGodzilla);
+                mapThreads.add(newGodzillaThread);
+                if(!paused) {
+                    newGodzillaThread.start();
+                }
             }
         });
         summonGodzillaMenu.addRow(4, summonGodzillaButton);
@@ -1420,13 +1444,18 @@ public class Window extends Application {
         }
         mapObjects.add(newShip);
         System.err.println(newShip.getSpawn());
-        new Thread(newShip).start();
+        Thread newShipThread = new Thread(newShip);
+        mapThreads.add(newShipThread);
+        mapMove(newShip, newShip.getSpawn());
+        if(!paused) {
+            newShipThread.start();
+        }
     }
 
 // Creating a monster at a random watery location
     public void newRandomMonster()
     {
-        Move newMonster;
+        SeaMonster newMonster;
         Random random = new Random();
         if (random.nextInt(3) == 0) {
             newMonster = new SeaSerpent(this, windowThread);
@@ -1437,8 +1466,15 @@ public class Window extends Application {
                 newMonster = new Kraken(this, windowThread);
            }
         }
+        newMonster.setName(newMonster.getName() +" "+ monstersSummoned);
         mapObjects.add(newMonster);
-        new Thread(newMonster).start();
+        Thread newMonsterThread = new Thread(newMonster);
+        mapThreads.add(newMonsterThread);
+        mapMove(newMonster, newMonster.getLocation());
+        if(!paused) {
+            newMonsterThread.start();
+        }
+        monstersSummoned++;
     }
     
     /**
@@ -1540,7 +1576,13 @@ public class Window extends Application {
                         predator.end();
                         predator.setTarget(
                                 getPreyMonster(predator.getLocation()));
-                        new Thread(predator).start();
+                        predator.setTarget(getPreyShip(predator.getLocation()));
+                        Thread newPredatorThread = new Thread(predator);
+                        mapThreads.add(newPredatorThread);
+                        mapMove(predator, predator.getLocation());
+                        if(!paused) {
+                            newPredatorThread.start();
+                        }
                     }
                 }
             // CargoShip reached Dock
@@ -1555,7 +1597,13 @@ public class Window extends Application {
                         predator.end();
                         predator.setTarget(null);
                         predator.setDestination(predator.getSpawn());
-                        new Thread(predator).start();
+                        predator.setTarget(getPreyShip(predator.getLocation()));
+                        Thread newPredatorThread = new Thread(predator);
+                        mapThreads.add(newPredatorThread);
+                        mapMove(predator, predator.getLocation());
+                        if(!paused) {
+                            newPredatorThread.start();
+                        }
                     }
             // SeaMonster reached CargoShip
                 } else if(predator instanceof SeaMonster) {
@@ -1571,7 +1619,12 @@ public class Window extends Application {
                         mapMove(prey, null);
                         predator.end();
                         predator.setTarget(getPreyShip(predator.getLocation()));
-                        new Thread(predator).start();
+                        Thread newPredatorThread = new Thread(predator);
+                        mapThreads.add(newPredatorThread);
+                        mapMove(predator, predator.getLocation());
+                        if(!paused) {
+                            newPredatorThread.start();
+                        }
                     }
                 }
             }

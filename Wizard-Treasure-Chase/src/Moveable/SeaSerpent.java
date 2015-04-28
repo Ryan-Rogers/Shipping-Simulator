@@ -19,6 +19,7 @@ public class SeaSerpent extends SeaMonster {
         super(newWindow, newGuiThread);
         this.cSym = 's';
         this.type = "SeaSerpent";
+        this.name = "SeaSerpent";
     }
     
     @Override

@@ -20,6 +20,7 @@ public class Leviathan extends SeaMonster {
         super(newWindow, newGuiThread);
         this.cSym = 'L';
         this.type = "Leviathan";
+        this.name = "Leviathan";
     }
     
     @Override

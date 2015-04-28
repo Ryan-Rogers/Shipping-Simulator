@@ -20,6 +20,7 @@ public class Kraken extends SeaMonster {
         super(newWindow, newGuiThread);
         this.cSym = 'K';
         this.type = "Kraken";
+        this.name = "Kraken";
     }
     
     @Override

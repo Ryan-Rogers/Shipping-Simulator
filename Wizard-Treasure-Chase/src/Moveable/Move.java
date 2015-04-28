@@ -29,6 +29,7 @@ public class Move implements Runnable {
     protected char cSym;
     protected boolean isRunning;
     protected Location spawn;
+    protected boolean paused;
     
     /**
      * Case sensitive representation of the class name 
@@ -136,8 +137,14 @@ public class Move implements Runnable {
             
         // Loops while moveable is not at destination and GUI is open
             while(guiThread.isAlive() && isRunning) {
-                
-                if(currentLocation.getX() == destination.getX()
+                if(paused) {
+                    try { // Sleeping
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException ex) {// Sleep exception
+                        System.err.println("ShipBasic run() failed to sleep");
+                    }
+                } else {
+                if (currentLocation.getX() == destination.getX()
                         && currentLocation.getY() == destination.getY()) {
                     end();
                     if(destination.equals(spawn)) {
@@ -147,44 +154,44 @@ public class Move implements Runnable {
                         guiWindow.reachedDestination(this, target);
                     }
                 } else {
-
-                    if(target != null) { // Moveable has a target
-                        destination = target.currentLocation;
-                    }
-
-                    int xDifference; // Difference in current x and destination x
-                    int yDifference; // Difference in current y and destination y
-
-                    try { // Sleeping
-                        Thread.sleep(sleepTime);
-                        if(!isRunning) {
-                            continue;
-                        }
-                    } catch (InterruptedException ex) {// Sleep exception
-                        System.err.println("ShipBasic run() failed to sleep");
-                    }
-
-                // Calculating differenecs in x's and y's
-                    xDifference = currentLocation.getX() - destination.getX();
-                    yDifference = currentLocation.getY() - destination.getY();
-                    if((xDifference * xDifference)
-                            > (yDifference * yDifference)) {
-
-                    // Moveable is to the right of destination
-                        if(currentLocation.getX() > destination.getX()) {
-                            moveMe(-1, 0); // x - 1, y
-
-                    // Moveable is to the left of destination
-                        } else { // Moving moveable right
-                            moveMe(1, 0); // x + 1, y
+                        if(target != null) { // Moveable has a target
+                            destination = target.currentLocation;
                         }
 
-                // Moveable is farther from destination y than x
-                    } else { // Moveable is above destination
-                        if(currentLocation.getY() > destination.getY()) {
-                            moveMe(0, -1); // x, y - 1
-                        } else { // Moving moveable up
-                            moveMe(0, 1); // x, y + 1
+                        int xDifference; // Difference in current x and destination x
+                        int yDifference; // Difference in current y and destination y
+
+                        try { // Sleeping
+                            Thread.sleep(sleepTime);
+                            if(!isRunning) {
+                                continue;
+                            }
+                        } catch (InterruptedException ex) {// Sleep exception
+                            System.err.println("ShipBasic run() failed to sleep");
+                        }
+
+                    // Calculating differenecs in x's and y's
+                        xDifference = currentLocation.getX() - destination.getX();
+                        yDifference = currentLocation.getY() - destination.getY();
+                        if((xDifference * xDifference)
+                                > (yDifference * yDifference)) {
+
+                        // Moveable is to the right of destination
+                            if(currentLocation.getX() > destination.getX()) {
+                                moveMe(-1, 0); // x - 1, y
+
+                        // Moveable is to the left of destination
+                            } else { // Moving moveable right
+                                moveMe(1, 0); // x + 1, y
+                            }
+
+                    // Moveable is farther from destination y than x
+                        } else { // Moveable is above destination
+                            if(currentLocation.getY() > destination.getY()) {
+                                moveMe(0, -1); // x, y - 1
+                            } else { // Moving moveable up
+                                moveMe(0, 1); // x, y + 1
+                            }
                         }
                     }
                 }
@@ -222,6 +229,10 @@ public class Move implements Runnable {
 // Get Current Destination
     public Location getDestination() {
         return destination;
+    }
+    
+    public void setPaused(boolean newPauseState) {
+        this.paused = newPauseState;
     }
     
     /**
