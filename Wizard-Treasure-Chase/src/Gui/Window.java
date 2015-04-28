@@ -218,7 +218,14 @@ public class Window extends Application {
         mapPane.setMinWidth(1080);
         mapPane.setMinHeight(720);
         mapPane.setPrefWidth(1080);
-        mapPane.setPrefHeight(720);        
+        mapPane.setPrefHeight(720);
+        ImageView splashScreen = new ImageView();
+        splashScreen.setImage(splash);
+        splashScreen.setFitWidth(1080);
+        splashScreen.setPreserveRatio(true);
+        splashScreen.setSmooth(true);
+        splashScreen.setCache(true);
+        mapPane.add(splashScreen, 0, 0);
 
     // Right Pane
         rightPane = new GridPane();
@@ -281,6 +288,11 @@ public class Window extends Application {
         openMenu.addRow(1, openText);
         Button openButton = new Button("Load");
         openButton.setOnAction((ActionEvent event) -> {
+            mapList = new char[36][54]; // Loading map in fileName to mapList
+            mapObjects.clear(); // Removing all Move from mapObjects
+            mapButtons.clear();
+            populateMapPane();
+            mapPane.add(splashScreen, 0, 0);
             textOutput("Loading new files"); // Notifying user of load
             fileName = openText.getText(); // Saving new fileName from GUI
             loadMapList(); // Loading map in fileName to mapList
@@ -317,10 +329,11 @@ public class Window extends Application {
         closeButton.setAlignment(Pos.BASELINE_LEFT);
         closeButton.setOnAction((ActionEvent event) -> {
             System.err.println("Close button pressed");
-            mapObjects.clear(); // Removing all Move from mapObjects
             mapList = new char[36][54]; // Loading map in fileName to mapList
-            createMapButtons(); // Drawing mapList to mapButtons
-            populateMapPane(); // Adding mapButtons to mapPane
+            mapObjects.clear(); // Removing all Move from mapObjects
+            mapButtons.clear();
+            populateMapPane();
+            mapPane.add(splashScreen, 0, 0);
         });
         fileMenuArea.addRow(1, closeButton);
 
