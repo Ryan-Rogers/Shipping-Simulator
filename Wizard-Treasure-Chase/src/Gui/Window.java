@@ -44,6 +44,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import static javafx.application.Application.launch;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 // JavaFX > Event
 import javafx.event.ActionEvent;
@@ -56,6 +58,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
@@ -90,7 +93,6 @@ public class Window extends Application {
     GridPane rightPane;
     ScrollPane outputScroll;
     static String fileName;
-    static String theme;
     /**
      * Holds only the terrain cSym that were found at map file load.
      * Format:
@@ -143,7 +145,9 @@ public class Window extends Application {
     static Image craneship;
     static Image piership;
 
-// Files > Sounds
+// Files
+    static String fileHeader = "FILE:";
+    static String fileFooter = ".png";
     static Media krakenSound = new Media(new File("Sounds/Kraken.wav").toURI()
             .toString());
     static Media leviathanSound = new Media(new File("Sounds/Leviathan.wav")
@@ -165,8 +169,10 @@ public class Window extends Application {
 // Window
     @Override
     public void start(Stage windowStage) {
-    // Variable Initializations
-        theme = "Theme/Past/";
+    // Theme independent images
+        logo = new Image(fileHeader +"logo"+ fileFooter);
+        splash = new Image(fileHeader +"LoadingScreen"+ fileFooter);
+        entity = new Image(fileHeader +"entity"+ fileFooter);
         
     // Setup
         GridPane root = new GridPane(); // Creating window pane
@@ -178,35 +184,6 @@ public class Window extends Application {
     // Static GUI Code
         windowStage.setWidth(1280); // DEFAULT
         windowStage.setHeight(720); // DEFAULT
-
-    // Files
-        String fileHeader = "FILE:";
-        String fileFooter = ".png";
-        splash = new Image(fileHeader + "LoadingScreen" + fileFooter); // No theme
-        entity = new Image(fileHeader + "entity" + fileFooter); // No theme
-        water = new Image(fileHeader + theme + "water" + fileFooter);
-        wateralt = new Image(fileHeader + theme + "wateralt" + fileFooter);
-        wateralt2 = new Image(fileHeader + theme + "wateralt2" + fileFooter);
-        land = new Image(fileHeader + theme + "land" + fileFooter);
-        landalt = new Image(fileHeader + theme + "landalt" + fileFooter);
-        landalt2 = new Image(fileHeader + theme + "landalt2" + fileFooter);
-        landalt3 = new Image(fileHeader + theme + "landalt3" + fileFooter);
-        sand = new Image(fileHeader + theme + "sand" + fileFooter);
-        oilTanker = new Image(fileHeader + theme + "oiltanker" + fileFooter);
-        containerShip = new Image(fileHeader + theme + "containership"
-                + fileFooter);
-        cargoShip = new Image(fileHeader + theme + "cargoship" + fileFooter);
-        logo = new Image(fileHeader + theme + "logo" + fileFooter);
-        godzilla = new Image(fileHeader + theme + "godzilla" + fileFooter);
-        seaserpent = new Image(fileHeader + theme + "seaserpent" + fileFooter);
-        leviathan = new Image(fileHeader + theme + "leviathan" + fileFooter);
-        kraken = new Image(fileHeader + theme + "kraken" + fileFooter);
-        dock = new Image(fileHeader + theme + "dock" + fileFooter);
-        crane = new Image(fileHeader + theme + "crane" + fileFooter);
-        pier = new Image(fileHeader + theme + "pier" + fileFooter);
-        dockship = new Image(fileHeader + theme + "shipdock" + fileFooter);
-        craneship = new Image(fileHeader + theme + "shipcrane" + fileFooter);
-        piership = new Image(fileHeader + theme + "shippier" + fileFooter);
 
 // Main Pane
     // Map pane
@@ -282,17 +259,28 @@ public class Window extends Application {
         openPane.setStyle("-fx-base: #003380ff;"); // Dark blue
         GridPane openMenu = new GridPane();
         openPane.setContent(openMenu);
+        
+    // File Menu > Open > Theme Options
+        Label themeLabel = new Label("Theme:");
+        openMenu.addRow(0, themeLabel);
+        ObservableList<String> themeOptions = FXCollections.observableArrayList(
+            "Default", "Past", "Future");
+        final ComboBox themeMenu = new ComboBox(themeOptions);
+        themeMenu.getSelectionModel().selectFirst();
+        openMenu.addRow(1, themeMenu);
+    
+    // File Menu Open > Filename
         Label openLabel = new Label("Filename:");
-        openMenu.addRow(0, openLabel);
+        openMenu.addRow(2, openLabel);
         TextField openText = new TextField("complex");
-        openMenu.addRow(1, openText);
+        openMenu.addRow(3, openText);
         Button openButton = new Button("Load");
         openButton.setOnAction((ActionEvent event) -> {
-            mapList = new char[36][54]; // Loading map in fileName to mapList
-            mapObjects.clear(); // Removing all Move from mapObjects
-            mapButtons.clear();
-            populateMapPane();
-            mapPane.add(splashScreen, 0, 0);
+            System.err.println("File menu load button pressed");
+            loadThemeImages((String)themeMenu.getSelectionModel()
+                    .getSelectedItem());
+            System.err.println((String)themeMenu.getSelectionModel()
+                    .getSelectedItem());
             textOutput("Loading new files"); // Notifying user of load
             fileName = openText.getText(); // Saving new fileName from GUI
             loadMapList(); // Loading map in fileName to mapList
@@ -300,7 +288,7 @@ public class Window extends Application {
             populateMapPane(); // Adding mapButtons to mapPane
             loadPortToMap(); // Loading Port from file
         });
-        openMenu.addRow(2, openButton);
+        openMenu.addRow(4, openButton);
 
     // File Menu > Snap Shot
         TitledPane snapShotPane = new TitledPane();
@@ -315,6 +303,7 @@ public class Window extends Application {
         Button snapShotButton = new Button("Save Snap Shot");
         snapShotMenu.addRow(2, snapShotButton);
         snapShotButton.setOnAction((ActionEvent event) -> {
+            textOutput("Saving new files"); // Notifying user of load
             System.err.println("Snap Shot button pressed");
             FileHandler fileHandler = new FileHandler(snapShotText.getText());
             fileHandler.saveMap(terrainMap);
@@ -328,6 +317,7 @@ public class Window extends Application {
         closeButton.setStyle("-fx-base: #003380ff;");
         closeButton.setAlignment(Pos.BASELINE_LEFT);
         closeButton.setOnAction((ActionEvent event) -> {
+            textOutput("Removed all objects"); // Notifying user of load
             System.err.println("Close button pressed");
             mapList = new char[36][54]; // Loading map in fileName to mapList
             mapObjects.clear(); // Removing all Move from mapObjects
@@ -344,6 +334,7 @@ public class Window extends Application {
         exitButton.setStyle("-fx-base: #003380ff;");
         exitButton.setAlignment(Pos.BASELINE_LEFT);
         exitButton.setOnAction((ActionEvent event) -> {
+            System.err.println("Exit button pressed");
             windowStage.close();
         });
         fileMenuArea.addRow(2, exitButton);
@@ -1161,6 +1152,45 @@ public class Window extends Application {
         return shipChoice;
     }
     
+    public void loadThemeImages(String theme) {
+        water = new Image(fileHeader +"theme/"+ theme +"/"+"water"+ fileFooter);
+        wateralt = new Image(fileHeader +"theme/"+ theme +"/"+"wateralt"
+                + fileFooter);
+        wateralt2 = new Image(fileHeader +"theme/"+ theme +"/"+"wateralt2"
+                + fileFooter);
+        land = new Image(fileHeader +"theme/"+ theme +"/"+"land"+ fileFooter);
+        landalt = new Image(fileHeader +"theme/"+ theme +"/"+"landalt"
+                + fileFooter);
+        landalt2 = new Image(fileHeader +"theme/"+ theme +"/"+"landalt2"
+                + fileFooter);
+        landalt3 = new Image(fileHeader +"theme/"+ theme +"/"+"landalt3"
+                + fileFooter);
+        sand = new Image(fileHeader +"theme/"+ theme +"/"+"sand"+ fileFooter);
+        oilTanker = new Image(fileHeader +"theme/"+ theme +"/"+"oiltanker"
+                + fileFooter);
+        containerShip = new Image(fileHeader +"theme/"+ theme +"/"
+                +"containership"+ fileFooter);
+        cargoShip = new Image(fileHeader +"theme/"+ theme +"/"+"cargoship"
+                + fileFooter);
+        godzilla = new Image(fileHeader +"theme/"+ theme +"/"+"godzilla"
+                + fileFooter);
+        seaserpent = new Image(fileHeader +"theme/"+ theme +"/"+"seaserpent"
+                + fileFooter);
+        leviathan = new Image(fileHeader +"theme/"+ theme +"/"+"leviathan"
+                + fileFooter);
+        kraken = new Image(fileHeader +"theme/"+ theme +"/"+"kraken"
+                + fileFooter);
+        dock = new Image(fileHeader +"theme/"+ theme +"/"+"dock"+ fileFooter);
+        crane = new Image(fileHeader +"theme/"+ theme +"/"+"crane"+ fileFooter);
+        pier = new Image(fileHeader +"theme/"+ theme +"/"+"pier"+ fileFooter);
+        dockship = new Image(fileHeader +"theme/"+ theme +"/"+"shipdock"
+                + fileFooter);
+        craneship = new Image(fileHeader +"theme/"+ theme +"/"+"shipcrane"
+                + fileFooter);
+        piership = new Image(fileHeader +"theme/"+ theme +"/"+"shippier"
+                + fileFooter);
+    }
+    
 // Returns a new button with custom defaults
     public Button customButton()
     {
@@ -1394,16 +1424,14 @@ public class Window extends Application {
             // 1/100
                 case 0:
                     return wateralt2;
-            // 4/100
+            // 3/100
                 case 1:
                     return wateralt;
                 case 2:
                     return wateralt;
                 case 3:
                     return wateralt;
-                case 4:
-                    return wateralt;
-            // 45/100
+            // 46/100
                 default:
                     return water;
             }
@@ -1412,10 +1440,43 @@ public class Window extends Application {
             return sand;
         }
         if ("*".equals(String.valueOf(type))) {
-            if (random.nextInt(6) > 0) {
-                return land;
-            } else {
-                return landalt;
+            switch (random.nextInt(100)) {
+            // 5/100
+                case 0:
+                    return landalt;
+                case 1:
+                    return landalt;
+                case 2:
+                    return landalt;
+                case 3:
+                    return landalt;
+                case 4:
+                    return landalt;
+            // 5/100
+                case 5:
+                    return landalt;
+                case 6:
+                    return landalt;
+                case 7:
+                    return landalt;
+                case 8:
+                    return landalt;
+                case 9:
+                    return landalt;
+            // 5/100
+                case 10:
+                    return landalt;
+                case 11:
+                    return landalt;
+                case 12:
+                    return landalt;
+                case 13:
+                    return landalt;
+                case 14:
+                    return landalt;
+            // 85/100
+                default:
+                    return land;
             }
         }
         if ("T".equals(String.valueOf(type))) {
@@ -1498,17 +1559,5 @@ public class Window extends Application {
     public void setWindowThread(WindowThread inputThread)
     {
         windowThread = inputThread;
-    }
-
-// Saves the recieved fileName
-    public void setFileName(String file)
-    {
-        fileName = file;
-    }
-
-// Saves the recieved theme
-    public void setTheme(String newTheme)
-    {
-        theme = newTheme;
     }
 }
