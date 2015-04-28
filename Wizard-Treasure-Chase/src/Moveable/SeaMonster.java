@@ -8,6 +8,7 @@ package Moveable;
 
 import Gui.Window;
 import java.util.Random;
+import javafx.scene.media.Media;
 
 
 /**
@@ -24,11 +25,12 @@ public class SeaMonster extends Move {
 //        this.setTarget(newWindow.getPreyShip(this.getClass()));
         
         this.setTarget(newWindow.getPreyShip(currentLocation));
-        
-        
-        
-        sleepTime -= (new Random()).nextInt(300);
+        sleepTime = 500 + new Random().nextInt(100);
         this.cSym = 'E';
         this.type = "SeaMonster";
+    }
+    
+    public String battlecry() {
+        return "SeaMonster battle cry";
     }
 }

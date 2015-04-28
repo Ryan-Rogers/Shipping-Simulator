@@ -21,4 +21,9 @@ public class Kraken extends SeaMonster {
         this.cSym = 'K';
         this.type = "Kraken";
     }
+    
+    @Override
+    public String battlecry() {
+        return "RELEASE ME!";
+    }
 }

@@ -13,23 +13,6 @@ import Gui.Window;
 public class OilTanker extends CargoShip
 {
 
-    /**
-     * CSV Constructor.
-     * @param input
-     * @param newLocation
-     * @param newDestination
-     * @param newWindow
-     * @param newGuiThread
-     */
-    public OilTanker(String input, Map.Location newLocation, Map.Location newDestination, 
-            Window newWindow, Thread newGuiThread)
-    {
-        super(input, newLocation, newDestination, newWindow, newGuiThread);
-
-        this.cSym = 'T';
-        this.type = "OilTanker";
-    }
-
     public OilTanker(Window newWindow, Thread newGuiThread)
     {
         super(newWindow, newGuiThread);

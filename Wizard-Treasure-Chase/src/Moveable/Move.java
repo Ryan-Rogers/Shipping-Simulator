@@ -41,7 +41,7 @@ public class Move implements Runnable {
         isRunning = false;
         sleepTime = 500 + new Random().nextInt(500); //TODO: have child classes set this by weight
         currentLocation = newLocation;
-        destination = newDestination;
+        getValidTarget();
         guiWindow = newWindow;
         guiThread = newGuiThread;
         type = "Moveable";
@@ -60,7 +60,7 @@ public class Move implements Runnable {
         
         sleepTime = 500 + new Random().nextInt(500);
         currentLocation = getValidSpawn(); // DEBUG DEFAULT UNUSED
-        destination = getValidDestination(); // DEBUG DEFAULT UNUSED
+        getValidTarget();
         
         type = "Moveable";
         cSym = 'E';
@@ -78,7 +78,6 @@ public class Move implements Runnable {
         
         sleepTime = 500 + new Random().nextInt(500);
         currentLocation = getValidSpawn(); // DEBUG DEFAULT UNUSED
-        destination = null; // DEBUG DEFAULT UNUSED
         
         type = "Moveable";
         cSym = 'E';
@@ -92,9 +91,8 @@ public class Move implements Runnable {
 // New moveable with a target
     public Move(Location newLocation, Move newTarget, Window newWindow,
             Thread newGuiThread) {
-        sleepTime = 500 + new Random().nextInt(500);
+        sleepTime = 700 + new Random().nextInt(100);
         currentLocation = newLocation;
-        target = newTarget;
         guiWindow = newWindow;
         guiThread = newGuiThread;
         type = "Moveable";
@@ -114,17 +112,11 @@ public class Move implements Runnable {
         return waterLocations.get(index);
     }
     
-    protected Location getValidDestination()
-    {
-        ArrayList<Location> dockLocations;
-        
-        dockLocations = guiWindow.getDockLocations();
-        
-        Random rand = new Random();
-        
-        int index = rand.nextInt(dockLocations.size());
-        
-        return dockLocations.get(index);
+    protected void getValidTarget() {
+        ArrayList<Dock> dockList = guiWindow.getDocks();
+        int randomIndex = new Random().nextInt(dockList.size());
+        setDestination(dockList.get(randomIndex).getLocation());
+        setTarget(dockList.get(randomIndex));
     }
     
 // Runnable
@@ -142,7 +134,8 @@ public class Move implements Runnable {
                 
                 if(currentLocation.getX() == destination.getX()
                         && currentLocation.getY() == destination.getY()) {
-                    destination = new Location(10, 10);
+                    end();
+                    guiWindow.reachedDestination(this, target);
                 } else {
 
                     if(target != null) { // Moveable has a target
@@ -152,51 +145,35 @@ public class Move implements Runnable {
                     int xDifference; // Difference in current x and destination x
                     int yDifference; // Difference in current y and destination y
 
-                // Sleeping
-                    try { 
+                    try { // Sleeping
                         Thread.sleep(sleepTime);
                         if(!isRunning) {
                             continue;
                         }
-
-                // Sleep exception
-                    } catch (InterruptedException ex) {
+                    } catch (InterruptedException ex) {// Sleep exception
                         System.err.println("ShipBasic run() failed to sleep");
                     }
 
                 // Calculating differenecs in x's and y's
                     xDifference = currentLocation.getX() - destination.getX();
                     yDifference = currentLocation.getY() - destination.getY();
-
-                // Moveable is farther from destination x than y
-                    if((xDifference * xDifference) > (yDifference * yDifference)) {
+                    if((xDifference * xDifference)
+                            > (yDifference * yDifference)) {
 
                     // Moveable is to the right of destination
                         if(currentLocation.getX() > destination.getX()) {
-
-                        // Moving moveable left
                             moveMe(-1, 0); // x - 1, y
 
                     // Moveable is to the left of destination
-                        } else {
-
-                        // Moving moveable right
+                        } else { // Moving moveable right
                             moveMe(1, 0); // x + 1, y
                         }
 
                 // Moveable is farther from destination y than x
-                    } else {
-
-                    // Moveable is above destination
+                    } else { // Moveable is above destination
                         if(currentLocation.getY() > destination.getY()) {
-
-                        // Moving moveable down
                             moveMe(0, -1); // x, y - 1
-
-                    // Moveable is below destination
-                        } else {
-
-                        // Moving moveable up
+                        } else { // Moving moveable up
                             moveMe(0, 1); // x, y + 1
                         }
                     }
@@ -205,15 +182,20 @@ public class Move implements Runnable {
         }
     }
     
-    public void end()
-    {
+    public void end() {
         isRunning = false;
     }
     
-// Call Window to Move Ship
+    /**
+     * Tells window to move this Move by the inputed X, Y differences.
+     * If the location is equal to the destination, it stops the thread.
+     * @param byX
+     * @param byY 
+     */
     public void moveMe(int byX, int byY) {
-        guiWindow.mapMove(this, new Location(currentLocation.getX() + byX, 
-                currentLocation.getY() + byY));
+        Location newLocation = new Location(currentLocation.getX() + byX, 
+                currentLocation.getY() + byY);
+        guiWindow.mapMove(this, newLocation);
     }
     
 // Set Destination
@@ -264,8 +246,8 @@ public class Move implements Runnable {
      * @param newLatitude
      */
     public void setLatitude(Double newLatitude) {
-        currentLocation = new Location(currentLocation.getX(), 
-                MapConverter.lat2row(newLatitude));
+        currentLocation = new Location(MapConverter.lon2col(newLatitude), 
+                currentLocation.getY());
     }
 
 // Set Location
@@ -289,5 +271,9 @@ public class Move implements Runnable {
 // toStringArray
     public String toStringArray() {
         return "Moveable\n";
+    }
+    
+    public Move getTarget() {
+        return target;
     }
 }

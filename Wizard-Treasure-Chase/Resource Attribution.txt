@@ -5,3 +5,7 @@ http://opengameart.org/content/ships-with-ripple-effect
 		cargoship.png
 https://blurppy.files.wordpress.com/2014/03/godzilla-sea1500.jpg
 	godzilla.png
+http://opengameart.org/content/orc-dying-sound-effect
+	GodzillaKills.wav
+http://opengameart.org/sites/default/files/dropmetalthing.ogg
+	Docking.wav

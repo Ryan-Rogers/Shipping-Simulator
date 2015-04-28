@@ -159,6 +159,8 @@ public class Window extends Application {
             .toURI().toString());
     static Media godzillaSummonSound = new Media(new File(
             "Sounds/GodzillaSummon.wav").toURI().toString());
+    static Media Docking = new Media(new File("Sounds/Docking.wav").toURI()
+            .toString());
 
 // Application loop
     public void main(String[] args) {
@@ -487,6 +489,7 @@ public class Window extends Application {
             editShip.setLength(Double.valueOf(shipLengthText.getText()));
             editShip.setDraft(Double.valueOf(shipDraftText.getText()));
             editShip.setCapacity(Double.valueOf(shipCapacityText.getText()));
+            Location previousLocation = editShip.getLocation();
             if(shipYText.getText().equals("") // Checking if X, Y empty in GUI
                     || shipXText.getText().equals("")) {
                 editShip.setLocation(new Location(
@@ -501,6 +504,8 @@ public class Window extends Application {
             editShip.getCargo().setLabel(shipCargoText.getText());
             editShip.getCargo().setWeight(Double.valueOf(
                     shipCargoWeightText.getText()));
+            mapMove(editShip, editShip.getLocation());
+            removeGhost(previousLocation);
         });
         updateShip.addRow(11, saveShipButton);
         
@@ -949,14 +954,14 @@ public class Window extends Application {
         return locations;
     }
         
-    public ArrayList<Location> getDockLocations() {
-        ArrayList<Location> locations = new ArrayList<>();
-        for(Move move : mapObjects) {
-            if (move instanceof Dock) {
-                locations.add(move.getLocation());
+    public ArrayList<Dock> getDocks() {
+        ArrayList<Dock> docks = new ArrayList<>();
+        for(Move mapObject : mapObjects) {
+            if(mapObject instanceof Dock) {
+                docks.add((Dock)mapObject);
             }
         }
-        return locations;
+        return docks;
     }
     
     public void loadPortToMap()
@@ -1265,7 +1270,7 @@ public class Window extends Application {
         }
         mapObjects.add(newShip);
         new Thread(newShip).start();
-    }    
+    }
 
 // Creating a monster at a random watery location
     public void newRandomMonster()
@@ -1321,28 +1326,28 @@ public class Window extends Application {
         } else { // newLocation == null
             ship.end();
             mapObjects.remove(ship); // Removing ship from mapObjects
-            Move otherMoveAtShipLocation = null; // Holds Move at newLocation
-            for(Move mapObject : mapObjects) { // Saving Move at newLocation
+            Move otherMoveAtShipLocation = null; // Holds Move at ship.getLocation()
+            for(Move mapObject : mapObjects) { // Saving Move at ship.getLocation()
                 if(mapObject.getLocation().equals(ship.getLocation())) {
                     otherMoveAtShipLocation = mapObject;
                 }
             }
-        // Setting image at newLocation for other Move at newLocation
+        // Setting image at ship.getLocation() for other Move at ship
             if(otherMoveAtShipLocation != null) { // Other Move found
-                mapButtons.get(newLocation.getY()).get(newLocation.getX())
-                        .setGraphic(customImageView(otherMoveAtShipLocation
-                        .getCSym()));
-            } else { // Setting image at newLocation for terrain
-                mapButtons.get(newLocation.getY()).get(newLocation.getX())
-                        .setGraphic(customImageView(terrainMap
-                        [newLocation.getY()][newLocation.getX()]));
+                mapButtons.get(ship.getLocation().getY()).get(ship.getLocation()
+                        .getX()).setGraphic(customImageView(
+                        otherMoveAtShipLocation.getCSym()));
+            } else { // Setting image at ship.getLocation() for terrain
+                mapButtons.get(ship.getLocation().getY()).get(ship.getLocation()
+                        .getX()).setGraphic(customImageView(terrainMap
+                        [ship.getLocation().getY()]
+                        [ship.getLocation().getX()]));
             }
             updateCurrentShips(false);
         }
     }
 
 // Prints the given map to the console
-
     public void printMap(char[][] map)
     {
         for(int row = 0; row < rows; row++) {
@@ -1354,48 +1359,72 @@ public class Window extends Application {
        System.err.println();
     }
     
+    public void reachedDestination(Move predator, Move prey) {
+        Platform.runLater(() -> {
+            if(prey != null) {
+            // GodZilla reached Monster
+                if(predator instanceof Godzilla) {
+                    if(prey instanceof SeaMonster) {
+                        System.err.println(((Godzilla) predator).battlecry());
+                        textOutput(((Godzilla) predator).battlecry());
+                        new MediaPlayer(godzillaKillsSound).play();
+                        mapMove(prey, null);
+                        predator.end();
+                        predator.setTarget(
+                                getPreyMonster(predator.getLocation()));
+                        new Thread(predator).start();
+                    }
+                }
+            // CargoShip reached Dock
+                if(predator instanceof CargoShip) {
+                    if(prey instanceof Dock) {
+                        textOutput(((CargoShip)predator).getName() 
+                                +" has docked at "+ ((Dock)prey).getName());
+                        new MediaPlayer(Docking).play();
+                        predator.end();
+                        predator.setTarget(null);
+                        predator.setDestination(new Location(0, 0));
+                        new Thread(predator).start();
+                    }
+                }
+            }
+        });
+    }
+    
 // Processing queue
     public static void mapUpdate() {
         if (!shipList.isEmpty()) { // Ships need to be updated
             if (!mapButtons.isEmpty()) { // GUI buttons are loaded
-                Move currentShip = shipList.remove();
-                Location newLocation = locationList.remove();
-                mapButtons.get(newLocation.getY())
+            // Drawing Move at its new location
+                Move currentShip = shipList.remove(); // Unqueueing ship
+                Location newLocation = locationList.remove(); // Unqueueing loc
+                mapButtons.get(newLocation.getY()) // Setting new loc image
                         .get(newLocation.getX())
                         .setGraphic(customImageView(currentShip.getCSym()));
-                
+            
+            // Undrawing Move from previous location
                 Location previousLocation = new Location(currentShip
-                        .getLocation());
-                if (currentShip.getLocation().getX() != newLocation.getX()
-                        || currentShip.getLocation().getY()
-                        != newLocation.getY()) {
-                    
-                    mapButtons.get(previousLocation.getY())
-                            .get(previousLocation.getX())
-                            .setGraphic(customImageView(terrainMap
-                            [previousLocation.getY()]
-                            [previousLocation.getX()]));
-                    
-                    currentShip.setLocation(newLocation);
-                    for(Move otherMover: mapObjects)
-                    {
-                        if(!currentShip.equals(otherMover)) {
-                            if(otherMover.getLocation().getX()
-                                    == previousLocation.getX()
-                                    && otherMover.getLocation().getY()
-                                    == previousLocation.getY()) {
-                                mapButtons.get(previousLocation.getY())
-                                .get(previousLocation.getX())
-                                .setGraphic(customImageView(otherMover
-                                        .getCSym()));
-                            }
-                        }
-                    }
-                }
+                        .getLocation()); // Saving previous location
+                currentShip.setLocation(newLocation);
+                removeGhost(previousLocation);
             }
         }
     }
     
+    public static void removeGhost(Location ghostLocation) {
+        mapButtons.get(ghostLocation.getY())
+                    .get(ghostLocation.getX())
+                    .setGraphic(customImageView(terrainMap
+                    [ghostLocation.getY()]
+                    [ghostLocation.getX()]));
+        for(Move mapObject : mapObjects) {
+            if(mapObject.getLocation().equals(ghostLocation)) {
+                mapButtons.get(ghostLocation.getY())
+                    .get(ghostLocation.getX())
+                    .setGraphic(customImageView(mapObject.getCSym()));
+            }
+        }
+    }
 
 // Returns a default ImageView
     public static ImageView customImageView(Image image)

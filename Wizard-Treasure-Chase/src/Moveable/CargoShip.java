@@ -60,7 +60,7 @@ public class CargoShip extends Move
      * @param newDestination
      * @param newWindow
      * @param newGuiThread
-     */
+     *//*
     public CargoShip(String input, Location newLocation, Location newDestination, 
             Window newWindow, Thread newGuiThread)
     {
@@ -98,8 +98,7 @@ public class CargoShip extends Move
             sleepTime += 250;
         }
         
-    }
-
+    }*/
     /**
      * Generates a random ship.
      * @param newWindow
@@ -381,11 +380,4 @@ public class CargoShip extends Move
         }
         return returnString;
     }
-
-//    @Override
-//    protected Location getValidSpawn()
-//    {
-//        TODO: Ryan: notice this
-//    }
-    
 }

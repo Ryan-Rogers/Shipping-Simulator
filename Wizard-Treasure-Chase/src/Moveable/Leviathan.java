@@ -21,4 +21,9 @@ public class Leviathan extends SeaMonster {
         this.cSym = 'L';
         this.type = "Leviathan";
     }
+    
+    @Override
+    public String battlecry() {
+        return "Come! Ahab beckons!";
+    }
 }

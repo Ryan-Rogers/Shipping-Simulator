@@ -7,6 +7,7 @@
 package Moveable;
 
 import Gui.Window;
+import java.util.Random;
 
 /**
  * @author Ryan Rogers
@@ -18,6 +19,11 @@ public class Godzilla extends SeaMonster {
         this.setTarget(newWindow.getPreyMonster(currentLocation));
         this.cSym = 'G';
         this.type = "Godzilla";
-        sleepTime = 100;
+        sleepTime = 300 + new Random().nextInt(100);;
+    }
+    
+    @Override
+    public String battlecry() {
+        return "Baraaaawr-rompf!";
     }
 }
