@@ -1,25 +1,15 @@
 Java Project TODO
 -----------------
-
-Ships choose nearest dock
-
-Ships icon changes in correct dock
-
+Functional
+----------
 Ships only unload cargo if they fit into dock
-
-Ship values randomized
-
 Godzilla stops after all monsters
+
+Optional
+--------
+Move doesn't choose a spawn with a Move already there
+Ships choose nearest dock
 Godzilla notified on new monsters
-
-mapMove checks for ship collisions
-
-Monster menu
-
-Play and pause buttons for threads
-Add threads to mapObjectThreads
-Check Boolean paused on creation
-
 Change navigation algorithm to prevent land travel
 	and wall problem
 	and ship-ship collisions

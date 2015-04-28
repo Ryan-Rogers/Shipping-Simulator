@@ -10,6 +10,7 @@ package Moveable;
  *************************/
 import Gui.Window;
 import Map.Location;
+import java.util.Random;
 /**
  * The Ship class, with which the main 
  * body of the program dictates.
@@ -24,8 +25,10 @@ public class CargoShip extends Move
     /** Class data members */
     protected String name;
     protected String countryReg;
-    
-    
+    protected String[] firstNames = {"Red", "Green", "Dark", "Light", "Day", 
+        "Night", "Savanah", "Mountain", "Captain's", "Admiral's"};
+    protected String[] lastNames = {"Buffalo", "Pastures", "Knight", "Wave", 
+        "Star", "Moon", "Lion", "Goat", "Pride", "Joy"};
     protected long transponder;
     
     protected double capacity;
@@ -45,8 +48,14 @@ public class CargoShip extends Move
         super(newWindow, newGuiThread);
         type = "Ship";
         cSym = 'S';
-        this.name        = "Zenda";
-        this.countryReg  = "Ruritania";
+        Random randomized = new Random();
+        while(transponder > 9999999 || transponder < 1000000) {
+            transponder = Math.abs(randomized.nextLong());
+            transponder = (transponder/1000000000)/1000;
+        }
+        name = firstNames[randomized.nextInt(10)] + " " +
+                lastNames[randomized.nextInt(10)];
+        this.countryReg = "Ruritania";
         this.transponder = 0;
         this.capacity    = 10;
         this.length      = 90;

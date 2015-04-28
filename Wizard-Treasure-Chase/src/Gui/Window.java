@@ -121,6 +121,7 @@ public class Window extends Application {
             = new ConcurrentLinkedQueue<>();
     static Port port = new Port();
     static ConcurrentLinkedQueue<CargoShip> currentShips;
+    static ConcurrentLinkedQueue<SeaMonster> currentMonsters;
     static ConcurrentLinkedQueue<Dock> currentDocks;
     static ConcurrentLinkedQueue<Thread> mapThreads
             = new ConcurrentLinkedQueue<>();
@@ -153,6 +154,7 @@ public class Window extends Application {
     static Image dockship;
     static Image craneship;
     static Image piership;
+    static Image unsafe;
 
 // Files
     static String fileHeader = "FILE:";
@@ -814,10 +816,100 @@ public class Window extends Application {
         generateMonsterMenu.addRow(2, generateMonsterButton);
 
     // Monster Menu > Accordion > Update Monsters
-        TitledPane updateMonstersPane = new TitledPane();
-        updateMonstersPane.setStyle("-fx-base: #003380ff;");
-        updateMonstersPane.setText("Update Monsters");
+        TitledPane updateMonsterPane = new TitledPane();
+        updateMonsterPane.setStyle("-fx-base: #003380ff;");
+        updateMonsterPane.setText("Update Monsters");
+        GridPane updateMonster = new GridPane();
+        updateMonster.setStyle("-fx-base: #003380ff");
+        updateMonsterPane.setContent(updateMonster);
+        
+        Label monsterNameLabel = new Label("Name:");
+        updateMonster.addRow(0, monsterNameLabel);
+        TextField monsterNameText = new TextField("");
+        monsterNameText.setMaxWidth(100);
+        updateMonster.addRow(0, monsterNameText);
+        
+        Label monsterLongitudeLabel = new Label("Longitude:");
+        updateMonster.addRow(1, monsterLongitudeLabel);
+        TextField monsterLongitudeText = new TextField("");
+        monsterLongitudeText.setMaxWidth(60);
+        updateMonster.addRow(1, monsterLongitudeText);
+        TextField monsterYText = new TextField("");
+        monsterYText.setMaxWidth(60);
+        updateMonster.addRow(1, monsterYText);
+        
+        Label monsterLatitudeLabel = new Label("Latitude:");
+        updateMonster.addRow(2, monsterLatitudeLabel);
+        TextField monsterLatitudeText = new TextField("");
+        monsterLatitudeText.setMaxWidth(50);
+        updateMonster.addRow(2, monsterLatitudeText);
+        TextField monsterXText = new TextField("");
+        monsterXText.setMaxWidth(50);
+        updateMonster.addRow(2, monsterXText);
+        
+        Button saveMonsterButton = new Button("Save");
+        saveMonsterButton.setOnAction((ActionEvent event) -> {
+            System.err.println("Save monster button pressed");
+            updateCurrentMonsters(false); // Updating currentMonsters
+            SeaMonster editMonster = null;
+            for(SeaMonster currentMonster : currentMonsters) {
+                if(currentMonster.getName().equals(monsterNameText.getText())) {
+                    editMonster = currentMonster;
+                }
+            }
+                if(editMonster != null) {
+                System.err.println(editMonster.getLocation());
 
+                // Saving new values from GUI
+                editMonster.setName(monsterNameText.getText());
+                Location previousLocation = editMonster.getLocation();
+                if(monsterYText.getText().equals("") // Checking if X, Y empty in GUI
+                        || monsterXText.getText().equals("")) {
+                    editMonster.setLongitude(Double.valueOf(
+                            monsterLongitudeText.getText()));
+                    editMonster.setLatitude(Double.valueOf(
+                            monsterLatitudeText.getText()));
+                } else { // Setting location by lat, lon if X, Y empty in GUI
+                    editMonster.setLocation(new Location(
+                            Integer.valueOf(monsterXText.getText()), 
+                            Integer.valueOf(monsterYText.getText())));
+                }
+                editMonster.end();
+                mapMove(editMonster, editMonster.getLocation());
+                new Thread(editMonster).start();
+                removeGhost(previousLocation);
+            }
+        });
+        updateMonster.addRow(11, saveMonsterButton);
+
+
+    // Monster Menu > Update Monster > Load Button
+        Button updateMonsterButton = new Button("Load");
+        updateMonsterButton.setOnAction((ActionEvent event) -> {
+            System.err.println("Load monster button pressed");
+            updateCurrentMonsters(false); // Updating currentMonsters
+            SeaMonster editMonster = null;
+            for(SeaMonster currentMonster : currentMonsters) {
+                if(currentMonster.getName().equals(monsterNameText.getText())) {
+                    editMonster = currentMonster;
+                }
+            }
+            if(editMonster != null) {
+            // Updating GUI to new values
+                monsterNameText.setText(editMonster.getName());
+                monsterLongitudeText.setText(
+                        String.valueOf(editMonster.getLongitude()));
+                monsterYText.setText(
+                        String.valueOf(editMonster.getLocation().getY()));
+                monsterLatitudeText.setText(
+                        String.valueOf(editMonster.getLatitude()));
+                monsterXText.setText(
+                        String.valueOf(editMonster.getLocation().getX()));
+                }
+        });
+        updateMonster.addRow(11, updateMonsterButton);
+
+        
     // Monster Menu > Summon Godzilla
         TitledPane summonGodzilla = new TitledPane();
         summonGodzilla.setText("Summon Godzilla");
@@ -863,7 +955,7 @@ public class Window extends Application {
     // Monster Menu > Accordion
         Accordion monsterMenuAccordion = new Accordion();
         monsterMenuAccordion.getPanes().addAll(generateMonstersPane,
-                updateMonstersPane, summonGodzilla);
+                updateMonsterPane, summonGodzilla);
         monsterMenuArea.addRow(0, monsterMenuAccordion);
 
 // Monster Menu Buttons
@@ -984,7 +1076,7 @@ public class Window extends Application {
     }
 
 // Add text to output area
-    public void textOutput(String newOutput) {
+    public static void textOutput(String newOutput) {
         outputLabel.setText(newOutput +"\n"+ outputLabel.getText());
         
         /*
@@ -1368,6 +1460,8 @@ public class Window extends Application {
                 + fileFooter);
         piership = new Image(fileHeader +"theme/"+ theme +"/"+"shippier"
                 + fileFooter);
+        unsafe = new Image(fileHeader +"theme/"+ theme +"/"+"unsafe"
+                + fileFooter);
     }
     
 // Returns a new button with custom defaults
@@ -1431,7 +1525,7 @@ public class Window extends Application {
 
 // Creating a ship at a random watery location
     public void newRandomShip() {
-        Move newShip;
+        CargoShip newShip;
         Random random = new Random();
         if (random.nextInt(3) == 0) {
             newShip = new CargoShip(this, windowThread);
@@ -1442,6 +1536,7 @@ public class Window extends Application {
                 newShip = new ContainerShip(this, windowThread);
             }
         }
+        textOutput(newShip.getName() + " on the horizon!");
         mapObjects.add(newShip);
         System.err.println(newShip.getSpawn());
         Thread newShipThread = new Thread(newShip);
@@ -1467,6 +1562,7 @@ public class Window extends Application {
            }
         }
         newMonster.setName(newMonster.getName() +" "+ monstersSummoned);
+        textOutput(newMonster.getName() +" summoned!");
         mapObjects.add(newMonster);
         Thread newMonsterThread = new Thread(newMonster);
         mapThreads.add(newMonsterThread);
@@ -1482,7 +1578,7 @@ public class Window extends Application {
      * to textOutput.
      * @param printing Whether or not to print to the console
      */
-    public void updateCurrentShips(boolean printing) {
+    public static void updateCurrentShips(boolean printing) {
         currentShips = new ConcurrentLinkedQueue<>();
         for(Move mapObject : mapObjects) {
             if(mapObject instanceof CargoShip) {
@@ -1495,6 +1591,29 @@ public class Window extends Application {
             for(CargoShip currentShip : currentShips) {
                 textOutput("\nShip Index: "+ index 
                         +"\n"+ currentShip.toStringArray());
+                index++;
+            }
+        }
+    }
+    
+    /**
+     * Populates currentMonsters from mapObjects. Adds currentMonsters' toStrings
+     * to textOutput.
+     * @param printing Whether or not to print to the console
+     */
+    public void updateCurrentMonsters(boolean printing) {
+        currentMonsters = new ConcurrentLinkedQueue<>();
+        for(Move mapObject : mapObjects) {
+            if(mapObject instanceof SeaMonster) {
+                currentMonsters.add((SeaMonster)mapObject);
+            }
+        }
+        
+        if(printing) {
+            int index = 0;
+            for(SeaMonster currentMonster : currentMonsters) {
+                textOutput("\nMonster Index: "+ index 
+                        +"\n"+ currentMonster.toStringArray());
                 index++;
             }
         }
@@ -1573,10 +1692,8 @@ public class Window extends Application {
                         textOutput(((Godzilla) predator).battlecry());
                         new MediaPlayer(godzillaKillsSound).play();
                         mapMove(prey, null);
-                        predator.end();
                         predator.setTarget(
                                 getPreyMonster(predator.getLocation()));
-                        predator.setTarget(getPreyShip(predator.getLocation()));
                         Thread newPredatorThread = new Thread(predator);
                         mapThreads.add(newPredatorThread);
                         mapMove(predator, predator.getLocation());
@@ -1584,9 +1701,8 @@ public class Window extends Application {
                             newPredatorThread.start();
                         }
                     }
-                }
             // CargoShip reached Dock
-                else if(predator instanceof CargoShip) {
+                } else if(predator instanceof CargoShip) {
                     if(prey instanceof Dock) {
                         textOutput(((CargoShip)predator).getName() 
                                 +" docked at "+ ((Dock)prey).getName());
@@ -1597,7 +1713,6 @@ public class Window extends Application {
                         predator.end();
                         predator.setTarget(null);
                         predator.setDestination(predator.getSpawn());
-                        predator.setTarget(getPreyShip(predator.getLocation()));
                         Thread newPredatorThread = new Thread(predator);
                         mapThreads.add(newPredatorThread);
                         mapMove(predator, predator.getLocation());
@@ -1638,9 +1753,41 @@ public class Window extends Application {
             // Drawing Move at its new location
                 Move currentShip = shipList.remove(); // Unqueueing ship
                 Location newLocation = locationList.remove(); // Unqueueing loc
+                ImageView drawnImage = customImageView(currentShip.getCSym());
+                updateCurrentShips(false);
+                for(Move secondShip : mapObjects) {
+                    
+                // Two object share a location
+                    if(secondShip.getLocation().equals(newLocation)) {
+                        
+                    // CargoShip - ?
+                        if(currentShip instanceof CargoShip) {
+                        // CargoShip - CargoShip
+                            if(secondShip instanceof CargoShip) {
+                                drawnImage = customImageView('X');
+                        // CargoShip - Dock
+                            } else if(secondShip instanceof Dock) {
+                                if(currentShip instanceof OilTanker) {
+                                    if(secondShip instanceof Pier) {
+                                        drawnImage = customImageView('p');
+                                    }
+                                } else if(currentShip instanceof ContainerShip) {
+                                    if(secondShip instanceof Crane) {
+                                        drawnImage = customImageView('c');
+                                    }
+                                } else {
+                                    if(!(secondShip instanceof Pier
+                                            || secondShip instanceof Crane)) {
+                                        drawnImage = customImageView('d');
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 mapButtons.get(newLocation.getY()) // Setting new loc image
                         .get(newLocation.getX())
-                        .setGraphic(customImageView(currentShip.getCSym()));
+                        .setGraphic(drawnImage);
             
             // Undrawing Move from previous location
                 Location previousLocation = new Location(currentShip
@@ -1777,6 +1924,18 @@ public class Window extends Application {
         }
         if ("G".equals(String.valueOf(type))) {
             return godzilla;
+        }
+        if("X".equals(String.valueOf(type))) {
+            return unsafe;
+        }
+        if ("p".equals(String.valueOf(type))) {
+            return piership;
+        }
+        if ("c".equals(String.valueOf(type))) {
+            return craneship;
+        }
+        if("d".equals(String.valueOf(type))) {
+            return dockship;
         }
         return entity; // No image exists for the given char
     }
