@@ -35,72 +35,8 @@ public class CargoShip extends Move
     
     protected Cargo cargo;
     
-    //No empty params allowable
-//    /** Default class constructor. */
-//    public Ship()
-//    {
-//        super(location, relay, sleepTime);
-//        this.name        = "Zenda";
-//        this.countryReg  = "Ruritania";
-//        this.transponder = 0;
-//        this.capacity    = 10;
-//        this.length      = 90;
-//        this.beam        = 10;
-//        this.draft       = 5;
-//        this.cSym  = 'S';
-//        this.cargo       = new Cargo();
-//    }
-    
-    
-    
     /**
-     * Class constructor based on string input.
-     * @param input
-     * @param newLocation
-     * @param newDestination
-     * @param newWindow
-     * @param newGuiThread
-     *//*
-    public CargoShip(String input, Location newLocation, Location newDestination, 
-            Window newWindow, Thread newGuiThread)
-    {
-        super(newLocation, newDestination, newWindow, newGuiThread);
-        type = "Ship";
-        cSym = 'S';
-        
-        String[] tokens = input.split(",");
-        
-        if (tokens.length == 8)
-        {
-            this.name        = tokens[0];
-            this.countryReg  = tokens[1];
-            this.transponder = Long.parseLong(tokens[2]);
-            this.capacity    = Double.parseDouble(tokens[3]);
-            this.length      = Double.parseDouble(tokens[4]);
-            this.beam        = Double.parseDouble(tokens[5]);
-            this.draft       = Double.parseDouble(tokens[6]);
-            this.cargo       = new Cargo(tokens[7]);
-        }
-        else
-        {
-            this.name        = tokens[0];
-            this.countryReg  = tokens[1];
-            this.transponder = Long.parseLong(tokens[2]);
-            this.capacity    = Double.parseDouble(tokens[3]);
-            this.length      = Double.parseDouble(tokens[4]);
-            this.beam        = Double.parseDouble(tokens[5]);
-            this.draft       = Double.parseDouble(tokens[6]);
-            this.cargo       = null;
-        }
-        
-        if(cargo != null)
-        {
-            sleepTime += 250;
-        }
-        
-    }*/
-    /**
-     * Generates a random ship.
+     * Generates a default ship.
      * @param newWindow
      * @param newGuiThread 
      */
@@ -118,36 +54,6 @@ public class CargoShip extends Move
         this.draft       = 5;
         this.cargo       = new Cargo();
     }
-    
-//    /**
-//     * Parameter Based Constructor.
-//     * @param name
-//     * @param countryReg
-//     * @param cSym
-//     * @param transponder
-//     * @param capacity
-//     * @param length
-//     * @param beam
-//     * @param draft
-//     * @param longitute
-//     * @param latitude
-//     * @param cargo
-//     */
-//    public Ship(String name, String countryReg, char cSym, long transponder, double capacity, double length, double beam, double draft, double longitute, double latitude, Cargo cargo, Location location, long sleepTime)
-//    {
-//        //super(location, sleepTime);
-//        this.name = name;
-//        this.countryReg = countryReg;
-//        this.cSym = cSym;
-//        this.transponder = transponder;
-//        this.capacity = capacity;
-//        this.length = length;
-//        this.beam = beam;
-//        this.draft = draft;
-//        this.cargo = cargo;
-//    }
-    
-    
     
     /**
     * Function to return the ship's current name.

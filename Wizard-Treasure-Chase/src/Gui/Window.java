@@ -99,7 +99,11 @@ public class Window extends Application {
      * [row/y][column/x]
      */
     static char[][] terrainMap;
-    static char[][] mapList = new char[rows][columns]; // [row][column]
+    /**
+     * [row][column] <p>
+     * [y][x]
+     */
+    static char[][] mapList = new char[rows][columns];
     static ConcurrentLinkedQueue<Move> shipList
             = new ConcurrentLinkedQueue<>();
     /**
@@ -117,6 +121,7 @@ public class Window extends Application {
             = new ConcurrentLinkedQueue<>();
     static Port port = new Port();
     static ConcurrentLinkedQueue<CargoShip> currentShips;
+    static ConcurrentLinkedQueue<Dock> currentDocks;
 
 // Files
 // Files > Images
@@ -392,17 +397,6 @@ public class Window extends Application {
         updateShipID.setMaxWidth(30);
         updateShip.addRow(0, updateShipID);
         
-        /*
-        // Ship select button
-        Button selectShipButton = new Button("Select");
-        selectShipButton.setOnAction((ActionEvent event) -> {
-            System.err.println("Update ships button pressed");
-            CargoShip editShip = (CargoShip)currentShips.toArray()
-                    [Integer.getInteger(updateShipID.getText())];
-        });
-        updateShip.addRow(0, selectShipButton);
-        */
-        
         Label shipNameLabel = new Label("Name:");
         updateShip.addRow(1, shipNameLabel);
         TextField shipNameText = new TextField("");
@@ -492,19 +486,21 @@ public class Window extends Application {
             Location previousLocation = editShip.getLocation();
             if(shipYText.getText().equals("") // Checking if X, Y empty in GUI
                     || shipXText.getText().equals("")) {
-                editShip.setLocation(new Location(
-                    Integer.valueOf(shipXText.getText()), 
-                    Integer.valueOf(shipYText.getText())));
-            } else { // Setting location by lat, lon if X, Y empty in GUI
                 editShip.setLongitude(Double.valueOf(
                         shipLongitudeText.getText()));
                 editShip.setLatitude(Double.valueOf(
                         shipLatitudeText.getText()));
+            } else { // Setting location by lat, lon if X, Y empty in GUI
+                editShip.setLocation(new Location(
+                        Integer.valueOf(shipXText.getText()), 
+                        Integer.valueOf(shipYText.getText())));
             }
             editShip.getCargo().setLabel(shipCargoText.getText());
             editShip.getCargo().setWeight(Double.valueOf(
                     shipCargoWeightText.getText()));
+            editShip.end();
             mapMove(editShip, editShip.getLocation());
+            new Thread(editShip).start();
             removeGhost(previousLocation);
         });
         updateShip.addRow(11, saveShipButton);
@@ -595,7 +591,139 @@ public class Window extends Application {
     // Port Menu > Accordion > Update Dock
         TitledPane updateDockPane = new TitledPane();
         updateDockPane.setStyle("-fx-base: #003380ff;");
-        updateDockPane.setText("Update Dock");
+        updateDockPane.setText("Update Docks");
+        GridPane updateDock = new GridPane();
+        updateDock.setStyle("-fx-base: #003380ff");
+        updateDockPane.setContent(updateDock);
+        
+        Label updateDockLabel = new Label("Index:");
+        updateDock.addRow(0, updateDockLabel);
+        TextField updateDockID = new TextField("0");
+        updateDockID.setMaxWidth(30);
+        updateDock.addRow(0, updateDockID);
+        
+        Label dockNameLabel = new Label("Name:");
+        updateDock.addRow(1, dockNameLabel);
+        TextField dockNameText = new TextField("");
+        dockNameText.setMaxWidth(100);
+        updateDock.addRow(1, dockNameText);
+        
+        Label dockNumLabel = new Label("Number:");
+        updateDock.addRow(2, dockNumLabel);
+        TextField dockNumText = new TextField("");
+        dockNumText.setMaxWidth(50);
+        updateDock.addRow(2, dockNumText);
+        
+        TextField dockCharText = new TextField("");
+        dockCharText.setMaxWidth(50);
+        updateDock.addRow(2, dockCharText);
+        
+        Label dockWidthLabel = new Label("Width:");
+        updateDock.addRow(3, dockWidthLabel);
+        TextField dockWidthText = new TextField("");
+        dockWidthText.setMaxWidth(50);
+        updateDock.addRow(3, dockWidthText);
+        
+        Label dockLengthLabel = new Label("Length:");
+        updateDock.addRow(4, dockLengthLabel);
+        TextField dockLengthText = new TextField("");
+        dockLengthText.setMaxWidth(50);
+        updateDock.addRow(4, dockLengthText);
+        
+        Label dockDepthLabel = new Label("Depth:");
+        updateDock.addRow(5, dockDepthLabel);
+        TextField dockDepthText = new TextField("");
+        dockDepthText.setMaxWidth(50);
+        updateDock.addRow(5, dockDepthText);
+        
+        Label dockLongitudeLabel = new Label("Longitude:");
+        updateDock.addRow(6, dockLongitudeLabel);
+        TextField dockLongitudeText = new TextField("");
+        dockLongitudeText.setMaxWidth(60);
+        updateDock.addRow(6, dockLongitudeText);
+        TextField dockYText = new TextField("");
+        dockYText.setMaxWidth(60);
+        updateDock.addRow(6, dockYText);
+        
+        Label dockLatitudeLabel = new Label("Latitude:");
+        updateDock.addRow(7, dockLatitudeLabel);
+        TextField dockLatitudeText = new TextField("");
+        dockLatitudeText.setMaxWidth(50);
+        updateDock.addRow(7, dockLatitudeText);
+        TextField dockXText = new TextField("");
+        dockXText.setMaxWidth(50);
+        updateDock.addRow(7, dockXText);
+    
+    // Dock Menu > Update Dock > Save Button
+        Button saveDockButton = new Button("Save");
+        saveDockButton.setOnAction((ActionEvent event) -> {
+            System.err.println("Save dock button pressed");
+            updateCurrentDocks(false); // Updating currentDocks
+            for(int counter = Integer.valueOf(updateDockID.getText()); 
+                    counter > 0; counter--) {
+                currentDocks.poll();
+                // Removing docks from currentDocks until we're at index
+            }
+            Dock editDock = currentDocks.poll(); // Setting dock to edit
+            System.err.println(editDock.getLocation());
+            // Saving new values from GUI
+            editDock.setName(dockNameText.getText());
+            editDock.setSection(dockCharText.getText().charAt(0));
+            editDock.setNum(Integer.valueOf(dockNumText.getText()));
+            editDock.setLength(Double.valueOf(dockLengthText.getText()));
+            editDock.setWidth(Double.valueOf(dockWidthText.getText()));
+            editDock.setDepth(Double.valueOf(dockDepthText.getText()));
+            Location previousLocation = editDock.getLocation();
+            if(dockYText.getText().equals("") // Checking if X, Y empty in GUI
+                    || dockXText.getText().equals("")) {
+                System.err.println("Debug 2");
+                editDock.setLongitude(Double.valueOf(
+                        dockLongitudeText.getText()));
+                editDock.setLatitude(Double.valueOf(
+                        dockLatitudeText.getText()));
+            } else { // Setting location by lat, lon if X, Y empty in GUI
+                System.err.println("Debug 1");
+                editDock.setLocation(new Location(
+                    Integer.valueOf(dockXText.getText()), 
+                    Integer.valueOf(dockYText.getText())));
+            }
+            mapMove(editDock, editDock.getLocation());
+            removeGhost(previousLocation);
+        });
+        updateDock.addRow(11, saveDockButton);
+        
+    // Dock Menu > Update Dock > Load Button
+        Button updateDockButton = new Button("Load");
+        updateDockButton.setOnAction((ActionEvent event) -> {
+            System.err.println("Load dock button pressed");
+            updateCurrentDocks(false); // Updating currentDocks
+            for(int counter = Integer.valueOf(updateDockID.getText()); 
+                    counter > 0; counter--) {
+                currentDocks.poll();
+                // Removing docks from currentDocks until we're at index
+            }
+            Dock editDock = currentDocks.poll(); // Setting dock to edit
+            
+            // Updating GUI to new values
+            dockNameText.setText(editDock.getName());
+            dockNumText.setText(String.valueOf(editDock.getNum()));
+            dockCharText.setText(String.valueOf(editDock.getSection()));
+            dockLengthText.setText(
+                    String.valueOf(editDock.getLength()));
+            dockWidthText.setText(
+                    String.valueOf(editDock.getWidth()));
+            dockDepthText.setText(
+                    String.valueOf(editDock.getDepth()));
+            dockLongitudeText.setText(
+                    String.valueOf(editDock.getLongitude()));
+            dockYText.setText(
+                    String.valueOf(editDock.getLocation().getY()));
+            dockLatitudeText.setText(
+                    String.valueOf(editDock.getLatitude()));
+            dockXText.setText(
+                    String.valueOf(editDock.getLocation().getX()));
+        });
+        updateDock.addRow(11, updateDockButton);
 
     // Port Menu > Accordion
         Accordion portMenuAccordion = new Accordion();
@@ -948,9 +1076,31 @@ public class Window extends Application {
 
     public ArrayList<Location> getWaterLocations() {
         ArrayList<Location> locations = new ArrayList<>();
-        waterLocations.stream().forEach((lo) -> {
-            locations.add(lo);
-        });
+        int x = 0;
+        int y = 0;
+        for(x = 0; x < 54; x++) {
+            if(terrainMap[y][x] == '.') {
+                locations.add(new Location(x, y));
+            }
+        }
+        y = 35;
+        for(x = 0; x < 54; x++) {
+            if(terrainMap[y][x] == '.') {
+                locations.add(new Location(x, y));
+            }
+        }
+        x = 0;
+        for(y = 0; y < 36; y++) {
+            if(terrainMap[y][x] == '.') {
+                locations.add(new Location(x, y));
+            }
+        }
+        x = 53;
+        for(y = 0; y < 36; y++) {
+            if(terrainMap[y][x] == '.') {
+                locations.add(new Location(x, y));
+            }
+        }
         return locations;
     }
         
@@ -1269,6 +1419,7 @@ public class Window extends Application {
             }
         }
         mapObjects.add(newShip);
+        System.err.println(newShip.getSpawn());
         new Thread(newShip).start();
     }
 
@@ -1312,39 +1463,56 @@ public class Window extends Application {
             }
         }
     }
+    
+    public void updateCurrentDocks(boolean printing) {
+        currentDocks = new ConcurrentLinkedQueue<>();
+        for(Move mapObject : mapObjects) {
+            if(mapObject instanceof Dock) {
+                currentDocks.add((Dock)mapObject);
+            }
+        }
+        
+        if(printing) {
+            int index = 0;
+            for(Dock currentDock : currentDocks) {
+                textOutput("\nDock Index: "+ index 
+                        +"\n"+ currentDock.toStringArray());
+                index++;
+            }
+        }
+    }
 
 // Adding move to queue
-    public void mapMove(Move ship, Location newLocation)
-    {
-        if(newLocation != null) {
-            Platform.runLater(() -> {
+    public void mapMove(Move ship, Location newLocation) {
+        Platform.runLater(() -> {
+            if(newLocation != null) {
                 shipList.add(ship);
                 locationList.add(newLocation);
                 mapUpdate();
-            });
-    // Removing ship from the map when mapMove gets null for newLocation
-        } else { // newLocation == null
-            ship.end();
-            mapObjects.remove(ship); // Removing ship from mapObjects
-            Move otherMoveAtShipLocation = null; // Holds Move at ship.getLocation()
-            for(Move mapObject : mapObjects) { // Saving Move at ship.getLocation()
-                if(mapObject.getLocation().equals(ship.getLocation())) {
-                    otherMoveAtShipLocation = mapObject;
+            // Removing ship from the map when mapMove gets null for newLocation
+            } else { // newLocation == null
+                ship.end();
+                mapObjects.remove(ship); // Removing ship from mapObjects
+                Move otherMoveAtShipLocation = null; // Holds Move at ship.getLocation()
+                for(Move mapObject : mapObjects) { // Saving Move at ship.getLocation()
+                    if(mapObject.getLocation().equals(ship.getLocation())) {
+                        otherMoveAtShipLocation = mapObject;
+                    }
                 }
+            // Setting image at ship.getLocation() for other Move at ship
+                if(otherMoveAtShipLocation != null) { // Other Move found
+                    mapButtons.get(ship.getLocation().getY()).get(ship.getLocation()
+                            .getX()).setGraphic(customImageView(
+                            otherMoveAtShipLocation.getCSym()));
+                } else { // Setting image at ship.getLocation() for terrain
+                    mapButtons.get(ship.getLocation().getY()).get(ship.getLocation()
+                            .getX()).setGraphic(customImageView(terrainMap
+                            [ship.getLocation().getY()]
+                            [ship.getLocation().getX()]));
+                }
+                updateCurrentShips(false);
             }
-        // Setting image at ship.getLocation() for other Move at ship
-            if(otherMoveAtShipLocation != null) { // Other Move found
-                mapButtons.get(ship.getLocation().getY()).get(ship.getLocation()
-                        .getX()).setGraphic(customImageView(
-                        otherMoveAtShipLocation.getCSym()));
-            } else { // Setting image at ship.getLocation() for terrain
-                mapButtons.get(ship.getLocation().getY()).get(ship.getLocation()
-                        .getX()).setGraphic(customImageView(terrainMap
-                        [ship.getLocation().getY()]
-                        [ship.getLocation().getX()]));
-            }
-            updateCurrentShips(false);
-        }
+        });
     }
 
 // Prints the given map to the console
@@ -1376,14 +1544,33 @@ public class Window extends Application {
                     }
                 }
             // CargoShip reached Dock
-                if(predator instanceof CargoShip) {
+                else if(predator instanceof CargoShip) {
                     if(prey instanceof Dock) {
                         textOutput(((CargoShip)predator).getName() 
-                                +" has docked at "+ ((Dock)prey).getName());
+                                +" docked at "+ ((Dock)prey).getName());
                         new MediaPlayer(Docking).play();
+                        port.getCargoList().add(((CargoShip)predator)
+                                .getCargo());
+                        ((CargoShip)predator).setCargo(null);
                         predator.end();
                         predator.setTarget(null);
-                        predator.setDestination(new Location(0, 0));
+                        predator.setDestination(predator.getSpawn());
+                        new Thread(predator).start();
+                    }
+            // SeaMonster reached CargoShip
+                } else if(predator instanceof SeaMonster) {
+                    if(prey instanceof CargoShip) {
+                        textOutput(((SeaMonster)predator).battlecry());
+                        if(predator instanceof Kraken) {
+                            new MediaPlayer(krakenSound).play();
+                        } else if(predator instanceof Leviathan) {
+                            new MediaPlayer(leviathanSound).play();
+                        } else if(predator instanceof SeaSerpent) {
+                            new MediaPlayer(seaSerpentSound).play();
+                        }
+                        mapMove(prey, null);
+                        predator.end();
+                        predator.setTarget(getPreyShip(predator.getLocation()));
                         new Thread(predator).start();
                     }
                 }

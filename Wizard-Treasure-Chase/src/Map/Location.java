@@ -5,14 +5,19 @@
 package Map;
 
 /**
- *
+ * x, y
  * @author mason
  */
 public class Location
 {
     private int x;
     private int y;
-
+    
+    /**
+     * x, y
+     * @param x
+     * @param y 
+     */
     public Location(int x, int y)
     {
         this.x = x;

@@ -28,6 +28,7 @@ public class Move implements Runnable {
     protected int sleepTime;
     protected char cSym;
     protected boolean isRunning;
+    protected Location spawn;
     
     /**
      * Case sensitive representation of the class name 
@@ -46,6 +47,7 @@ public class Move implements Runnable {
         guiThread = newGuiThread;
         type = "Moveable";
         cSym = 'E';
+        spawn = newLocation;
     }
 
     /**
@@ -60,6 +62,7 @@ public class Move implements Runnable {
         
         sleepTime = 500 + new Random().nextInt(500);
         currentLocation = getValidSpawn(); // DEBUG DEFAULT UNUSED
+        spawn = currentLocation;
         getValidTarget();
         
         type = "Moveable";
@@ -78,6 +81,7 @@ public class Move implements Runnable {
         
         sleepTime = 500 + new Random().nextInt(500);
         currentLocation = getValidSpawn(); // DEBUG DEFAULT UNUSED
+        spawn = currentLocation;
         
         type = "Moveable";
         cSym = 'E';
@@ -93,6 +97,7 @@ public class Move implements Runnable {
             Thread newGuiThread) {
         sleepTime = 700 + new Random().nextInt(100);
         currentLocation = newLocation;
+        spawn = currentLocation;
         guiWindow = newWindow;
         guiThread = newGuiThread;
         type = "Moveable";
@@ -135,7 +140,12 @@ public class Move implements Runnable {
                 if(currentLocation.getX() == destination.getX()
                         && currentLocation.getY() == destination.getY()) {
                     end();
-                    guiWindow.reachedDestination(this, target);
+                    if(destination.equals(spawn)) {
+                        guiWindow.mapMove(this, null);
+                        guiWindow.newRandomShip();
+                    } else {
+                        guiWindow.reachedDestination(this, target);
+                    }
                 } else {
 
                     if(target != null) { // Moveable has a target
@@ -275,5 +285,9 @@ public class Move implements Runnable {
     
     public Move getTarget() {
         return target;
+    }
+    
+    public Location getSpawn() {
+        return spawn;
     }
 }
